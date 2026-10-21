@@ -178,7 +178,7 @@ const fadeVariants: Variants = {
 const SCREEN_LABEL: Record<Route, string> = Object.fromEntries(NAV_ITEMS.map((n) => [n.route, `${n.label}画面`])) as Record<Route, string>;
 
 function ScreenStage({ entranceDelay }: { entranceDelay: number }) {
-  const { route, irisOrigin } = useApp();
+  const { route, irisOrigin, navigate } = useApp();
   const reduce = useReducedMotion();
   const tone = useTone();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -189,6 +189,24 @@ function ScreenStage({ entranceDelay }: { entranceDelay: number }) {
     setLastRoute(route);
     setMoved(true);
   }
+  // ひび手帳から切り替えたとき：画面が見えた瞬間に、ホームを開く動き（時計盤が現れる）を見せる。
+  // 読み込みはひび手帳の切り替えの動きの裏で済んでいるので、見えたと知らされたらホームへ移る（もうホームなら開き直す）
+  const [replay, setReplay] = useState(0);
+  const routeRef = useRef(route);
+  routeRef.current = route;
+  useEffect(() => {
+    if (!IN_HIBI) return;
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin !== location.origin || e.source !== window.parent || (e.data as { type?: string } | null)?.type !== 'hibi:shown') return;
+      if (routeRef.current !== 'hall') navigate('hall');
+      else {
+        setMoved(true);
+        setReplay((n) => n + 1);
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [navigate]);
   // 押したボタンの位置から開く（ステージ内の座標に変換）
   // 新しい画面の最初の描画に間に合うよう、描画中に計算する
   const origin = useMemo<Origin>(() => {
@@ -201,7 +219,7 @@ function ScreenStage({ entranceDelay }: { entranceDelay: number }) {
     const radius = Math.ceil(Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y))) + 8;
     return { x, y, r: radius };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route, irisOrigin]);
+  }, [route, irisOrigin, replay]);
 
   return (
     <div className="stage" ref={stageRef}>
@@ -210,7 +228,7 @@ function ScreenStage({ entranceDelay }: { entranceDelay: number }) {
       </p>
       <AnimatePresence initial={false} custom={origin}>
         <motion.main
-          key={route}
+          key={`${route}-${replay}`}
           className="screen"
           data-theme={tone}
           data-screen={route}
@@ -225,7 +243,7 @@ function ScreenStage({ entranceDelay }: { entranceDelay: number }) {
       </AnimatePresence>
       {/* 波紋の輪：画面が開くのに合わせて、細い線が外へ広がって消える */}
       {!reduce && moved && (
-        <div className="ripple" key={`ripple-${route}`} aria-hidden="true" style={{ left: origin.x, top: origin.y }}>
+        <div className="ripple" key={`ripple-${route}-${replay}`} aria-hidden="true" style={{ left: origin.x, top: origin.y }}>
           {[0, 1].map((i) => (
             <motion.span
               key={i}
