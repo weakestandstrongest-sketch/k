@@ -163,6 +163,11 @@
   stroke-width: 12px;
   stroke-linejoin: round;
 }
+/* 小さな文字は縁取りを細く（隣の文字を縁が覆わないように） */
+.cf-center .cf-center__label,
+.cf-center .cf-center__note {
+  stroke-width: 4px;
+}
 .cf-center__label {
   font-family: var(--font-sans);
   font-weight: 600;

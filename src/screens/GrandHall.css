@@ -381,6 +381,13 @@
   .hall__numeral {
     font-size: clamp(6rem, 36vw, 9.5rem);
   }
+  /* デジタル時計→アナログ時計と、アナログ時計→NEXT の間をそろえる */
+  .hall__dial {
+    margin-top: 20px;
+  }
+  .hall__dial-legend {
+    margin-top: 0;
+  }
   .hall__stats {
     gap: var(--sp-2);
   }

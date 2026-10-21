@@ -307,7 +307,7 @@ function ClockFaceImpl({
               </text>
             )}
             {centerValue && (
-              <text y={compact ? 44 : 40} textAnchor="middle" className={`cf-center__value ${centerValue.length > 4 ? 'cf-center__value--long' : ''}`}>
+              <text y={0} textAnchor="middle" dominantBaseline="central" className={`cf-center__value ${centerValue.length > 4 ? 'cf-center__value--long' : ''}`}>
                 {centerValue}
               </text>
             )}
