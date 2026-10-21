@@ -510,7 +510,7 @@
   }
   .chamber {
     width: 100%;
-    height: 100%;
+    height: 100dvh;
   }
   .chamber__shell {
     box-shadow: none;

@@ -9,8 +9,9 @@
       <line x1="0" y1="196" x2="0" y2="150"/>
       <line x1="-196" y1="0" x2="-150" y2="0"/>
     </g>
-    <path d="M 0 0 L 92 -118" stroke-width="8" stroke-linecap="round"/>
-    <circle cx="96" cy="-123" r="14" fill="#c9a45c" stroke="none"/>
+    <path d="M 0 0 L 86 -110" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="92" cy="-118" r="13" fill="#c9a45c" stroke="none"/>
+    <circle r="12" fill="#c9a45c" stroke="none"/>
   </g>
-  <text x="256" y="300" text-anchor="middle" font-family="Bodoni Moda, Didot, Times New Roman, serif" font-style="italic" font-size="150" fill="#efe6d2">C</text>
+  <text x="256" y="372" text-anchor="middle" font-family="Bodoni Moda, Didot, Times New Roman, serif" font-style="italic" font-size="96" fill="#efe6d2">C</text>
 </svg>

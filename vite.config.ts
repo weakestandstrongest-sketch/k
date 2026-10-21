@@ -36,6 +36,17 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // ライブラリを別ファイルにして、更新時のダウンロードを小さくする
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-dom/client'],
+          motion: ['motion', 'motion/react'],
+        },
+      },
+    },
+  },
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],

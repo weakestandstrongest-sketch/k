@@ -259,8 +259,9 @@
   color: var(--ink-dim);
 }
 .stat__value {
-  font-size: clamp(1.4rem, 1rem + 1vw, 2rem);
+  font-size: clamp(1.2rem, 0.8rem + 0.9vw, 1.9rem);
   line-height: 1.2;
+  white-space: nowrap;
 }
 .stat__value small {
   font-family: var(--font-sans);

@@ -1,8 +1,7 @@
-@import '@fontsource/bodoni-moda/400.css';
-@import '@fontsource/bodoni-moda/400-italic.css';
-@import '@fontsource/bodoni-moda/600.css';
-@import '@fontsource/cormorant-garamond/400-italic.css';
-@import '@fontsource/cormorant-garamond/500.css';
+/* 欧文の見出し用書体（ラテン文字のみ。端末に保存されオフラインでも表示） */
+@import '@fontsource/bodoni-moda/latin-400.css';
+@import '@fontsource/bodoni-moda/latin-400-italic.css';
+@import '@fontsource/bodoni-moda/latin-600.css';
 @import './tokens.css';
 
 *,
@@ -47,6 +46,13 @@ textarea {
 
 button {
   touch-action: manipulation;
+}
+
+/* 予定をドラッグしている間は文字の選択を止める */
+body.is-dragging {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grabbing;
 }
 
 :focus-visible {

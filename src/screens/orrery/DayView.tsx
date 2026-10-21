@@ -219,6 +219,7 @@ function DayTimeline({ dayEvents, conflictMap, hourPx, nowMin, windowStart, wind
     e.currentTarget.setPointerCapture(e.pointerId);
     const screen = e.currentTarget.closest('.screen') as HTMLElement | null;
     dragRef.current = { id: ev.id, startY: e.clientY, origStart: ev.startMin, dur: ev.endMin - ev.startMin, scrollStart: screen?.scrollTop ?? 0, screen };
+    document.body.classList.add('is-dragging');
     setDrag({ id: ev.id, start: ev.startMin, mode: 'pointer' });
   };
 
@@ -241,6 +242,7 @@ function DayTimeline({ dayEvents, conflictMap, hourPx, nowMin, windowStart, wind
     const d = dragRef.current;
     const current = drag;
     dragRef.current = null;
+    document.body.classList.remove('is-dragging');
     setDrag(null);
     if (!d || !current) return;
     if (current.start !== d.origStart) justDragged.current = true;

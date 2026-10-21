@@ -14,6 +14,7 @@ import { formatTimeRange } from '../lib/date';
 import { arcPath, continuousAngle, minuteToAngle, polar } from '../lib/geometry';
 import { assignLanes, type ConflictKind, type FreeSlot } from '../lib/schedule';
 import { ease } from '../motion/tokens';
+import { useNow } from '../state/useNow';
 import './ClockFace.css';
 
 interface Props {
@@ -21,7 +22,8 @@ interface Props {
   dateKey: string;
   /** 今日を表示中なら現在の分。それ以外は null（針を隠す） */
   nowMin: number | null;
-  nowSec?: number;
+  /** 外周を回る秒の点を表示する（今日のみ） */
+  liveSeconds?: boolean;
   windowStart: number;
   windowEnd: number;
   conflicts?: Map<string, ConflictKind>;
@@ -45,7 +47,7 @@ function ClockFaceImpl({
   events,
   dateKey,
   nowMin,
-  nowSec = 0,
+  liveSeconds = false,
   windowStart,
   windowEnd,
   conflicts,
@@ -68,7 +70,7 @@ function ClockFaceImpl({
   const d0 = introDelay;
 
   // 針の角度（0:00 をまたいでも逆回転しない連続角）
-  const target = nowMin == null ? null : minuteToAngle(nowMin + nowSec / 60);
+  const target = nowMin == null ? null : minuteToAngle(nowMin);
   const angleRef = useRef(animateIntro ? (target ?? 0) - 300 : (target ?? 0));
   const hand = useSpring(angleRef.current, reduce ? { stiffness: 1000, damping: 100 } : { stiffness: 60, damping: 18, mass: 1 });
   useEffect(() => {
@@ -286,11 +288,7 @@ function ClockFaceImpl({
             <circle cy={-470} r={compact ? 22 : 18} className="cf-hand__halo" />
           </motion.g>
         )}
-        {target != null && !reduce && (
-          <g className="cf-seconds" aria-hidden="true" transform={`rotate(${nowSec * 6})`}>
-            <circle cy={-494} r={4} />
-          </g>
-        )}
+        {target != null && !reduce && liveSeconds && <SecondsOrbit />}
         <circle r={16} className="cf-pin" aria-hidden="true" />
         <circle r={6} className="cf-pin-inner" aria-hidden="true" />
 
@@ -326,3 +324,13 @@ function ClockFaceImpl({
 }
 
 export const ClockFace = memo(ClockFaceImpl);
+
+/** 秒の点だけを毎秒描き直す（文字盤全体は毎分だけ更新） */
+function SecondsOrbit() {
+  const sec = useNow(1000).getSeconds();
+  return (
+    <g className="cf-seconds" aria-hidden="true" transform={`rotate(${sec * 6})`}>
+      <circle cy={-494} r={4} />
+    </g>
+  );
+}

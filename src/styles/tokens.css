@@ -13,7 +13,6 @@
 :root {
   /* 書体 */
   --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', 'Times New Roman', serif;
-  --font-ornament: 'Cormorant Garamond', 'Garamond', 'Times New Roman', serif;
   --font-mincho: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'Noto Serif JP', 'Noto Serif CJK JP', serif;
   --font-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
 

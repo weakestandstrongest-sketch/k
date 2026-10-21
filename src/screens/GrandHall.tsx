@@ -34,7 +34,8 @@ import { useNow } from '../state/useNow';
 import './GrandHall.css';
 
 export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
-  const now = useNow(1000);
+  // 画面全体は 15 秒ごと、時刻の表示（LiveTime）だけ毎秒更新
+  const now = useNow(15_000);
   const reduce = useReducedMotion();
   const { events, settings, status } = useEvents();
   const { openChamber, navigate, setReviewDate, setFocusDate, setCalView, setSettingsOpen } = useApp();
@@ -51,8 +52,6 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
   const open = (e: CalendarEvent, layoutKey?: string) => openChamber({ mode: 'view', id: e.id, layoutKey });
   const create = () => openChamber({ mode: 'new', draft: emptyDraft(today, Math.min(snapMinutes(nowMin + 30, 30), 1380)) });
 
-  const hh = formatMinutes(nowMin);
-  const sec = String(now.getSeconds()).padStart(2, '0');
 
   return (
     <div className="screen__inner hall">
@@ -82,12 +81,7 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
             </p>
           </motion.div>
           <motion.div className="hall__time" variants={item}>
-            <span className="hall__time-main num">
-              <RollingText text={hh} stagger={0.02} />
-            </span>
-            <span className="hall__time-sec num" aria-hidden="true">
-              {sec}
-            </span>
+            <LiveTime />
             <span className="hall__time-label">現在時刻</span>
           </motion.div>
         </section>
@@ -97,7 +91,7 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
             events={data.day}
             dateKey={today}
             nowMin={nowMin}
-            nowSec={now.getSeconds()}
+            liveSeconds
             windowStart={settings.dayStartMin}
             windowEnd={settings.dayEndMin}
             conflicts={data.conflictMap}
@@ -201,6 +195,20 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
         CHRONOS ATELIER
       </motion.div>
     </div>
+  );
+}
+
+function LiveTime() {
+  const now = useNow(1000);
+  return (
+    <>
+      <span className="hall__time-main num">
+        <RollingText text={formatMinutes(minutesOfDay(now))} stagger={0.02} />
+      </span>
+      <span className="hall__time-sec num" aria-hidden="true">
+        {String(now.getSeconds()).padStart(2, '0')}
+      </span>
+    </>
   );
 }
 
