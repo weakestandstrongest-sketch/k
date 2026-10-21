@@ -1,0 +1,20 @@
+.rolling {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: pre;
+  perspective: 600px;
+}
+.rolling__slot {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  /* 上下に少し余裕を持たせて欠けないようにする */
+  padding-block: 0.08em;
+  margin-block: -0.08em;
+  line-height: 1;
+}
+.rolling__char {
+  display: inline-block;
+  will-change: transform;
+  transform-origin: 50% 50% -0.3em;
+}

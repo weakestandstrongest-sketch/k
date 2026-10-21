@@ -1,0 +1,183 @@
+/*
+ * デザイントークン
+ * ------------------------------------------------------------
+ * 画面ごとに「data-theme」を切り替えると、色・線・光・質感がまとめて変わります。
+ *   hall      … 大広間（黒・アイボリー・古金）
+ *   orrery    … 天球儀（アイボリー・チャコール・金属）
+ *   chamber   … 私室（深紅）
+ *   equation  … 時間設計（深い青と静かな光）
+ *   chronicle … 年代記（琥珀・青銅・古文書）
+ *   night     … 一日を閉じる（星空）
+ */
+
+:root {
+  /* 書体 */
+  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', 'Times New Roman', serif;
+  --font-ornament: 'Cormorant Garamond', 'Garamond', 'Times New Roman', serif;
+  --font-mincho: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'Noto Serif JP', 'Noto Serif CJK JP', serif;
+  --font-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
+
+  /* 文字サイズ（流体） */
+  --fs-micro: 0.6875rem;
+  --fs-small: 0.8125rem;
+  --fs-body: 0.9375rem;
+  --fs-lead: 1.125rem;
+  --fs-title: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
+  --fs-hero: clamp(4.5rem, 2rem + 13vw, 13rem);
+
+  /* 余白（8 の倍数を基本に） */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  /* 線・角・影 */
+  --hairline: 1px;
+  --radius-0: 0;
+  --radius-1: 2px;
+  --radius-pill: 999px;
+
+  /* 時間（モーション）— src/motion/tokens.ts と対応 */
+  --dur-instant: 120ms;
+  --dur-fast: 200ms;
+  --dur-base: 320ms;
+  --dur-slow: 500ms;
+  --dur-grand: 800ms;
+  --ease-escapement: cubic-bezier(0.7, 0, 0.2, 1);
+  --ease-glide: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-regal: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* レイアウト */
+  --rail-width: 104px;
+  --mobile-nav-height: 68px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* 状態色（全テーマ共通の意味） */
+  --c-danger: #d2483c;
+  --c-warn: #d9a03b;
+  --c-ok: #5fae8a;
+}
+
+/* ---------- テーマ ---------- */
+
+[data-theme='hall'] {
+  color-scheme: dark;
+  --bg: #0b0a09;
+  --bg-raised: #141210;
+  --bg-sunken: #070606;
+  --ink: #efe6d2;
+  --ink-dim: #b5ab97;
+  --ink-faint: #7b7365;
+  --line: rgba(201, 164, 92, 0.32);
+  --line-strong: rgba(201, 164, 92, 0.7);
+  --accent: #c9a45c;
+  --accent-ink: #0b0a09;
+  --accent-2: #8c6d3a;
+  --glow: rgba(214, 178, 106, 0.28);
+  --focus: #f3d48d;
+  --texture-opacity: 0.07;
+  --vignette: radial-gradient(120% 90% at 70% 30%, rgba(201, 164, 92, 0.08), transparent 60%);
+}
+
+[data-theme='orrery'] {
+  color-scheme: light;
+  --bg: #ece5d6;
+  --bg-raised: #f6f1e6;
+  --bg-sunken: #e1d8c6;
+  --ink: #1d1c1a;
+  --ink-dim: #4b4842;
+  --ink-faint: #6f6a61;
+  --line: rgba(29, 28, 26, 0.18);
+  --line-strong: rgba(29, 28, 26, 0.55);
+  --accent: #8a6a2c; /* 真鍮 */
+  --accent-ink: #f6f1e6;
+  --accent-2: #4f5a66; /* 鋼 */
+  --glow: rgba(138, 106, 44, 0.18);
+  --focus: #1f4f8f;
+  --texture-opacity: 0.05;
+  --vignette: radial-gradient(100% 80% at 20% 0%, rgba(255, 255, 255, 0.55), transparent 60%);
+}
+
+[data-theme='chamber'] {
+  color-scheme: dark;
+  --bg: #120707;
+  --bg-raised: #1c0c0c;
+  --bg-sunken: #0b0404;
+  --ink: #f4e7df;
+  --ink-dim: #c9aea4;
+  --ink-faint: #8e756d;
+  --line: rgba(214, 74, 64, 0.32);
+  --line-strong: rgba(226, 92, 78, 0.75);
+  --accent: #d6453a;
+  --accent-ink: #fff4ef;
+  --accent-2: #c9a45c;
+  --glow: rgba(214, 69, 58, 0.3);
+  --focus: #ffb3a6;
+  --texture-opacity: 0.06;
+  --vignette: radial-gradient(90% 70% at 50% 0%, rgba(214, 69, 58, 0.16), transparent 65%);
+}
+
+[data-theme='equation'] {
+  color-scheme: dark;
+  --bg: #070c18;
+  --bg-raised: #0d1526;
+  --bg-sunken: #050812;
+  --ink: #e3ebf7;
+  --ink-dim: #9fb0c9;
+  --ink-faint: #6a7a93;
+  --line: rgba(120, 170, 255, 0.24);
+  --line-strong: rgba(140, 190, 255, 0.6);
+  --accent: #8cc3ff;
+  --accent-ink: #050812;
+  --accent-2: #c9a45c;
+  --glow: rgba(110, 170, 255, 0.28);
+  --focus: #bfe0ff;
+  --texture-opacity: 0.05;
+  --vignette: radial-gradient(80% 70% at 85% 10%, rgba(80, 140, 255, 0.14), transparent 60%);
+}
+
+[data-theme='chronicle'] {
+  color-scheme: dark;
+  --bg: #15100a;
+  --bg-raised: #1f170e;
+  --bg-sunken: #0e0a06;
+  --ink: #f0dfbf;
+  --ink-dim: #c3a77c;
+  --ink-faint: #8a7356;
+  --line: rgba(205, 140, 60, 0.3);
+  --line-strong: rgba(222, 160, 80, 0.7);
+  --accent: #e0a24a; /* 琥珀 */
+  --accent-ink: #15100a;
+  --accent-2: #a8703a; /* 青銅 */
+  --glow: rgba(224, 162, 74, 0.25);
+  --focus: #ffd48a;
+  --texture-opacity: 0.11;
+  --vignette: radial-gradient(110% 80% at 30% 10%, rgba(224, 162, 74, 0.12), transparent 60%);
+}
+
+[data-theme='night'] {
+  color-scheme: dark;
+  --bg: #05060d;
+  --bg-raised: #0b0d1a;
+  --bg-sunken: #030308;
+  --ink: #eef0ff;
+  --ink-dim: #a9aed0;
+  --ink-faint: #6d7196;
+  --line: rgba(190, 200, 255, 0.22);
+  --line-strong: rgba(210, 220, 255, 0.6);
+  --accent: #f6e7b0;
+  --accent-ink: #05060d;
+  --accent-2: #8ea2ff;
+  --glow: rgba(246, 231, 176, 0.35);
+  --focus: #ffffff;
+  --texture-opacity: 0.04;
+  --vignette: radial-gradient(70% 60% at 50% 40%, rgba(110, 120, 220, 0.18), transparent 70%);
+}

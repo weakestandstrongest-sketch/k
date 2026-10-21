@@ -1,0 +1,17 @@
+import { useSyncExternalStore } from 'react';
+
+export function useMediaQuery(query: string): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mql = window.matchMedia(query);
+      mql.addEventListener('change', onChange);
+      return () => mql.removeEventListener('change', onChange);
+    },
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
+}
+
+/** スマートフォン幅かどうか */
+export const MOBILE_QUERY = '(max-width: 760px)';
+export const useIsMobile = () => useMediaQuery(MOBILE_QUERY);

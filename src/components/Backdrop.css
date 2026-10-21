@@ -1,0 +1,52 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.backdrop__vignette {
+  position: absolute;
+  inset: 0;
+  background: var(--vignette);
+}
+.backdrop__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.backdrop__lines path {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+.backdrop__lines path.thin {
+  stroke-width: 0.8;
+  opacity: 0.7;
+}
+.backdrop__lines path.hair {
+  stroke-width: 0.6;
+  opacity: 0.35;
+}
+.backdrop__lines path.glow {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  opacity: 0.4;
+  filter: drop-shadow(0 0 6px var(--glow));
+}
+/* 紙・石の質感（SVG ノイズ） */
+.backdrop__grain {
+  position: absolute;
+  inset: -50%;
+  opacity: var(--texture-opacity);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.45  0 0 0 0 0.4  0 0 0 1.1 -0.2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+.backdrop--chronicle .backdrop__grain {
+  mix-blend-mode: soft-light;
+}
+.backdrop--orrery .backdrop__grain {
+  mix-blend-mode: multiply;
+}

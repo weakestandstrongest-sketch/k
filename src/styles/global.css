@@ -1,0 +1,361 @@
+@import '@fontsource/bodoni-moda/400.css';
+@import '@fontsource/bodoni-moda/400-italic.css';
+@import '@fontsource/bodoni-moda/600.css';
+@import '@fontsource/cormorant-garamond/400-italic.css';
+@import '@fontsource/cormorant-garamond/500.css';
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--bg);
+  transition: background-color var(--dur-slow) var(--ease-regal);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  height: 100dvh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* ---------- 文字の役割 ---------- */
+.kicker {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.heading {
+  margin: 0;
+  font-family: var(--font-mincho);
+  font-weight: 500;
+  font-size: var(--fs-title);
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+}
+.subheading {
+  margin: 0;
+  font-family: var(--font-mincho);
+  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: 0.12em;
+}
+.muted {
+  color: var(--ink-dim);
+}
+.faint {
+  color: var(--ink-faint);
+}
+.num {
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* ---------- ボタン ---------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding: 0 var(--sp-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-0);
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--fs-small);
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-fast) var(--ease-escapement),
+    color var(--dur-fast) var(--ease-escapement),
+    border-color var(--dur-fast),
+    transform var(--dur-fast) var(--ease-escapement);
+}
+.btn:hover {
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.btn--primary:hover {
+  background: color-mix(in srgb, var(--accent) 86%, var(--ink));
+}
+.btn--danger {
+  background: var(--c-danger);
+  border-color: var(--c-danger);
+  color: #fff;
+}
+.btn--danger:hover {
+  background: color-mix(in srgb, var(--c-danger) 85%, #000);
+}
+.btn--ghost {
+  border-color: var(--line);
+  color: var(--ink-dim);
+}
+.btn--ghost:hover {
+  color: var(--ink);
+}
+.btn--small {
+  min-height: 36px;
+  padding: 0 var(--sp-3);
+  font-size: var(--fs-micro);
+}
+.btn--icon {
+  width: 44px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+/* ---------- 入力 ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+.field__label {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  color: var(--ink-dim);
+}
+.field__control {
+  width: 100%;
+  min-height: 46px;
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--bg-sunken) 60%, transparent);
+  color: var(--ink);
+  font-size: 16px; /* iPhone で拡大されないように 16px 以上 */
+  transition: border-color var(--dur-fast), background-color var(--dur-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.field__control:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+  background: color-mix(in srgb, var(--bg-sunken) 85%, transparent);
+}
+.field__control:focus-visible {
+  box-shadow: 0 2px 0 0 var(--accent);
+}
+textarea.field__control {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.6;
+}
+select.field__control {
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-dim) 50%), linear-gradient(135deg, var(--ink-dim) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+.field--error .field__control {
+  border-bottom-color: var(--c-danger);
+}
+.field__error {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--c-danger);
+}
+[data-theme='orrery'] .field__error,
+[data-theme='orrery'] .text-danger {
+  color: #a8261b;
+}
+.field__hint {
+  margin: 0;
+  font-size: var(--fs-micro);
+  color: var(--ink-faint);
+}
+input[type='date'].field__control,
+input[type='time'].field__control {
+  min-width: 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+input[type='date']::-webkit-calendar-picker-indicator,
+input[type='time']::-webkit-calendar-picker-indicator {
+  filter: var(--picker-filter, none);
+}
+[data-theme='hall'],
+[data-theme='chamber'],
+[data-theme='equation'],
+[data-theme='chronicle'],
+[data-theme='night'] {
+  --picker-filter: invert(0.85);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 40px;
+  cursor: pointer;
+  user-select: none;
+}
+.check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+/* ---------- 小さな記号 ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border: 1px solid var(--line);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.chip--danger {
+  border-color: color-mix(in srgb, var(--c-danger) 70%, transparent);
+  color: var(--c-danger);
+}
+[data-theme='orrery'] .chip--danger {
+  color: #a8261b;
+}
+.chip--warn {
+  border-color: color-mix(in srgb, var(--c-warn) 70%, transparent);
+  color: var(--c-warn);
+}
+[data-theme='orrery'] .chip--warn {
+  color: #865b0a;
+}
+.chip--sample {
+  border-style: dashed;
+  color: var(--ink-faint);
+}
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cat, var(--accent));
+  flex: none;
+}
+.rule {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: linear-gradient(90deg, var(--line-strong), var(--line) 40%, transparent);
+}
+
+/* ---------- アプリの骨組み ---------- */
+.app {
+  position: relative;
+  height: 100dvh;
+}
+.stage {
+  position: fixed;
+  inset: 0 0 0 calc(var(--rail-width) + var(--safe-left));
+  overflow: hidden;
+}
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-overflow-scrolling: touch;
+}
+.screen__inner {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  padding: calc(var(--sp-6) + var(--safe-top)) calc(var(--sp-7) + var(--safe-right)) var(--sp-8) var(--sp-7);
+}
+@media (max-width: 760px) {
+  .stage {
+    inset: 0;
+  }
+  .screen__inner {
+    padding: calc(var(--sp-4) + var(--safe-top)) calc(var(--sp-4) + var(--safe-right)) calc(var(--mobile-nav-height) + var(--sp-7) + var(--safe-bottom))
+      calc(var(--sp-4) + var(--safe-left));
+  }
+}
+
+/* ---------- 視差効果を減らす設定 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

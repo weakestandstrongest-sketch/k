@@ -1,0 +1,136 @@
+.opening {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  cursor: pointer;
+  overflow: hidden;
+  /* 扉が開いた後ろが見えるよう背景は持たない */
+}
+.opening__door {
+  position: absolute;
+  inset: 0;
+  background: #0b0a09;
+  color: #efe6d2;
+  will-change: transform;
+}
+.opening__door--left {
+  clip-path: inset(0 50% 0 0);
+  border-right: 1px solid rgba(201, 164, 92, 0.5);
+}
+.opening__door--right {
+  clip-path: inset(0 0 0 50%);
+}
+.opening__content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgba(201, 164, 92, 0.12), transparent 70%),
+    #0b0a09;
+}
+.opening__frame {
+  position: absolute;
+  inset: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  width: calc(100% - 32px);
+  height: calc(100% - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+}
+.opening__frame path {
+  fill: none;
+  stroke: rgba(201, 164, 92, 0.55);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.opening__center {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+  text-align: center;
+}
+.opening__dial {
+  width: min(46vmin, 300px);
+  height: min(46vmin, 300px);
+  overflow: visible;
+}
+.opening__ring {
+  fill: none;
+  stroke: #c9a45c;
+  stroke-width: 1.5;
+}
+.opening__ring--thin {
+  stroke: rgba(201, 164, 92, 0.45);
+  stroke-width: 1;
+}
+.opening__tick {
+  stroke: rgba(239, 230, 210, 0.55);
+  stroke-width: 1.5;
+}
+.opening__tick--major {
+  stroke: #c9a45c;
+  stroke-width: 3;
+}
+.opening__hand {
+  stroke: #c9a45c;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.opening__sun,
+.opening__pin {
+  fill: #c9a45c;
+}
+.opening__brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.8rem, 0.6rem + 0.6vw, 1.05rem);
+  color: #c9a45c;
+  margin-right: -0.6em;
+  white-space: nowrap;
+}
+.opening__date {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.opening__day {
+  font-family: var(--font-display);
+  font-size: clamp(3.6rem, 2rem + 6vw, 6rem);
+  line-height: 0.9;
+}
+.opening__date-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding-left: 16px;
+  border-left: 1px solid rgba(201, 164, 92, 0.6);
+  font-family: var(--font-mincho);
+  letter-spacing: 0.2em;
+  color: #b5ab97;
+  font-size: 0.85rem;
+}
+.opening__date-full {
+  color: #efe6d2;
+  font-size: 1.1rem;
+}
+.opening__schedule {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  color: #b5ab97;
+}
+.opening__skip {
+  position: absolute;
+  right: calc(28px + env(safe-area-inset-right, 0px));
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid rgba(201, 164, 92, 0.5);
+  background: rgba(11, 10, 9, 0.6);
+  color: #efe6d2;
+  letter-spacing: 0.3em;
+  font-size: 0.75rem;
+  cursor: pointer;
+}

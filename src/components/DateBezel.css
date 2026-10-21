@@ -1,0 +1,52 @@
+.bezel {
+  display: block;
+  flex: none;
+  overflow: visible;
+}
+.bezel__rim {
+  fill: var(--bg-raised);
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.bezel__ring {
+  fill: none;
+  stroke: var(--line);
+}
+.bezel__month {
+  font-family: var(--font-display);
+  font-size: 11px;
+  fill: var(--ink-faint);
+}
+.bezel__month.is-current {
+  fill: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+}
+.bezel__tick {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+.bezel__tick.is-current {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+.bezel__hand {
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.bezel__hand-tip {
+  fill: var(--accent);
+}
+.bezel__index {
+  fill: var(--accent);
+}
+.bezel__core {
+  fill: var(--bg);
+  stroke: var(--line-strong);
+}
+.bezel__weekday {
+  font-family: var(--font-mincho);
+  font-size: 26px;
+  fill: var(--ink);
+}
