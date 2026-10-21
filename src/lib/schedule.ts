@@ -224,3 +224,12 @@ export function clampMinutes(min: number): number {
 export function snapMinutes(min: number, step = 15): number {
   return Math.round(min / step) * step;
 }
+
+/** 活動時間帯の内訳：予定本体・余白（本体と重ならない部分）・空き */
+export function timeBreakdown(dayEvents: CalendarEvent[], windowStart: number, windowEnd: number) {
+  const clip = (i: Interval): Interval => ({ start: Math.max(windowStart, i.start), end: Math.min(windowEnd, i.end) });
+  const window = Math.max(0, windowEnd - windowStart);
+  const core = totalMinutes(dayEvents.map((e) => clip(coreInterval(e))));
+  const buffered = totalMinutes(dayEvents.map((e) => clip(bufferedInterval(e))));
+  return { window, core, bufferExtra: buffered - core, free: window - buffered };
+}

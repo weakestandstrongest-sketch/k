@@ -372,6 +372,13 @@
   .stat__note {
     display: none;
   }
+  .stat__value {
+    font-size: 1.2rem;
+    word-break: keep-all;
+  }
+  .stat__label {
+    letter-spacing: 0.08em;
+  }
   .hall__actions .btn {
     flex: 1;
   }

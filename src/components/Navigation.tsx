@@ -23,7 +23,7 @@ function originOf(e: MouseEvent<HTMLElement>) {
   return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 
-export function Navigation({ onCreate }: { onCreate: (origin: { x: number; y: number }) => void }) {
+export function Navigation({ onCreate }: { onCreate: () => void }) {
   const { route, navigate, setSettingsOpen } = useApp();
   const { saving } = useEvents();
 
@@ -53,7 +53,7 @@ export function Navigation({ onCreate }: { onCreate: (origin: { x: number; y: nu
           ))}
         </ul>
         <div className="rail__foot">
-          <button type="button" className="rail__create" onClick={(e) => onCreate(originOf(e))} aria-label="新しい予定を作成">
+          <button type="button" className="rail__create" onClick={onCreate} aria-label="新しい予定を作成">
             <Icon name="plus" size={22} />
           </button>
           <button type="button" className="rail__gear" onClick={() => setSettingsOpen(true)} aria-label="設定">
@@ -69,7 +69,7 @@ export function Navigation({ onCreate }: { onCreate: (origin: { x: number; y: nu
         {NAV_ITEMS.slice(0, 2).map((item) => (
           <DockItem key={item.route} item={item} active={route === item.route} onClick={(e) => navigate(item.route, originOf(e))} />
         ))}
-        <button type="button" className="dock__create" onClick={(e) => onCreate(originOf(e))} aria-label="新しい予定を作成">
+        <button type="button" className="dock__create" onClick={onCreate} aria-label="新しい予定を作成">
           <span className="dock__create-ring" aria-hidden="true" />
           <Icon name="plus" size={26} />
         </button>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assignLanes, conflictsFor, findConflicts, freeSlots, nextEvent, totalFree } from './schedule';
+import { assignLanes, conflictsFor, findConflicts, freeSlots, nextEvent, timeBreakdown, totalFree } from './schedule';
 import { ev } from './testUtils';
 
 describe('衝突の検出', () => {
@@ -68,5 +68,14 @@ describe('次の予定', () => {
     expect(nextEvent([a, b, c], 570)).toMatchObject({ ongoing: true, event: { id: 'a' } });
     expect(nextEvent([a, b, c], 600)).toMatchObject({ ongoing: false, event: { id: 'c' } });
     expect(nextEvent([a, b, c], 900)).toBeNull();
+  });
+});
+
+describe('時間の内訳', () => {
+  it('活動時間 = 予定 + 余白 + 空き（重なりは二重に数えない）', () => {
+    const list = [ev('09:00', '10:00'), ev('09:30', '10:30'), ev('12:00', '13:00', { bufferBeforeMin: 30 })];
+    const b = timeBreakdown(list, 8 * 60, 18 * 60);
+    expect(b).toEqual({ window: 600, core: 150, bufferExtra: 30, free: 420 });
+    expect(b.core + b.bufferExtra + b.free).toBe(b.window);
   });
 });

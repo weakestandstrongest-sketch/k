@@ -86,7 +86,7 @@ function Shell() {
   }, []);
 
   const create = useCallback(
-    (_origin?: Point) => {
+    () => {
       const today = todayKey();
       const date = route === 'orrery' || route === 'equation' ? focusDate : today;
       const nowMin = minutesOfDay(new Date());
