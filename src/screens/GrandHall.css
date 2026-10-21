@@ -14,59 +14,35 @@
     'banner banner';
   column-gap: clamp(32px, 4vw, 80px);
   row-gap: var(--sp-5);
-  max-width: 1480px;
+  max-width: 1360px;
   margin: 0 auto;
 }
 .hall__head {
   grid-area: head;
   display: flex;
-  align-items: flex-start;
-  gap: var(--sp-4);
+  align-items: center;
+  gap: var(--sp-3);
 }
-/* 左上の白い札 */
 .hall__pocket {
-  display: inline-grid;
-  grid-template-columns: auto auto;
-  grid-template-areas: 'value unit' 'label label';
-  align-items: baseline;
-  column-gap: 4px;
-  padding: 6px 18px 8px 12px;
-  background: #fff;
-  color: #050f4a;
-  border: 2px solid #050f4a;
-  box-shadow: 4px 4px 0 rgba(2, 8, 50, 0.6);
-}
-.hall__pocket-value {
-  grid-area: value;
-  font-size: 2.1rem;
-  line-height: 1;
-  font-weight: 800;
-}
-.hall__pocket-unit {
-  grid-area: unit;
-  font-weight: 800;
-}
-.hall__pocket-label {
-  grid-area: label;
-  display: flex;
-  flex-direction: column;
-  font-size: 0.68rem;
-  font-weight: 800;
-  line-height: 1.25;
-}
-.hall__pocket-label small {
-  font-family: var(--font-display);
-  font-style: italic;
+  margin: 0;
+  padding: 3px 12px;
+  border-radius: var(--r-pill);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-1);
+  font-size: var(--fs-micro);
   font-weight: 600;
-  font-size: 0.68rem;
-  letter-spacing: 0.02em;
+  color: var(--ink-dim);
+}
+.hall__pocket .num {
+  font-weight: 600;
+  color: var(--crimson);
 }
 .hall__head .hall__gear {
   display: none;
   margin-left: auto;
 }
 
-/* ---- 日付 ---- */
+/* ---- 日付（細く大きな数字） ---- */
 .hall__date {
   grid-area: date;
   display: grid;
@@ -75,93 +51,90 @@
     'num side'
     'time time';
   align-items: end;
-  column-gap: var(--sp-4);
-  row-gap: var(--sp-3);
+  column-gap: var(--sp-5);
+  row-gap: var(--sp-2);
 }
 .hall__numeral {
+  position: relative;
   grid-area: num;
   font-size: var(--fs-hero);
-  line-height: 0.8;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  color: #fff;
-  /* 水色の影をずらして重ねる */
-  text-shadow: 0.05em 0.04em 0 var(--cyan);
-  margin-left: -0.02em;
+  font-weight: 200;
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+  color: var(--ink);
+  margin-left: -0.05em;
+}
+.hall__slash {
+  position: absolute;
+  left: 8%;
+  right: -6%;
+  top: 52%;
+  height: 1.5px;
+  background: var(--crimson);
+  transform: rotate(-58deg);
+  transform-origin: center;
+  pointer-events: none;
 }
 .hall__date-side {
   grid-area: side;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.6rem;
 }
 .hall__month-en {
   margin: 0;
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 900;
-  font-size: 2.4rem;
-  line-height: 0.9;
-  color: var(--cyan);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.5em;
+  color: var(--ink-dim);
 }
 .hall__month {
-  margin: var(--sp-1) 0 0;
-  color: var(--ink-dim);
-  letter-spacing: 0.08em;
+  margin: 6px 0 0;
+  color: var(--ink-faint);
   font-size: var(--fs-small);
-  font-weight: 700;
 }
 .hall__wafu {
-  color: var(--yellow);
   margin-left: var(--sp-2);
+  color: var(--crimson);
 }
 .hall__weekday {
-  display: inline-block;
-  margin: var(--sp-1) 0 0;
-  padding: 2px 18px 2px 8px;
+  margin: 2px 0 0;
   font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: clamp(1.5rem, 1rem + 1.4vw, 2.3rem);
-  letter-spacing: 0.08em;
-  line-height: 1.2;
-  background: #fff;
-  color: #050f4a;
-  transform: skewX(var(--slant));
-  box-shadow: 5px 4px 0 var(--hl);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 1rem + 1.2vw, 2rem);
+  letter-spacing: 0.12em;
+  line-height: 1.3;
 }
 .hall__weekday-en {
-  margin: 6px 0 0;
+  margin: 0;
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: 0.3em;
-  color: var(--ink-dim);
+  font-size: 0.62rem;
+  letter-spacing: 0.6em;
+  color: var(--ink-faint);
 }
 .hall__time {
   grid-area: time;
   display: flex;
   align-items: baseline;
-  gap: var(--sp-3);
-  padding: 6px var(--sp-5) 6px var(--sp-3);
-  background: var(--bar);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 100%, 0 100%);
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
 }
 .hall__time-main {
-  font-size: clamp(2.8rem, 2rem + 2.6vw, 4.6rem);
+  font-size: clamp(2.8rem, 2rem + 2.6vw, 4.4rem);
+  font-weight: 200;
   line-height: 1;
-  font-weight: 800;
-  color: #fff;
+  letter-spacing: -0.03em;
 }
 .hall__time-sec {
-  font-size: 1.4rem;
-  color: var(--yellow);
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--crimson);
   width: 1.6em;
 }
 .hall__time-label {
   margin-left: auto;
   font-size: var(--fs-micro);
-  font-weight: 700;
   letter-spacing: 0.2em;
-  color: var(--cyan);
+  color: var(--ink-faint);
 }
 
 /* ---- 時計盤 ---- */
@@ -170,7 +143,7 @@
   align-self: start;
   position: relative;
   width: 100%;
-  max-width: 640px;
+  max-width: 620px;
   justify-self: center;
 }
 .hall__dial-legend {
@@ -180,7 +153,6 @@
   gap: var(--sp-2) var(--sp-4);
   margin: var(--sp-3) 0 0;
   font-size: var(--fs-micro);
-  font-weight: 700;
   color: var(--ink-dim);
 }
 .hall__dial-legend span {
@@ -190,16 +162,17 @@
 }
 .lg {
   display: inline-block;
-  width: 18px;
+  width: 16px;
   height: 0;
-  border-top: 6px solid var(--ink-dim);
+  border-top: 5px solid var(--ink-dim);
+  border-radius: 3px;
 }
-.lg--arc { border-top-color: #33e4ff; }
-.lg--buffer { border-top: 3px dashed var(--ink-dim); }
-.lg--free { border-top: 3px solid var(--yellow); }
-.lg--window { border-top: 2px dotted var(--ink-dim); }
+.lg--arc { border-top-color: #4a6fd1; }
+.lg--buffer { border-top: 2px dashed var(--ink-dim); }
+.lg--free { border-top: 2px solid var(--crimson); }
+.lg--window { border-top: 1px dotted var(--ink-dim); }
 
-/* ---- 次の予定 ---- */
+/* ---- 次の予定（ウィジェット風のカード） ---- */
 .hall__next {
   grid-area: next;
   display: flex;
@@ -211,53 +184,54 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: var(--sp-3) calc(var(--sp-6) + 10px) var(--sp-4) var(--sp-5);
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
   border: 0;
-  background: var(--bar);
-  color: #fff;
+  border-radius: var(--r-lg);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-1);
+  color: var(--ink);
   text-align: left;
   cursor: pointer;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 26px) 100%, 0 100%);
-  box-shadow: inset 6px 0 0 var(--cat);
-  transition: background-color var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-escapement);
+  overflow: hidden;
+  transition: transform var(--dur-fast) var(--ease-ios), box-shadow var(--dur-fast);
 }
-.hall__next-card:hover,
-.hall__next-card:focus-visible {
-  background: #fff;
-  color: #050f4a;
-  transform: translateX(6px);
-  outline: none;
+.hall__next-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--cat);
+}
+.hall__next-card:hover {
+  box-shadow: var(--shadow-2);
+}
+.hall__next-card:active {
+  transform: scale(0.985);
 }
 .hall__next-count {
   display: flex;
   align-items: baseline;
   gap: var(--sp-3);
-  font-size: clamp(2rem, 1.4rem + 1.6vw, 2.8rem);
-  font-weight: 800;
-  line-height: 1;
-  color: var(--cyan);
-}
-.hall__next-card:hover .hall__next-count {
-  color: var(--hl);
+  font-size: clamp(1.8rem, 1.3rem + 1.4vw, 2.5rem);
+  font-weight: 200;
+  line-height: 1.1;
 }
 .hall__next-count-label {
   font-family: var(--font-sans);
-  font-style: normal;
   font-size: var(--fs-micro);
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: inherit;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--crimson);
 }
 .hall__next-title {
   font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: 1.45rem;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
   line-height: 1.35;
-}
-.hall__next-empty .hall__next-title {
-  display: inline-block;
-  transform: skewX(var(--slant));
 }
 .hall__next-meta {
   display: flex;
@@ -265,11 +239,7 @@
   align-items: center;
   gap: var(--sp-2) var(--sp-3);
   font-size: var(--fs-small);
-  font-weight: 700;
-  opacity: 0.85;
-}
-.hall__next-meta .num {
-  font-size: 1.1rem;
+  color: var(--ink-dim);
 }
 .hall__next-meta .dot {
   background: var(--cat);
@@ -281,34 +251,37 @@
 }
 .hall__next-leave {
   font-size: var(--fs-small);
-  font-weight: 700;
-  color: var(--yellow);
-}
-.hall__next-card:hover .hall__next-leave {
-  color: #8a6a00;
+  color: var(--c-warn);
 }
 .hall__next-leave.is-late {
-  color: var(--c-danger);
+  color: var(--crimson);
 }
 .hall__next-prep {
   position: absolute;
-  top: var(--sp-3);
-  right: calc(var(--sp-6) + 6px);
+  top: var(--sp-4);
+  right: var(--sp-4);
+  padding: 1px 10px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
   font-size: var(--fs-micro);
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  color: var(--ink-dim);
 }
 .hall__next-empty {
-  padding: var(--sp-3) 0;
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-lg);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-1);
+}
+.hall__next-empty p {
+  margin: 0;
 }
 .hall__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-4);
-  padding-top: var(--sp-2);
+  gap: var(--sp-2);
 }
 
-/* ---- 概要（数値の帯） ---- */
+/* ---- 概要（小さなウィジェット） ---- */
 .hall__stats {
   grid-area: stats;
   display: grid;
@@ -319,28 +292,24 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: var(--sp-3) var(--sp-6) var(--sp-3) var(--sp-4);
-  background: var(--bar);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-lg);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-1);
 }
 .stat__label {
   font-size: var(--fs-micro);
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: var(--cyan);
+  font-weight: 600;
+  color: var(--ink-dim);
 }
 .stat__value {
-  font-size: clamp(1.4rem, 1rem + 1vw, 2.2rem);
-  line-height: 1.1;
-  font-weight: 800;
+  font-size: clamp(1.4rem, 1rem + 1vw, 2rem);
+  font-weight: 300;
+  line-height: 1.15;
   white-space: nowrap;
-  border-bottom: 3px solid var(--cyan);
-  align-self: flex-start;
-  padding-right: var(--sp-2);
 }
 .stat__value small {
   font-family: var(--font-sans);
-  font-style: normal;
   font-size: var(--fs-small);
   margin-left: 2px;
   color: var(--ink-dim);
@@ -350,24 +319,21 @@
   color: var(--ink-faint);
 }
 .stat--danger .stat__value {
-  color: var(--hl);
-  border-bottom-color: var(--hl);
+  color: var(--crimson);
 }
 .stat__action {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   align-self: flex-start;
   margin-top: var(--sp-1);
-  padding: 2px 10px;
+  padding: 0;
   border: 0;
-  background: #fff;
-  color: #050f4a;
+  background: none;
+  color: var(--crimson);
   font-size: var(--fs-micro);
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
-  transform: skewX(var(--slant));
-  box-shadow: 3px 3px 0 var(--hl);
 }
 
 /* ---- 一覧 ---- */
@@ -379,10 +345,13 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-3);
-  padding-bottom: var(--sp-3);
+  padding: 0 var(--sp-2) var(--sp-3);
 }
 .hall__empty {
-  padding: var(--sp-5) 0;
+  padding: var(--sp-5);
+  border-radius: var(--r-lg);
+  background: var(--bg-raised);
+  margin: 0;
 }
 .hall__banner {
   grid-area: banner;
@@ -401,7 +370,7 @@
       'banner';
   }
   .hall__dial {
-    max-width: 560px;
+    max-width: 540px;
   }
 }
 
@@ -413,25 +382,20 @@
     display: inline-flex;
   }
   .hall__numeral {
-    font-size: clamp(6rem, 38vw, 10rem);
-  }
-  .hall__month-en {
-    font-size: 1.9rem;
+    font-size: clamp(6rem, 36vw, 9.5rem);
   }
   .hall__stats {
-    gap: 6px;
+    gap: var(--sp-2);
   }
   .stat {
-    padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3);
+    padding: var(--sp-3) var(--sp-3);
+    border-radius: var(--r-md);
   }
   .stat__note {
     display: none;
   }
   .stat__value {
-    font-size: 1.25rem;
-  }
-  .stat__label {
-    letter-spacing: 0.02em;
+    font-size: 1.2rem;
   }
   .hall__actions .btn {
     flex: 1;

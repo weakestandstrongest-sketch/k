@@ -11,17 +11,17 @@ export interface CategoryInfo {
 }
 
 /**
- * カテゴリーの色は、深い青の背景の上でも見分けられる鮮やかな色。
+ * カテゴリーの色は、白い面でも黒い面でも見分けられる落ち着いた中間調。
  */
 export const CATEGORIES: readonly CategoryInfo[] = [
-  { id: 'work', label: '仕事', enamel: '水色', tag: 'WORK', color: '#33e4ff' },
-  { id: 'meeting', label: '会議', enamel: '紅', tag: 'MEET', color: '#ff3d5e' },
-  { id: 'study', label: '学び', enamel: '菫', tag: 'STUDY', color: '#b97cff' },
-  { id: 'health', label: '健康', enamel: '若葉', tag: 'HEALTH', color: '#42f09a' },
-  { id: 'personal', label: '私用', enamel: '山吹', tag: 'LIFE', color: '#ffd93b' },
-  { id: 'travel', label: '移動', enamel: '空', tag: 'MOVE', color: '#9fc4ff' },
-  { id: 'social', label: '交流', enamel: '桃', tag: 'SOCIAL', color: '#ff62c9' },
-  { id: 'other', label: 'その他', enamel: '銀', tag: 'OTHER', color: '#d7def0' },
+  { id: 'work', label: '仕事', enamel: '藍', tag: 'WORK', color: '#4a6fd1' },
+  { id: 'meeting', label: '会議', enamel: '紅', tag: 'MEET', color: '#e0243c' },
+  { id: 'study', label: '学び', enamel: '菫', tag: 'STUDY', color: '#8061c9' },
+  { id: 'health', label: '健康', enamel: '翠', tag: 'HEALTH', color: '#2f9a72' },
+  { id: 'personal', label: '私用', enamel: '山吹', tag: 'LIFE', color: '#c58b22' },
+  { id: 'travel', label: '移動', enamel: '浅葱', tag: 'MOVE', color: '#3592a6' },
+  { id: 'social', label: '交流', enamel: '桃', tag: 'SOCIAL', color: '#cf5389' },
+  { id: 'other', label: 'その他', enamel: '鈍', tag: 'OTHER', color: '#8b909b' },
 ];
 
 const BY_ID = new Map(CATEGORIES.map((c) => [c.id, c]));

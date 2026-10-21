@@ -117,7 +117,7 @@ function ClockFaceImpl({
         <defs>
           <radialGradient id={`cf-face-${uid}`} cx="50%" cy="45%" r="60%">
             <stop offset="0%" stopColor="var(--bg-raised)" />
-            <stop offset="100%" stopColor="var(--bg-sunken)" />
+            <stop offset="100%" stopColor="var(--bg)" />
           </radialGradient>
           <mask id={`cf-sweep-${uid}`} maskUnits="userSpaceOnUse" x="-500" y="-500" width="1000" height="1000">
             {animateIntro ? (

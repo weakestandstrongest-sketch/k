@@ -13,8 +13,7 @@
   justify-content: space-between;
   gap: var(--sp-4);
   padding-bottom: var(--sp-4);
-  border-bottom: 1px double var(--line-strong);
-  border-bottom-width: 3px;
+  border-bottom: 1px solid var(--line);
 }
 .chr__controls {
   display: flex;
@@ -24,46 +23,49 @@
 }
 .chr__periods {
   display: inline-flex;
-  border: 1px solid var(--line-strong);
+  padding: 2px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
 }
 .chr__periods button {
   position: relative;
   min-width: 52px;
-  min-height: 40px;
+  min-height: 32px;
   border: 0;
+  border-radius: 8px;
   background: none;
   color: var(--ink-dim);
-  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--fs-small);
   cursor: pointer;
-}
-.chr__periods button + button {
-  border-left: 1px solid var(--line);
 }
 .chr__period-label {
   position: relative;
 }
 .chr__periods button.is-on {
-  color: var(--accent-ink);
+  color: var(--ink);
 }
 .chr__period-jewel {
   position: absolute;
   inset: 0;
-  background: var(--accent);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  box-shadow: 0 2px 6px rgba(17, 18, 20, 0.12);
 }
 .chr__notice {
   display: flex;
   gap: var(--sp-3);
   margin: 0;
   padding: var(--sp-3) var(--sp-4);
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg-sunken) 60%, transparent);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--bg-raised) 70%, transparent);
   font-size: var(--fs-small);
   color: var(--ink-dim);
 }
 .chr__notice svg {
   flex: none;
   margin-top: 3px;
-  color: var(--accent);
+  color: var(--crimson);
 }
 .chr__notice strong {
   color: var(--ink);
@@ -72,26 +74,26 @@
 .chr__kpis {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
+  gap: var(--sp-3);
 }
 .chr__kpi {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: var(--sp-4) var(--sp-3);
-}
-.chr__kpi + .chr__kpi {
-  border-left: 1px solid var(--line);
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-1);
 }
 .chr__kpi-label {
   font-size: var(--fs-micro);
-  letter-spacing: 0.16em;
+  font-weight: 600;
   color: var(--ink-dim);
 }
 .chr__kpi-value {
-  font-size: clamp(1.4rem, 1rem + 1.2vw, 2.2rem);
+  font-size: clamp(1.15rem, 0.8rem + 0.9vw, 1.8rem);
   line-height: 1.15;
+  white-space: nowrap;
 }
 .chr__kpi-value small {
   font-family: var(--font-sans);
@@ -113,11 +115,9 @@
   flex-direction: column;
   gap: var(--sp-3);
   padding: var(--sp-5);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, transparent), transparent 120px),
-    color-mix(in srgb, var(--bg-raised) 85%, transparent);
-  border: 1px solid var(--line);
-  box-shadow: inset 0 0 0 4px color-mix(in srgb, var(--bg) 60%, transparent), inset 0 0 0 5px var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-1);
 }
 .chr__panel-head {
   display: flex;
@@ -152,7 +152,7 @@
 }
 .chr__ring-seg {
   fill: none;
-  stroke-width: 26;
+  stroke-width: 22;
 }
 .chr__ring-seg--inner {
   stroke-width: 10;
@@ -187,6 +187,8 @@
 .chr__cat-bar {
   grid-area: bar;
   height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
   background: var(--bg-sunken);
 }
 .chr__cat-bar span {
@@ -406,9 +408,6 @@
   .chr__kpis {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .chr__kpi:nth-child(4) {
-    border-left: 0;
-  }
   .chr__history {
     columns: 1;
   }
@@ -419,15 +418,6 @@
   }
   .chr__kpis {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .chr__kpi:nth-child(odd) {
-    border-left: 0;
-  }
-  .chr__kpi:nth-child(4) {
-    border-left: 1px solid var(--line);
-  }
-  .chr__kpi {
-    border-bottom: 1px solid var(--line);
   }
   .chr__panel {
     padding: var(--sp-4);

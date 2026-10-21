@@ -6,7 +6,6 @@ import { AnimatePresence, MotionConfig, motion, useReducedMotion, type Variants 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Chamber } from './components/Chamber';
 import { DailyReview } from './components/DailyReview';
-import { GuideBar } from './components/GuideBar';
 import { Navigation, NAV_ITEMS } from './components/Navigation';
 import { OpeningSequence } from './components/OpeningSequence';
 import { SettingsDialog } from './components/SettingsDialog';
@@ -129,7 +128,6 @@ function Shell() {
 
       <AnimatePresence>{chamber && <Chamber key="chamber" />}</AnimatePresence>
       <AnimatePresence>{reviewDate && <DailyReview key={`review-${reviewDate}`} date={reviewDate} />}</AnimatePresence>
-      {showUi && <GuideBar />}
       <SettingsDialog />
       <StatusNotices />
       <Toasts />
@@ -148,19 +146,18 @@ function Shell() {
   );
 }
 
-// ---------- 画面の転換（斜めに切り裂くように、新しい画面が左から差し込む） ----------
+// ---------- 画面の転換（iOS のように、静かに重なって入れ替わる） ----------
 
 const irisVariants: Variants = {
-  enter: { clipPath: 'polygon(0% 0%, 0% 0%, -30% 100%, -30% 100%)', zIndex: 2 },
+  enter: { opacity: 0, scale: 0.985, y: 8, zIndex: 2 },
   center: {
-    clipPath: 'polygon(0% 0%, 160% 0%, 130% 100%, -30% 100%)',
-    zIndex: 2,
-    x: 0,
     opacity: 1,
-    transition: { duration: 0.5, ease: ease.regal },
-    transitionEnd: { clipPath: 'none' },
+    scale: 1,
+    y: 0,
+    zIndex: 2,
+    transition: { duration: 0.45, ease: [0.32, 0.72, 0, 1] },
   },
-  exit: { zIndex: 1, x: -60, opacity: 0.4, transition: { duration: 0.5, ease: ease.regal } },
+  exit: { opacity: 0, zIndex: 1, transition: { duration: 0.25, ease: ease.escapement } },
 };
 
 const fadeVariants: Variants = {

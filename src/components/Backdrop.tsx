@@ -1,5 +1,5 @@
 /**
- * 各画面の背景：水面の揺らめき・漂う欠片・画面の端の巨大な縦文字
+ * 各画面の背景：霧のような光、鋭く細い斜線、半透明の刃のかたち、深紅の小さな環
  * 純粋な装飾なので、支援技術からは隠しています。
  */
 import { motion, useReducedMotion } from 'motion/react';
@@ -9,7 +9,7 @@ import './Backdrop.css';
 
 export type BackdropKind = 'hall' | 'orrery' | 'equation' | 'chronicle';
 
-/** 画面の端に縦に置く大きな英字 */
+/** 画面の端に縦に置く、字間の広い英字 */
 const WORD: Record<BackdropKind, string> = {
   hall: 'TODAY',
   orrery: 'CALENDAR',
@@ -17,41 +17,42 @@ const WORD: Record<BackdropKind, string> = {
   chronicle: 'ARCHIVE',
 };
 
-/** 漂う欠片（位置・大きさ・色・回転・動きの遅れ） */
-const SHARDS: { x: number; y: number; w: number; h: number; c: string; r: number; d: number }[] = [
-  { x: 8, y: 22, w: 18, h: 26, c: 'var(--shard-a)', r: 18, d: 0 },
-  { x: 22, y: 64, w: 12, h: 18, c: 'var(--shard-b)', r: -24, d: 1.2 },
-  { x: 41, y: 12, w: 10, h: 14, c: 'var(--shard-c)', r: 40, d: 2.1 },
-  { x: 57, y: 78, w: 22, h: 30, c: 'var(--shard-a)', r: -12, d: 0.6 },
-  { x: 68, y: 36, w: 9, h: 12, c: 'var(--shard-b)', r: 30, d: 1.8 },
-  { x: 83, y: 58, w: 16, h: 22, c: 'var(--shard-c)', r: -36, d: 0.3 },
-  { x: 91, y: 18, w: 11, h: 16, c: 'var(--shard-a)', r: 12, d: 2.6 },
-  { x: 35, y: 88, w: 14, h: 10, c: 'var(--shard-b)', r: 52, d: 1.5 },
-];
-
 function BackdropImpl({ kind, intro = false, introDelay = 0 }: { kind: BackdropKind; intro?: boolean; introDelay?: number }) {
   const reduce = useReducedMotion();
-  const animate = intro && !reduce;
+  const draw = intro && !reduce;
+  const line = (d: number) => ({
+    initial: draw ? { pathLength: 0, opacity: 0 } : false,
+    animate: { pathLength: 1, opacity: 1 },
+    transition: { duration: 1.4, ease: ease.regal, delay: introDelay + d },
+  });
 
   return (
     <div className={`backdrop backdrop--${kind}`} aria-hidden="true">
-      <div className="backdrop__water" />
-      <div className="backdrop__vignette" />
-      <motion.div
-        className="backdrop__word-wrap"
-        initial={animate ? { opacity: 0, x: 80 } : false}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, ease: ease.glide, delay: introDelay }}
-      >
-        <span className="backdrop__word">{WORD[kind]}</span>
-      </motion.div>
-      {SHARDS.map((s, i) => (
-        <span
-          key={i}
-          className="backdrop__shard"
-          style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.w, height: s.h, background: s.c, ['--r' as string]: `${s.r}deg`, animationDelay: `${-s.d * 3}s` }}
-        />
-      ))}
+      <div className="backdrop__mist" />
+      <svg className="backdrop__svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+        {/* 半透明の刃 */}
+        <g className="backdrop__blades">
+          <polygon points="1180,-40 1230,-40 1080,1040 1040,1040" />
+          <polygon points="1420,-40 1450,-40 1330,1040 1300,1040" />
+          <polygon points="180,1040 220,1040 520,-40 500,-40" />
+        </g>
+        {/* 鋭い細線 */}
+        <motion.path className="backdrop__hair" d="M 1240 -20 L 980 1020" {...line(0)} />
+        <motion.path className="backdrop__hair backdrop__hair--faint" d="M 1520 -20 L 1340 1020" {...line(0.15)} />
+        <motion.path className="backdrop__hair backdrop__hair--faint" d="M 0 760 L 1600 600" {...line(0.3)} />
+        <motion.path className="backdrop__hair backdrop__hair--accent" d="M 1300 -20 L 1050 1020" {...line(0.45)} />
+        {/* 深紅の環と軸（刃に刻まれた印のような小さな意匠） */}
+        <motion.g
+          className="backdrop__sigil"
+          initial={draw ? { opacity: 0, scale: 0.6 } : false}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: ease.glide, delay: introDelay + 0.8 }}
+        >
+          <circle cx="1166" cy="300" r="13" />
+          <line x1="1162" y1="320" x2="1128" y2="470" />
+        </motion.g>
+      </svg>
+      <span className="backdrop__word">{WORD[kind]}</span>
     </div>
   );
 }

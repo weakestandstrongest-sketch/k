@@ -1,91 +1,91 @@
-/* 予定の帯：黒い斜めの帯に、色付きの札と数値 */
+/* 予定の一覧：iOS の「まとまった一覧」のように、角の丸い面の中に細い区切り線で並べる */
 .evrow-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  background: var(--bg-raised);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
 }
 .evrow-item {
   position: relative;
 }
+.evrow-item + .evrow-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 92px;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+  z-index: 1;
+}
 .evrow {
   position: relative;
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr) auto auto;
+  grid-template-columns: 56px 3px minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--sp-3);
   width: 100%;
-  min-height: 62px;
-  padding: 6px calc(var(--cut) + var(--sp-3)) 6px 0;
+  min-height: 64px;
+  padding: 10px var(--sp-3) 10px var(--sp-4);
   border: 0;
   background: none;
   text-align: left;
   cursor: pointer;
-  color: #fff;
+  color: var(--ink);
   isolation: isolate;
-  transition: transform var(--dur-fast) var(--ease-escapement), color var(--dur-fast);
 }
 .evrow__shell {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--bar);
-  clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
-  transition: background-color var(--dur-fast) var(--ease-escapement);
-}
-/* 選んでいる（触れている）帯は白地・黒文字・赤い縁 */
-.evrow:hover,
-.evrow:focus-visible {
-  color: #050f4a;
-  transform: translateX(6px);
-  outline: none;
+  background: transparent;
+  transition: background-color var(--dur-fast) var(--ease-ios);
 }
 .evrow:hover .evrow__shell,
 .evrow:focus-visible .evrow__shell {
-  background: #fff;
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
 }
-.evrow:hover::after,
-.evrow:focus-visible::after {
-  content: '';
-  position: absolute;
-  z-index: -2;
-  inset: 0 -5px -5px 5px;
-  background: var(--hl);
-  clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+.evrow:active .evrow__shell {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
 }
-.evrow__tag {
-  position: relative;
-  align-self: stretch;
+.evrow:focus-visible {
+  outline-offset: -2px;
+}
+.evrow__time {
   display: flex;
-  align-items: center;
-  overflow: hidden;
-  background: linear-gradient(115deg, var(--cat) 0 58%, transparent 58.5%);
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.2;
 }
-.evrow__tag span {
-  padding-left: 6px;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 900;
-  font-size: 1.05rem;
-  letter-spacing: 0.02em;
-  color: #050f4a;
-  transform: rotate(-14deg);
-  white-space: nowrap;
+.evrow__end {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+}
+.evrow__rule {
+  align-self: stretch;
+  border-radius: 2px;
+  background: var(--cat);
 }
 .evrow__main {
   display: flex;
   flex-direction: column;
+  gap: 1px;
   min-width: 0;
 }
 .evrow__title {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-weight: 800;
-  font-size: 1.02rem;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  font-size: 0.98rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -100,48 +100,11 @@
   gap: 2px var(--sp-3);
   font-size: var(--fs-micro);
   color: var(--ink-dim);
-  letter-spacing: 0.04em;
-}
-.evrow:hover .evrow__meta,
-.evrow:focus-visible .evrow__meta {
-  color: #3a4a8a;
 }
 .evrow__loc {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-}
-.evrow__stats {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--sp-3);
-}
-.evrow__stat {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  padding-bottom: 2px;
-  border-bottom: 3px solid var(--cyan);
-}
-.evrow__stat small {
-  font-size: 0.6rem;
-  font-weight: 800;
-  color: var(--cyan);
-}
-.evrow__stat b {
-  font-size: 1.55rem;
-  line-height: 1;
-  font-weight: 600;
-}
-.evrow__stat--len {
-  border-bottom-color: var(--yellow);
-}
-.evrow__stat--len small {
-  color: var(--yellow);
-}
-.evrow:hover .evrow__stat small,
-.evrow:focus-visible .evrow__stat small {
-  color: #050f4a;
 }
 .evrow__flags {
   display: flex;
@@ -149,43 +112,33 @@
   gap: 6px;
 }
 .evrow__lock {
-  color: var(--ink-dim);
+  color: var(--ink-faint);
+}
+.evrow__chevron {
+  color: var(--ink-faint);
 }
 .evrow.is-past {
-  opacity: 0.55;
+  opacity: 0.5;
 }
 .evrow.is-missed .evrow__title {
   text-decoration: line-through;
+  text-decoration-color: var(--ink-faint);
 }
 .evrow--compact {
-  min-height: 48px;
-  grid-template-columns: 58px minmax(0, 1fr) auto auto;
+  min-height: 50px;
+  grid-template-columns: 46px 3px minmax(0, 1fr) auto;
 }
-.evrow--compact .evrow__tag span {
-  font-size: 0.82rem;
-}
-.evrow--compact .evrow__stat b {
-  font-size: 1.25rem;
+.evrow--compact + * {
+  left: 82px;
 }
 @media (max-width: 760px) {
   .evrow {
-    grid-template-columns: 54px minmax(0, 1fr) auto;
-    grid-template-areas: 'tag main stats' 'tag flags stats';
-    gap: 0 var(--sp-2);
-    padding-right: calc(var(--cut) + var(--sp-2));
+    grid-template-columns: 48px 3px minmax(0, 1fr) auto;
+    gap: var(--sp-2) var(--sp-3);
+    padding-left: var(--sp-3);
   }
-  .evrow__tag { grid-area: tag; }
-  .evrow__main { grid-area: main; }
-  .evrow__stats { grid-area: stats; flex-direction: column; align-items: flex-end; gap: 4px; }
-  .evrow__flags { grid-area: flags; }
-  .evrow__flags:empty { display: none; }
-  .evrow__tag span {
-    padding-left: 3px;
-    font-size: 0.7rem;
-    letter-spacing: -0.02em;
-  }
-  .evrow__stat b {
-    font-size: 1.2rem;
+  .evrow-item + .evrow-item::before {
+    left: 76px;
   }
   .evrow__flags .chip--sample {
     display: none;

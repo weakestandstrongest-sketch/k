@@ -91,7 +91,9 @@
 }
 .review__seg {
   display: inline-flex;
-  border: 1px solid var(--line-strong);
+  padding: 2px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
 }
 .review__seg button {
   display: inline-flex;
@@ -100,14 +102,14 @@
   min-height: 40px;
   padding: 0 var(--sp-3);
   border: 0;
+  border-radius: 8px;
+  font-weight: 600;
   background: none;
   color: var(--ink-dim);
   cursor: pointer;
   font-size: var(--fs-small);
 }
-.review__seg button + button {
-  border-left: 1px solid var(--line-strong);
-}
+
 .review__seg button.is-on {
   background: var(--accent);
   color: var(--accent-ink);
@@ -174,7 +176,7 @@
 }
 .review__trail {
   fill: none;
-  stroke: var(--accent);
+  stroke: #ff3550;
   stroke-width: 1.6;
   stroke-linejoin: round;
   filter: drop-shadow(0 0 6px var(--glow));
@@ -194,8 +196,9 @@
 }
 .review__center-value {
   font-family: var(--font-display);
+  font-weight: 200;
   font-size: 72px;
-  fill: var(--accent);
+  fill: var(--ink);
 }
 .review__center-label {
   font-size: 15px;
@@ -225,7 +228,7 @@
   margin: 0;
   padding: 0 0 0 var(--sp-4);
   list-style: none;
-  border-left: 1px solid var(--accent);
+  border-left: 1px solid #ff3550;
   font-size: var(--fs-small);
 }
 .review__timeline li {
@@ -240,8 +243,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--glow);
+  background: #ff3550;
   transform: translateY(-50%);
 }
 @media (max-width: 860px) {

@@ -1,7 +1,7 @@
 /**
  * 画面の切り替え
- * - デスクトップ: 左に傾いた大きな英字のメニュー（選ぶと白い帯＋赤い影）
- * - スマートフォン: 下部の黒い帯（中央に「新しい予定」）
+ * - デスクトップ: iPad のようなサイドバー（選択中は丸い面で示す）
+ * - スマートフォン: すりガラスのタブバー（中央に「新しい予定」）
  */
 import { motion } from 'motion/react';
 import type { MouseEvent } from 'react';
@@ -11,11 +11,11 @@ import { t } from '../motion/tokens';
 import { Icon, type IconName } from './Icon';
 import './Navigation.css';
 
-export const NAV_ITEMS: { route: Route; label: string; word: string; short: string; icon: IconName }[] = [
-  { route: 'hall', label: 'ホーム', word: 'HOME', short: 'HOME', icon: 'hall' },
-  { route: 'orrery', label: 'カレンダー', word: 'CALENDAR', short: 'CAL', icon: 'orrery' },
-  { route: 'equation', label: '時間設計', word: 'PLAN', short: 'PLAN', icon: 'equation' },
-  { route: 'chronicle', label: '振り返り', word: 'REVIEW', short: 'REVIEW', icon: 'chronicle' },
+export const NAV_ITEMS: { route: Route; label: string; word: string; icon: IconName }[] = [
+  { route: 'hall', label: 'ホーム', word: 'HOME', icon: 'hall' },
+  { route: 'orrery', label: 'カレンダー', word: 'CALENDAR', icon: 'orrery' },
+  { route: 'equation', label: '時間設計', word: 'PLANNING', icon: 'equation' },
+  { route: 'chronicle', label: '振り返り', word: 'ARCHIVE', icon: 'chronicle' },
 ];
 
 function originOf(e: MouseEvent<HTMLElement>) {
@@ -31,27 +31,27 @@ export function Navigation({ onCreate }: { onCreate: () => void }) {
     <>
       <nav className="rail" aria-label="主要な画面">
         <div className="rail__brand" aria-hidden="true">
-          CHRONOS
-          <span>ATELIER</span>
+          <span className="rail__sigil" />
+          <span className="rail__brand-word">CHRONOS</span>
         </div>
         <ul className="rail__list">
-          {NAV_ITEMS.map((item, i) => {
+          {NAV_ITEMS.map((item) => {
             const active = route === item.route;
             return (
-              <li key={item.route} style={{ ['--i' as string]: i }}>
+              <li key={item.route}>
                 <button
                   type="button"
                   className={`rail__item ${active ? 'is-active' : ''}`}
                   aria-current={active ? 'page' : undefined}
-                  aria-label={item.label}
                   onClick={(e) => navigate(item.route, originOf(e))}
                 >
-                  {active && <motion.span layoutId="rail-plate" className="rail__plate" transition={t.chamber} aria-hidden="true" />}
-                  <span className="rail__word" aria-hidden="true">
-                    {item.word}
-                  </span>
-                  <span className="rail__label" aria-hidden="true">
-                    {item.label}
+                  {active && <motion.span layoutId="rail-pill" className="rail__pill" transition={t.chamber} aria-hidden="true" />}
+                  <Icon name={item.icon} size={20} className="rail__icon" />
+                  <span className="rail__text">
+                    <span className="rail__label">{item.label}</span>
+                    <span className="rail__word" aria-hidden="true">
+                      {item.word}
+                    </span>
                   </span>
                 </button>
               </li>
@@ -61,14 +61,16 @@ export function Navigation({ onCreate }: { onCreate: () => void }) {
         <div className="rail__foot">
           <button type="button" className="rail__create" onClick={onCreate} aria-label="新しい予定を作成">
             <Icon name="plus" size={20} />
-            <span>NEW</span>
+            <span className="rail__text">新しい予定</span>
           </button>
-          <button type="button" className="rail__gear" onClick={() => setSettingsOpen(true)} aria-label="設定">
-            <Icon name="gear" size={18} />
-            <span>SYSTEM</span>
+          <button type="button" className="rail__item rail__gear" onClick={() => setSettingsOpen(true)} aria-label="設定">
+            <Icon name="gear" size={20} className="rail__icon" />
+            <span className="rail__text">
+              <span className="rail__label">設定</span>
+            </span>
           </button>
           <span className={`rail__saving ${saving ? 'is-on' : ''}`} role="status" aria-live="polite">
-            {saving ? '保存中' : ''}
+            {saving ? '保存中…' : ''}
           </span>
         </div>
       </nav>
@@ -78,7 +80,7 @@ export function Navigation({ onCreate }: { onCreate: () => void }) {
           <DockItem key={item.route} item={item} active={route === item.route} onClick={(e) => navigate(item.route, originOf(e))} />
         ))}
         <button type="button" className="dock__create" onClick={onCreate} aria-label="新しい予定を作成">
-          <Icon name="plus" size={26} />
+          <Icon name="plus" size={24} />
         </button>
         {NAV_ITEMS.slice(2).map((item) => (
           <DockItem key={item.route} item={item} active={route === item.route} onClick={(e) => navigate(item.route, originOf(e))} />
@@ -99,11 +101,9 @@ function DockItem({
 }) {
   return (
     <button type="button" className={`dock__item ${active ? 'is-active' : ''}`} aria-current={active ? 'page' : undefined} onClick={onClick}>
-      {active && <motion.span layoutId="dock-plate" className="dock__plate" transition={t.chamber} aria-hidden="true" />}
-      <span className="dock__word" aria-hidden="true">
-        {item.short}
-      </span>
+      <Icon name={item.icon} size={23} />
       <span className="dock__label">{item.label}</span>
+      {active && <motion.span layoutId="dock-mark" className="dock__mark" transition={t.chamber} aria-hidden="true" />}
     </button>
   );
 }

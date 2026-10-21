@@ -1,33 +1,33 @@
 /*
- * デザイントークン ― 「月夜の水底」スタイル
+ * デザイントークン ― 「白と黒の静かな機巧」
  * ------------------------------------------------------------
- * 深い青の水の底から月明かりを見上げるような世界観。
- * 太く傾いた大文字、黒い斜めの帯、選択時の白と赤、水面の揺らめき。
+ * 霧のような白と、深い黒を基調に、細い深紅の線だけを差し色にします。
+ * 形は iOS のように角を丸め、影はごく薄く、余白をたっぷり取ります。
  *
- * 画面ごとに data-theme で色味が少しずつ変わります。
- *   hall      … ホーム（鮮やかな群青）
- *   orrery    … カレンダー（澄んだ水色寄りの青）
- *   chamber   … 予定の詳細（深い紺に赤）
- *   equation  … 時間設計（真夜中の藍）
- *   chronicle … 振り返り（青緑の記録庫と黄）
- *   night     … 一日を閉じる（月夜）
+ * 画面ごとに data-theme で明暗が変わります。
+ *   hall      … ホーム（霧の白）
+ *   orrery    … カレンダー（紙の白）
+ *   chamber   … 予定の詳細（黒い面に深紅）
+ *   equation  … 時間設計（黒）
+ *   chronicle … 振り返り（灰白）
+ *   night     … 一日を閉じる（漆黒）
  */
 
 :root {
-  /* 書体：欧文は太い縦長の斜体、和文は太いゴシック */
-  --font-display: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', sans-serif;
-  --font-heading: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
-  --font-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
+  /* 書体：欧文と数字は Inter（細いウェイトで大きく）、和文は端末のゴシック */
+  --font-display: 'Inter Variable', -apple-system, 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', sans-serif;
+  --font-heading: -apple-system, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
+  --font-sans: -apple-system, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
 
-  /* 文字サイズ（流体） */
+  /* 文字サイズ */
   --fs-micro: 0.6875rem;
   --fs-small: 0.8125rem;
   --fs-body: 0.9375rem;
-  --fs-lead: 1.125rem;
-  --fs-title: clamp(1.7rem, 1.2rem + 1.8vw, 2.6rem);
-  --fs-hero: clamp(6rem, 2rem + 15vw, 15rem);
+  --fs-lead: 1.0625rem;
+  --fs-title: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem);
+  --fs-hero: clamp(5.5rem, 2rem + 12vw, 12rem);
 
-  /* 余白（8 の倍数を基本に） */
+  /* 余白 */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
@@ -38,15 +38,17 @@
   --sp-8: 64px;
   --sp-9: 96px;
 
-  /* 線・角・傾き */
-  --hairline: 1px;
+  /* 角の丸み（iOS 風） */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+  --r-pill: 999px;
   --radius-0: 0;
-  --radius-1: 2px;
   --radius-pill: 999px;
-  --slant: -10deg; /* 文字と帯の傾き */
-  --cut: 14px; /* 斜めの帯の切り落とし幅 */
 
-  /* 時間（モーション）— src/motion/tokens.ts と対応 */
+  /* 時間（モーション） */
   --dur-instant: 120ms;
   --dur-fast: 200ms;
   --dur-base: 320ms;
@@ -55,147 +57,85 @@
   --ease-escapement: cubic-bezier(0.7, 0, 0.2, 1);
   --ease-glide: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-regal: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
 
   /* レイアウト */
-  --rail-width: 196px;
-  --mobile-nav-height: 68px;
+  --rail-width: 232px;
+  --mobile-nav-height: 64px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
 
   /* 全テーマ共通の意味を持つ色 */
-  --hl: #ff2c46; /* 選択・強調の赤 */
-  --yellow: #ffe23e;
-  --cyan: #3ff2ff;
-  --c-danger: #ff3b55;
-  --c-warn: #ffd23e;
-  --c-ok: #4cf0a0;
-  --c-sun: #ff6b81;
-  --c-sat: #7fe3ff;
-  --bar: rgba(2, 6, 32, 0.86); /* 黒い斜めの帯 */
-  --bar-ink: #ffffff;
+  --crimson: #e0243c;
+  --c-danger: #e0243c;
+  --c-warn: #c98a12;
+  --c-ok: #2b9a6b;
+  --c-sun: #d43a4c;
+  --c-sat: #3f6fc6;
 }
 
-/* ---------- テーマ ---------- */
-
-[data-theme='hall'] {
-  color-scheme: dark;
-  --bg: #0a2fd8;
-  --bg-deep: #03128c;
-  --bg-raised: #0b1f9e;
-  --bg-sunken: #031066;
-  --ink: #ffffff;
-  --ink-dim: #b9d8ff;
-  --ink-faint: #7fa6ef;
-  --line: rgba(160, 230, 255, 0.28);
-  --line-strong: rgba(190, 245, 255, 0.7);
-  --accent: #3ff2ff;
-  --accent-ink: #020a4a;
-  --accent-2: #ffe23e;
-  --glow: rgba(63, 242, 255, 0.35);
-  --focus: #ffe23e;
-  --water: 0.55;
-}
-
-[data-theme='orrery'] {
-  color-scheme: dark;
-  --bg: #0f45ea;
-  --bg-deep: #0520a8;
-  --bg-raised: #0b2cb4;
-  --bg-sunken: #041677;
-  --ink: #ffffff;
-  --ink-dim: #c4e4ff;
-  --ink-faint: #8cb4f5;
-  --line: rgba(170, 235, 255, 0.26);
-  --line-strong: rgba(200, 248, 255, 0.72);
-  --accent: #3ff2ff;
-  --accent-ink: #020a4a;
-  --accent-2: #ffe23e;
-  --glow: rgba(63, 242, 255, 0.32);
-  --focus: #ffe23e;
-  --water: 0.7;
-}
-
-[data-theme='chamber'] {
-  color-scheme: dark;
-  --bg: #071a7a;
-  --bg-deep: #030a3a;
-  --bg-raised: #0a1f8c;
-  --bg-sunken: #030c4a;
-  --ink: #ffffff;
-  --ink-dim: #c9d6ff;
-  --ink-faint: #8a9ce0;
-  --line: rgba(255, 120, 140, 0.32);
-  --line-strong: rgba(255, 150, 165, 0.8);
-  --accent: #ff2c46;
-  --accent-ink: #ffffff;
-  --accent-2: #3ff2ff;
-  --glow: rgba(255, 44, 70, 0.4);
-  --focus: #ffe23e;
-  --water: 0.35;
-}
-
-[data-theme='equation'] {
-  color-scheme: dark;
-  --bg: #061a9a;
-  --bg-deep: #020a52;
-  --bg-raised: #0a1fa8;
-  --bg-sunken: #030c5e;
-  --ink: #ffffff;
-  --ink-dim: #b7c8ff;
-  --ink-faint: #7f90e0;
-  --line: rgba(150, 190, 255, 0.28);
-  --line-strong: rgba(190, 220, 255, 0.7);
-  --accent: #3ff2ff;
-  --accent-ink: #020a4a;
-  --accent-2: #ffe23e;
-  --glow: rgba(63, 242, 255, 0.32);
-  --focus: #ffe23e;
-  --water: 0.4;
-}
-
+/* ---------- 明るい面（霧の白） ---------- */
+[data-theme='hall'],
+[data-theme='orrery'],
 [data-theme='chronicle'] {
-  color-scheme: dark;
-  --bg: #0758c4;
-  --bg-deep: #032a78;
-  --bg-raised: #0a4aa8;
-  --bg-sunken: #032a6e;
-  --ink: #ffffff;
-  --ink-dim: #c2e6ff;
-  --ink-faint: #87b8ea;
-  --line: rgba(170, 240, 255, 0.28);
-  --line-strong: rgba(200, 250, 255, 0.72);
-  --accent: #ffe23e;
-  --accent-ink: #062058;
-  --accent-2: #3ff2ff;
-  --glow: rgba(255, 226, 62, 0.3);
-  --focus: #ffffff;
-  --water: 0.5;
+  color-scheme: light;
+  --bg: #eef0f3;
+  --bg-deep: #e2e5ea;
+  --bg-raised: #ffffff;
+  --bg-sunken: #e6e8ec;
+  --material: rgba(255, 255, 255, 0.72); /* すりガラス */
+  --ink: #111214;
+  --ink-dim: #5c6068;
+  --ink-faint: #9195a0;
+  --line: rgba(17, 18, 20, 0.09);
+  --line-strong: rgba(17, 18, 20, 0.24);
+  --accent: #111214;
+  --accent-ink: #ffffff;
+  --accent-2: var(--crimson);
+  --glow: rgba(224, 36, 60, 0.14);
+  --focus: var(--crimson);
+  --shadow-1: 0 1px 2px rgba(17, 18, 20, 0.05), 0 4px 16px rgba(17, 18, 20, 0.05);
+  --shadow-2: 0 2px 6px rgba(17, 18, 20, 0.06), 0 18px 48px rgba(17, 18, 20, 0.12);
+  --mist-a: rgba(255, 255, 255, 0.9);
+  --mist-b: rgba(200, 208, 222, 0.55);
+}
+[data-theme='orrery'] {
+  --bg: #f4f5f7;
+  --bg-deep: #e9ebef;
+}
+[data-theme='chronicle'] {
+  --bg: #e9eaee;
+  --bg-deep: #dcdee4;
 }
 
+/* ---------- 暗い面（黒） ---------- */
+[data-theme='chamber'],
+[data-theme='equation'],
 [data-theme='night'] {
   color-scheme: dark;
-  --bg: #04104f;
-  --bg-deep: #01062a;
-  --bg-raised: #08186a;
-  --bg-sunken: #020a38;
-  --ink: #ffffff;
-  --ink-dim: #b8c6ff;
-  --ink-faint: #7a88cf;
-  --line: rgba(190, 210, 255, 0.24);
-  --line-strong: rgba(220, 230, 255, 0.6);
-  --accent: #e9f6ff;
-  --accent-ink: #04104f;
-  --accent-2: #3ff2ff;
-  --glow: rgba(200, 240, 255, 0.45);
-  --focus: #ffe23e;
-  --water: 0.25;
+  --bg: #0d0d10;
+  --bg-deep: #060608;
+  --bg-raised: #1a1a1f;
+  --bg-sunken: #121216;
+  --material: rgba(28, 28, 33, 0.72);
+  --ink: #f3f3f5;
+  --ink-dim: #a4a5ad;
+  --ink-faint: #6c6d75;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.26);
+  --accent: #f3f3f5;
+  --accent-ink: #0d0d10;
+  --accent-2: #ff3550;
+  --glow: rgba(255, 53, 80, 0.22);
+  --focus: #ff3550;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.5), 0 24px 60px rgba(0, 0, 0, 0.55);
+  --mist-a: rgba(255, 255, 255, 0.05);
+  --mist-b: rgba(255, 53, 80, 0.06);
 }
-
-/* 互換：以前の変数名 */
-:root,
-[data-theme] {
-  --vignette: radial-gradient(120% 90% at 50% 0%, transparent 40%, var(--bg-deep) 100%);
-  --texture-opacity: 0;
+[data-theme='night'] {
+  --bg: #050507;
+  --bg-raised: #141418;
 }

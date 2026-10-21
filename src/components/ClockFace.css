@@ -9,48 +9,48 @@
   height: 100%;
   overflow: visible;
 }
+/* 文字盤の地（明るい面では白、暗い面では黒に近い灰） */
 .cf-rim {
   stroke: var(--line);
   stroke-width: 1.5;
+  filter: drop-shadow(0 18px 40px rgba(17, 18, 20, 0.08));
 }
 .cf-ring {
   fill: none;
   stroke: var(--line-strong);
-  stroke-width: 1.5;
+  stroke-width: 1;
 }
 .cf-ring--thin {
   stroke: var(--line);
-  stroke-width: 1;
 }
 .cf-guilloche {
   fill: none;
   stroke: var(--line);
   stroke-width: 0.8;
-  opacity: 0.55;
+  opacity: 0.5;
 }
 .cf-tick {
   stroke: var(--ink-faint);
-  stroke-width: 1.2;
+  stroke-width: 1;
 }
 .cf-tick--hour {
   stroke: var(--ink-dim);
-  stroke-width: 2;
+  stroke-width: 1.6;
 }
 .cf-tick--major {
-  stroke: var(--cyan);
-  stroke-width: 3.5;
+  stroke: var(--ink);
+  stroke-width: 3;
 }
 .cf-numeral {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 700;
-  font-size: 30px;
-  fill: var(--ink-dim);
+  font-weight: 300;
+  font-size: 26px;
+  fill: var(--ink-faint);
 }
 .cf-numeral--cardinal {
-  font-size: 48px;
-  font-weight: 900;
-  fill: #fff;
+  font-size: 40px;
+  font-weight: 400;
+  fill: var(--ink);
 }
 .clockface--compact .cf-numeral {
   font-size: 44px;
@@ -61,7 +61,7 @@
 .cf-window {
   fill: none;
   stroke: var(--ink-faint);
-  stroke-width: 2;
+  stroke-width: 1.5;
   stroke-dasharray: 2 6;
 }
 .cf-window-cap {
@@ -70,16 +70,16 @@
 }
 .cf-elapsed {
   fill: none;
-  stroke: var(--cyan);
-  stroke-width: 3;
-  opacity: 0.55;
+  stroke: var(--ink);
+  stroke-width: 2;
+  opacity: 0.35;
 }
 .cf-free {
   fill: none;
-  stroke: var(--yellow);
-  stroke-width: 6;
+  stroke: var(--crimson);
+  stroke-width: 4;
   stroke-linecap: round;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 .cf-event {
   cursor: default;
@@ -91,8 +91,8 @@
 .cf-arc {
   fill: none;
   stroke: var(--cat);
-  stroke-linecap: butt;
-  transition: opacity var(--dur-fast) var(--ease-escapement), filter var(--dur-fast);
+  stroke-linecap: round;
+  transition: opacity var(--dur-fast) var(--ease-ios), filter var(--dur-fast);
 }
 .cf-hit {
   fill: none;
@@ -101,91 +101,93 @@
 .cf-buffer {
   fill: none;
   stroke: var(--cat);
-  stroke-width: 8;
-  stroke-dasharray: 3 5;
-  opacity: 0.7;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 1 7;
+  opacity: 0.8;
 }
 .cf-event.is-past .cf-arc {
-  opacity: 0.4;
+  opacity: 0.35;
 }
 .cf-event.is-overlap .cf-arc {
   stroke-dasharray: 14 6;
+  stroke-linecap: butt;
 }
 .cf-event:hover .cf-arc,
 .cf-event:focus-visible .cf-arc,
 .cf-event.is-selected .cf-arc {
-  filter: brightness(1.25) drop-shadow(0 0 10px var(--cat));
   opacity: 1;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--cat) 60%, transparent));
 }
 .cf-event:focus-visible .cf-hit {
   stroke: var(--focus);
-  stroke-opacity: 0.35;
+  stroke-opacity: 0.3;
 }
 .cf-done {
-  fill: var(--bg);
+  fill: var(--bg-raised);
   stroke: var(--ink);
   stroke-width: 2;
 }
 .cf-hand__line {
-  stroke: #fff;
-  stroke-width: 3;
+  stroke: var(--ink);
+  stroke-width: 2;
   stroke-linecap: round;
 }
 .cf-hand__tip {
-  fill: var(--hl);
+  fill: var(--ink);
 }
+/* 針の先は深紅の環 */
 .cf-hand__sun {
-  fill: var(--hl);
+  fill: var(--bg-raised);
+  stroke: var(--crimson);
+  stroke-width: 3;
 }
 .cf-hand__halo {
   fill: none;
-  stroke: #fff;
-  stroke-width: 1.5;
-  opacity: 0.6;
+  stroke: var(--crimson);
+  stroke-width: 1;
+  opacity: 0.35;
 }
 .cf-seconds circle {
-  fill: var(--yellow);
-  opacity: 0.85;
+  fill: var(--crimson);
 }
 .cf-pin {
-  fill: #fff;
+  fill: var(--ink);
 }
 .cf-pin-inner {
-  fill: var(--bg);
-}
-.cf-center__label {
-  font-family: var(--font-sans);
-  font-weight: 800;
-  font-size: 26px;
-  letter-spacing: 0.2em;
-  fill: var(--cyan);
+  fill: var(--crimson);
 }
 .cf-center text {
   paint-order: stroke;
-  stroke: var(--bg-sunken);
-  stroke-width: 14px;
+  stroke: var(--bg-raised);
+  stroke-width: 12px;
   stroke-linejoin: round;
+}
+.cf-center__label {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  fill: var(--ink-dim);
 }
 .cf-center__value {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 800;
+  font-weight: 200;
   font-size: 128px;
-  fill: #fff;
-  font-variant-numeric: lining-nums tabular-nums;
-}
-.cf-center__note {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 26px;
-  fill: var(--yellow);
-  letter-spacing: 0.08em;
+  fill: var(--ink);
+  font-variant-numeric: tabular-nums lining-nums;
 }
 .cf-center__value--long {
   font-size: 84px;
 }
 .clockface--compact .cf-center__value--long {
   font-size: 80px;
+}
+.cf-center__note {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  fill: var(--crimson);
+  letter-spacing: 0.06em;
 }
 .clockface--compact .cf-center__label {
   font-size: 36px;

@@ -5,50 +5,45 @@
   display: grid;
   place-items: center;
   padding: calc(var(--sp-4) + var(--safe-top)) calc(var(--sp-4) + var(--safe-right)) calc(var(--sp-4) + var(--safe-bottom)) calc(var(--sp-4) + var(--safe-left));
-  background: rgba(2, 6, 40, 0.72);
+  background: rgba(10, 10, 12, 0.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
+/* 角の大きく丸いシート */
 .dialog {
   position: relative;
   width: 100%;
   max-height: calc(100dvh - 2 * var(--sp-5) - var(--safe-top) - var(--safe-bottom));
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, var(--bg-raised), var(--bg-sunken));
+  background: var(--bg-raised);
   color: var(--ink);
-  border: 2px solid #fff;
-  box-shadow: 10px 10px 0 rgba(2, 6, 40, 0.85);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
   outline: none;
 }
 .dialog__corner {
-  position: absolute;
-  width: 46px;
-  height: 46px;
-  pointer-events: none;
+  display: none;
 }
-.dialog__corner--tl { top: -2px; left: -2px; background: linear-gradient(135deg, var(--hl) 0 50%, transparent 50%); }
-.dialog__corner--br { bottom: -2px; right: -2px; background: linear-gradient(-45deg, #fff 0 50%, transparent 50%); }
 .dialog__head {
   position: relative;
-  padding: var(--sp-5) var(--sp-7) var(--sp-3) var(--sp-5);
-  border-bottom: 1px solid var(--line);
+  padding: var(--sp-5) var(--sp-8) var(--sp-3) var(--sp-5);
 }
 .dialog__kicker {
-  margin: 0 0 var(--sp-1);
+  margin: 0 0 4px;
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 900;
-  font-size: 1rem;
-  letter-spacing: 0.04em;
-  color: var(--accent);
+  font-weight: 500;
+  font-size: 0.62rem;
+  letter-spacing: 0.42em;
+  color: var(--crimson);
 }
 .dialog__title {
-  display: inline-block;
   margin: 0;
   font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: 1.4rem;
-  letter-spacing: 0.04em;
-  transform: skewX(var(--slant));
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
 }
 .dialog__close {
   position: absolute;
@@ -56,17 +51,20 @@
   right: var(--sp-4);
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 2px solid var(--line-strong);
-  background: none;
-  color: var(--ink);
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink-dim);
   cursor: pointer;
-  transform: skewX(var(--slant));
 }
-.dialog__close:hover { background: #fff; color: #050f4a; box-shadow: 3px 3px 0 var(--hl); }
+.dialog__close:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 14%, transparent);
+}
 .dialog__body {
-  padding: var(--sp-5);
+  padding: var(--sp-2) var(--sp-5) var(--sp-5);
   overflow-y: auto;
   overscroll-behavior: contain;
   line-height: 1.7;
@@ -75,18 +73,30 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: var(--sp-3);
-  padding: var(--sp-4) var(--sp-5) var(--sp-5);
-  border-top: 1px solid var(--line);
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-5) var(--sp-5);
 }
 @media (max-width: 760px) {
   .dialog-layer {
     align-items: end;
     padding: 0;
   }
+  /* 下から出るシート（上端に小さな取っ手） */
   .dialog {
     max-height: 92dvh;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
     padding-bottom: var(--safe-bottom);
+  }
+  .dialog::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 38px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--line-strong);
+    transform: translateX(-50%);
   }
   .dialog__foot > * {
     flex: 1 1 auto;

@@ -1,63 +1,63 @@
+/* iOS の通知のような、角の丸いすりガラスの帯 */
 .toasts {
   position: fixed;
   z-index: 80;
   right: calc(var(--sp-5) + var(--safe-right));
-  bottom: calc(110px + var(--safe-bottom));
+  bottom: calc(var(--sp-5) + var(--safe-bottom));
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: var(--sp-2);
-  width: min(440px, calc(100vw - 2 * var(--sp-4)));
+  width: min(420px, calc(100vw - 2 * var(--sp-4)));
   pointer-events: none;
 }
-/* 黒い斜めの帯の通知。種類は左端の色で示す */
 .toast {
   pointer-events: auto;
   display: flex;
   align-items: center;
   gap: var(--sp-3);
   width: 100%;
-  padding: var(--sp-3) calc(var(--sp-3) + 16px) var(--sp-3) var(--sp-4);
-  background: rgba(2, 6, 34, 0.94);
-  color: #fff;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
-  box-shadow: inset 6px 0 0 var(--tone, #3ff2ff);
-  transform-origin: right center;
+  padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-3);
+  border-radius: var(--r-lg);
+  background: rgba(24, 24, 28, 0.86);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  color: #f3f3f5;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  transform-origin: center bottom;
   font-size: var(--fs-small);
-  font-weight: 700;
   line-height: 1.5;
 }
-.toast--success { --tone: #3ff2ff; }
-.toast--error { --tone: #ff2c46; }
-.toast--warning { --tone: #ffe23e; }
-.toast--info { --tone: #ffffff; }
+.toast--success { --tone: #f3f3f5; }
+.toast--error { --tone: #ff3550; }
+.toast--warning { --tone: #e8a93a; }
+.toast--info { --tone: #a4a5ad; }
 .toast__seal {
   display: grid;
   place-items: center;
   flex: none;
-  width: 28px;
-  height: 28px;
-  background: var(--tone, #3ff2ff);
-  color: #04114f;
-  transform: skewX(-10deg);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tone, #fff) 18%, transparent);
+  color: var(--tone, #fff);
 }
 .toast__message {
   flex: 1;
 }
 .toast__action {
   flex: none;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border: 0;
-  background: #fff;
-  color: #04114f;
+  border-radius: var(--r-pill);
+  background: #f3f3f5;
+  color: #111214;
   font: inherit;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
-  transform: skewX(-10deg);
-  box-shadow: 3px 3px 0 #ff2c46;
 }
 .toast__action:hover {
-  background: var(--tone, #3ff2ff);
+  background: #fff;
 }
 .toast__close {
   flex: none;
@@ -66,8 +66,9 @@
   width: 28px;
   height: 28px;
   border: 0;
+  border-radius: 50%;
   background: none;
-  color: #9fb4ff;
+  color: #8f9098;
   cursor: pointer;
 }
 @media (max-width: 760px) {
@@ -76,7 +77,7 @@
     right: var(--sp-3);
     left: var(--sp-3);
     width: auto;
-    top: calc(var(--sp-3) + var(--safe-top));
+    top: calc(var(--sp-2) + var(--safe-top));
     bottom: auto;
     flex-direction: column-reverse;
   }

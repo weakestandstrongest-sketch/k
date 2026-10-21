@@ -58,15 +58,11 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
 
       <motion.div className="hall__grid" variants={tickContainer(0.07, d0 + 0.15)} initial="hidden" animate="show">
         <motion.header className="hall__head" variants={item}>
-          {/* 左上の小さな白い札：今日の残りの予定 */}
-          <div className="hall__pocket">
-            <span className="hall__pocket-value num">{remaining.length}</span>
-            <span className="hall__pocket-unit">件</span>
-            <span className="hall__pocket-label">
-              本日の残りの予定
-              <small>events remaining today</small>
-            </span>
-          </div>
+          <p className="kicker">TODAY</p>
+          {/* 今日の残りの予定（小さな丸い札） */}
+          <p className="hall__pocket">
+            残り <span className="num">{remaining.length}</span> 件
+          </p>
           <button type="button" className="btn btn--icon btn--ghost hall__gear" onClick={() => setSettingsOpen(true)} aria-label="設定">
             <Icon name="gear" />
           </button>
@@ -75,6 +71,8 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
         <section className="hall__date" aria-label="今日の日付と時刻">
           <motion.div className="hall__numeral num" variants={item} aria-hidden="true">
             <RollingText text={String(day)} />
+            {/* 数字を斜めに貫く、細い深紅の線 */}
+            <span className="hall__slash" />
           </motion.div>
           <motion.div className="hall__date-side" variants={item}>
             <p className="hall__month-en">{MONTHS_EN[month - 1]}</p>
@@ -198,7 +196,7 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
   );
 }
 
-const MONTHS_EN = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const MONTHS_EN = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const WEEKDAYS_EN = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
 
 function LiveTime() {

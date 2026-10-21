@@ -5,7 +5,7 @@
 }
 .bezel__rim {
   fill: var(--bg-raised);
-  stroke: var(--line-strong);
+  stroke: var(--line);
   stroke-width: 1.2;
 }
 .bezel__ring {
@@ -18,7 +18,7 @@
   fill: var(--ink-faint);
 }
 .bezel__month.is-current {
-  fill: var(--accent);
+  fill: var(--crimson);
   font-size: 15px;
   font-weight: 600;
 }
@@ -27,7 +27,7 @@
   stroke-width: 1;
 }
 .bezel__tick.is-current {
-  stroke: var(--accent);
+  stroke: var(--crimson);
   stroke-width: 2.5;
 }
 .bezel__hand {
@@ -36,10 +36,10 @@
   stroke-linecap: round;
 }
 .bezel__hand-tip {
-  fill: var(--accent);
+  fill: var(--crimson);
 }
 .bezel__index {
-  fill: var(--accent);
+  fill: var(--crimson);
 }
 .bezel__core {
   fill: var(--bg);
