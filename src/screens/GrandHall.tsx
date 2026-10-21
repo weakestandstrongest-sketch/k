@@ -73,6 +73,8 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
         <section className="hall__date" aria-label="今日の日付と時刻">
           <motion.div className="hall__numeral num" variants={item} aria-hidden="true">
             <RollingText text={String(day)} />
+            {/* 数字を斜めに貫く、短い深紅の線 */}
+            <span className="hall__slash" />
           </motion.div>
           <motion.div className="hall__date-side" variants={item}>
             <p className="hall__month-en">{MONTHS_EN[month - 1]}</p>

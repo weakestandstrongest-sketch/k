@@ -37,12 +37,61 @@
   fill: var(--ink);
   opacity: 0.025;
 }
+/* 機械の図面のような細い線（どれもごく淡く） */
+.backdrop__ring,
 .backdrop__hair {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 1;
+  stroke-width: 1.1;
   opacity: 0.1;
-  vector-effect: non-scaling-stroke;
+}
+.backdrop__ring--inner {
+  opacity: 0.05;
+}
+.backdrop__hair--faint {
+  opacity: 0.06;
+}
+.backdrop__ticks {
+  stroke: var(--ink);
+  stroke-width: 1.1;
+  opacity: 0.12;
+  transform-box: view-box;
+  transform-origin: 1560px 110px;
+  animation: ring-turn 240s linear infinite;
+}
+.backdrop__ticks .is-major {
+  stroke-width: 1.6;
+  stroke-opacity: 1;
+}
+@keyframes ring-turn {
+  to { transform: rotate(360deg); }
+}
+.backdrop__arc {
+  fill: none;
+  stroke: var(--crimson);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+.backdrop__node {
+  fill: var(--crimson);
+  opacity: 0.7;
+}
+.backdrop__node--end {
+  fill: var(--ink);
+  opacity: 0.2;
+}
+.backdrop__node-ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  opacity: 0.18;
+}
+.backdrop__marks {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  opacity: 0.16;
 }
 /* 右端の縦書きの英字（字間を大きく） */
 .backdrop__word {
@@ -64,7 +113,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .backdrop__mist {
+  .backdrop__mist,
+  .backdrop__ticks {
     animation: none;
   }
 }
