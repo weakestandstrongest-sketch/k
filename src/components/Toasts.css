@@ -68,10 +68,13 @@
   cursor: pointer;
 }
 @media (max-width: 760px) {
+  /* スマートフォンでは上部に表示（下部の操作ボタンを隠さない） */
   .toasts {
     right: var(--sp-3);
     left: var(--sp-3);
     width: auto;
-    bottom: calc(var(--mobile-nav-height) + var(--sp-4) + var(--safe-bottom));
+    top: calc(var(--sp-3) + var(--safe-top));
+    bottom: auto;
+    flex-direction: column-reverse;
   }
 }

@@ -122,8 +122,8 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
             <NextCard event={next.event} ongoing={next.ongoing} nowMin={nowMin} onOpen={() => open(next.event)} />
           ) : (
             <div className="hall__next-empty">
-              <p className="hall__next-title">今日の予定はこれで終わりです</p>
-              <p className="muted">残りの時間は自由に使えます。</p>
+              <p className="hall__next-title">{data.day.length === 0 ? '今日の予定はまだありません' : '今日の予定はこれで終わりです'}</p>
+              <p className="muted">{data.day.length === 0 ? '「新しい予定」から最初の予定を加えましょう。' : '残りの時間は自由に使えます。'}</p>
             </div>
           )}
           <div className="hall__actions">

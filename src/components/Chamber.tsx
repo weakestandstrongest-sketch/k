@@ -32,7 +32,9 @@ export function Chamber() {
   const [busy, setBusy] = useState(false);
 
   const event = chamber && chamber.mode !== 'new' ? events.find((e) => e.id === chamber.id) : undefined;
-  const layoutKey = chamber?.mode === 'view' ? chamber.layoutKey : undefined;
+  // 共有レイアウトの相手（開いた元の行）は、開いた時点で固定する。
+  // 閲覧⇔編集を切り替えても枠が作り直されず、閉じると元の行へ戻る。
+  const [layoutKey] = useState(() => (chamber?.mode === 'view' ? chamber.layoutKey : undefined));
 
   // 開いている予定が他の操作で消えた場合は閉じる
   useEffect(() => {
