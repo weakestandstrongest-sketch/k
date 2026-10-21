@@ -1,6 +1,6 @@
 /**
  * 「現在」と「提案」の2本の時間軸を並べ、動く予定を線で結んで見せる。
- * 時間設計の画面と、予定を動かしたときの確認で共通して使います。
+ * 予定を動かして他の予定と重なったときの「再編成の確認」で使います。
  */
 import { motion, useReducedMotion } from 'motion/react';
 import { categoryOf } from '../data/categories';

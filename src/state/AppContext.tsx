@@ -6,7 +6,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { EventDraft } from '../data/types';
 import { compareDateKeys, todayKey, type DateKey } from '../lib/date';
 
-export type Route = 'hall' | 'orrery' | 'equation' | 'chronicle';
+export type Route = 'hall' | 'orrery' | 'chronicle' | 'settings';
 export type CalendarView = 'day' | 'week' | 'month';
 
 export type ChamberState =
@@ -22,8 +22,8 @@ export interface Point {
 const ROUTE_HASH: Record<Route, string> = {
   hall: '#/',
   orrery: '#/calendar',
-  equation: '#/plan',
   chronicle: '#/review',
+  settings: '#/settings',
 };
 
 function routeFromHash(hash: string): Route {
@@ -58,8 +58,6 @@ interface AppApi {
   closeChamber: () => void;
   reviewDate: DateKey | null;
   setReviewDate: (d: DateKey | null) => void;
-  settingsOpen: boolean;
-  setSettingsOpen: (open: boolean) => void;
 }
 
 const AppContext = createContext<AppApi | null>(null);
@@ -72,7 +70,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [calView, setCalViewState] = useState<CalendarView>(readStoredView);
   const [chamber, setChamber] = useState<ChamberState | null>(null);
   const [reviewDate, setReviewDate] = useState<DateKey | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const focusRef = useRef(focusDate);
 
   useEffect(() => {
@@ -128,10 +125,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeChamber,
       reviewDate,
       setReviewDate,
-      settingsOpen,
-      setSettingsOpen,
     }),
-    [route, irisOrigin, navigate, focusDate, dateDirection, setFocusDate, calView, setCalView, chamber, openChamber, closeChamber, reviewDate, settingsOpen],
+    [route, irisOrigin, navigate, focusDate, dateDirection, setFocusDate, calView, setCalView, chamber, openChamber, closeChamber, reviewDate],
   );
 
   return <AppContext.Provider value={api}>{children}</AppContext.Provider>;

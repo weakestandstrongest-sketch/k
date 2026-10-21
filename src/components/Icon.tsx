@@ -2,7 +2,6 @@
 export type IconName =
   | 'hall'
   | 'orrery'
-  | 'equation'
   | 'chronicle'
   | 'plus'
   | 'prev'
@@ -27,7 +26,6 @@ export type IconName =
 const PATHS: Record<IconName, string> = {
   hall: 'M3 21h18M5 21V10l7-6 7 6v11M9 21v-6a3 3 0 0 1 6 0v6',
   orrery: 'M12 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M12 12m-9 0a9 4 0 1 0 18 0a9 4 0 1 0 -18 0M19 7.5a1.5 1.5 0 1 0 0.01 0',
-  equation: 'M4 7h7M4 12h16M13 17h7M15 4l-4 6M9 20l4-6',
   chronicle: 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11M9 8h6',
   plus: 'M12 5v14M5 12h14',
   prev: 'M15 5l-7 7 7 7',

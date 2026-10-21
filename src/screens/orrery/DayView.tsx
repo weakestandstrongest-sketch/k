@@ -36,7 +36,7 @@ export const fadeOnly: Variants = {
 };
 
 export function DayView() {
-  const { focusDate, dateDirection, openChamber, navigate } = useApp();
+  const { focusDate, dateDirection, openChamber } = useApp();
   const { events, settings } = useEvents();
   const isMobile = useIsMobile();
   const reduce = useReducedMotion();
@@ -150,12 +150,6 @@ export function DayView() {
             </div>
           </dl>
           <SideFreeList date={focusDate} onCreate={(s) => createAt(s.start)} />
-          {data.conflicts.length > 0 && (
-            <button type="button" className="btn btn--small dayview__plan" onClick={() => navigate('equation')}>
-              時間設計で重なりを調整
-              <Icon name="next" size={14} />
-            </button>
-          )}
         </aside>
       )}
     </div>

@@ -27,7 +27,7 @@
   margin: 0;
   padding: 3px 12px;
   border-radius: var(--r-pill);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
   font-size: var(--fs-micro);
   font-weight: 600;
@@ -36,10 +36,6 @@
 .hall__pocket .num {
   font-weight: 600;
   color: var(--crimson);
-}
-.hall__head .hall__gear {
-  display: none;
-  margin-left: auto;
 }
 
 /* ---- 日付（細く大きな数字） ---- */
@@ -187,7 +183,7 @@
   padding: var(--sp-4) var(--sp-5) var(--sp-5);
   border: 0;
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
   color: var(--ink);
   text-align: left;
@@ -269,7 +265,7 @@
 .hall__next-empty {
   padding: var(--sp-4) var(--sp-5);
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .hall__next-empty p {
@@ -294,7 +290,7 @@
   gap: 2px;
   padding: var(--sp-4) var(--sp-5);
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .stat__label {
@@ -350,7 +346,7 @@
 .hall__empty {
   padding: var(--sp-5);
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   margin: 0;
 }
 .hall__banner {
@@ -377,9 +373,6 @@
 @media (max-width: 760px) {
   .hall__grid {
     row-gap: var(--sp-4);
-  }
-  .hall__head .hall__gear {
-    display: inline-flex;
   }
   .hall__numeral {
     font-size: clamp(6rem, 36vw, 9.5rem);

@@ -74,7 +74,7 @@ export interface CalendarEvent {
   /** 移動・準備のための前後の余白（分） */
   bufferBeforeMin: number;
   bufferAfterMin: number;
-  /** true の場合、時間設計の提案で動かさない */
+  /** true の場合、重なりの再編成で動かさない */
   fixed: boolean;
   /** サンプル（見本）データかどうか */
   isSample: boolean;

@@ -211,7 +211,7 @@
 .dayview__facts div {
   padding: var(--sp-3) var(--sp-4);
   border-radius: var(--r-md);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .dayview__facts dt {
@@ -226,7 +226,7 @@
 .dayview__free {
   padding: var(--sp-2) var(--sp-4);
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .dayview__free-title {
@@ -265,9 +265,6 @@
   margin: 0;
   font-size: var(--fs-small);
 }
-.dayview__plan {
-  align-self: flex-start;
-}
 
 /* ---- 時間軸 ---- */
 .tl {
@@ -276,7 +273,7 @@
   user-select: none;
   -webkit-user-select: none;
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .tl__hour {
@@ -597,7 +594,7 @@
 /* ================= 週表示（デスクトップ） ================= */
 .wgrid {
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .wgrid__head {
@@ -873,7 +870,7 @@
   position: relative;
   padding: var(--sp-3) var(--sp-3) var(--sp-4);
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .mgrid__weekdays {
@@ -1040,7 +1037,7 @@
   margin: 0;
   padding: var(--sp-4);
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
 }
 .monthview__ledger-actions {
   display: flex;

@@ -1,0 +1,23 @@
+.settings-screen__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  max-width: 720px;
+  margin: 0 auto;
+}
+.settings-screen__head {
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--line);
+}
+.settings-screen__card {
+  padding: var(--sp-5);
+  border-radius: var(--r-xl);
+  background: var(--card);
+  box-shadow: var(--shadow-1);
+}
+@media (max-width: 760px) {
+  .settings-screen__card {
+    padding: var(--sp-4);
+  }
+}

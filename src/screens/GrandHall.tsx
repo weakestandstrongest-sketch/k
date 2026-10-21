@@ -38,7 +38,7 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
   const now = useNow(15_000);
   const reduce = useReducedMotion();
   const { events, settings, status } = useEvents();
-  const { openChamber, navigate, setReviewDate, setFocusDate, setCalView, setSettingsOpen } = useApp();
+  const { openChamber, navigate, setReviewDate, setFocusDate, setCalView } = useApp();
   const today = todayKey(now);
   const nowMin = minutesOfDay(now);
   const data = useDayData(events, today, settings, nowMin);
@@ -65,9 +65,6 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
           <p className="hall__pocket">
             残り <span className="num">{remaining.length + data.allDay.length}</span> 件
           </p>
-          <button type="button" className="btn btn--icon btn--ghost hall__gear" onClick={() => setSettingsOpen(true)} aria-label="設定">
-            <Icon name="gear" />
-          </button>
         </motion.header>
 
         <section className="hall__date" aria-label="今日の日付と時刻">
@@ -159,7 +156,18 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
             unit="件"
             tone={data.overlapCount > 0 ? 'danger' : undefined}
             note={data.bufferCount > 0 ? `余白の重なり ${data.bufferCount}件` : '問題ありません'}
-            action={data.overlapCount + data.bufferCount > 0 ? { label: '時間設計で確認', onClick: () => navigate('equation') } : undefined}
+            action={
+              data.overlapCount + data.bufferCount > 0
+                ? {
+                    label: 'カレンダーで確認',
+                    onClick: () => {
+                      setFocusDate(today);
+                      setCalView('day');
+                      navigate('orrery');
+                    },
+                  }
+                : undefined
+            }
           />
         </motion.section>
 

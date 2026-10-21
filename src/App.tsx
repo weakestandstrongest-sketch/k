@@ -8,7 +8,6 @@ import { Chamber } from './components/Chamber';
 import { DailyReview } from './components/DailyReview';
 import { Navigation, NAV_ITEMS } from './components/Navigation';
 import { OpeningSequence } from './components/OpeningSequence';
-import { SettingsDialog } from './components/SettingsDialog';
 import { StatusNotices } from './components/StatusNotices';
 import { Toasts } from './components/Toasts';
 import { emptyDraft } from './data/eventModel';
@@ -16,7 +15,7 @@ import { minutesOfDay, todayKey } from './lib/date';
 import { snapMinutes } from './lib/schedule';
 import { ease } from './motion/tokens';
 import { Chronicle } from './screens/Chronicle';
-import { Equation } from './screens/Equation';
+import { Settings } from './screens/Settings';
 import { GrandHall } from './screens/GrandHall';
 import { Orrery } from './screens/Orrery';
 import { AppProvider, useApp, type Point, type Route } from './state/AppContext';
@@ -92,7 +91,7 @@ function Shell() {
   const create = useCallback(
     () => {
       const today = todayKey();
-      const date = route === 'orrery' || route === 'equation' ? focusDate : today;
+      const date = route === 'orrery' ? focusDate : today;
       const nowMin = minutesOfDay(new Date());
       const start = date === today ? Math.min(snapMinutes(nowMin + 30, 30), 23 * 60) : 9 * 60;
       openChamber({ mode: 'new', draft: emptyDraft(date, start) });
@@ -132,7 +131,6 @@ function Shell() {
 
       <AnimatePresence>{chamber && <Chamber key="chamber" />}</AnimatePresence>
       <AnimatePresence>{reviewDate && <DailyReview key={`review-${reviewDate}`} date={reviewDate} />}</AnimatePresence>
-      <SettingsDialog />
       <StatusNotices />
       <Toasts />
 
@@ -246,8 +244,8 @@ function ScreenFor({ route, entranceDelay }: { route: Route; entranceDelay: numb
       return <GrandHall entranceDelay={entranceDelay} />;
     case 'orrery':
       return <Orrery />;
-    case 'equation':
-      return <Equation />;
+    case 'settings':
+      return <Settings />;
     case 'chronicle':
       return <Chronicle />;
   }

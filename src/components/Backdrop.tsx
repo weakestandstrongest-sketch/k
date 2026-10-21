@@ -11,14 +11,14 @@ import { memo } from 'react';
 import { ease } from '../motion/tokens';
 import './Backdrop.css';
 
-export type BackdropKind = 'hall' | 'orrery' | 'equation' | 'chronicle';
+export type BackdropKind = 'hall' | 'orrery' | 'chronicle' | 'settings';
 
 /** 画面の端に縦に置く、字間の広い英字 */
 const WORD: Record<BackdropKind, string> = {
   hall: 'TODAY',
   orrery: 'CALENDAR',
-  equation: 'PLANNING',
   chronicle: 'ARCHIVE',
+  settings: 'SETTINGS',
 };
 
 function BackdropImpl({ kind, intro = false, introDelay = 0 }: { kind: BackdropKind; intro?: boolean; introDelay?: number }) {

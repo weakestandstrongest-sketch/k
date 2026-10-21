@@ -1,14 +1,12 @@
-/** 設定：週の始まり・活動時間帯・見本データ・全データの消去・起動演出 */
+/** 設定の中身：外観・週の始まり・活動時間帯・見本データ・全データの消去・起動演出 */
 import { useEffect, useState } from 'react';
 import type { Appearance, Settings } from '../data/types';
 import { formatMinutes, parseTime } from '../lib/date';
-import { useApp } from '../state/AppContext';
 import { useConfirm } from '../state/ConfirmContext';
 import { useEvents } from '../state/EventsContext';
 import { useToast } from '../state/ToastContext';
-import { Dialog } from './Dialog';
 import { Icon, type IconName } from './Icon';
-import './SettingsDialog.css';
+import './SettingsBody.css';
 
 const APPEARANCES: { value: Appearance; label: string; icon: IconName }[] = [
   { value: 'light', label: '白', icon: 'sun' },
@@ -16,16 +14,7 @@ const APPEARANCES: { value: Appearance; label: string; icon: IconName }[] = [
   { value: 'system', label: '自動', icon: 'device' },
 ];
 
-export function SettingsDialog() {
-  const { settingsOpen, setSettingsOpen } = useApp();
-  return (
-    <Dialog open={settingsOpen} onClose={() => setSettingsOpen(false)} title="設定" kicker="ATELIER SETTINGS" width={620}>
-      <SettingsBody onClose={() => setSettingsOpen(false)} />
-    </Dialog>
-  );
-}
-
-function SettingsBody({ onClose }: { onClose: () => void }) {
+export function SettingsBody({ onClose }: { onClose: () => void }) {
   const { settings, updateSettings, hasSamples, clearSamples, loadSamples, clearAll, events, memoryOnly } = useEvents();
   const confirm = useConfirm();
   const { push } = useToast();
@@ -194,8 +183,7 @@ function SettingsBody({ onClose }: { onClose: () => void }) {
         <ul>
           <li>通知・アラーム（バックグラウンドでの通知は行いません）</li>
           <li>iPhone の「カレンダー」や他サービスとの同期</li>
-          <li>終日の予定・日をまたぐ予定・繰り返しの予定</li>
-          <li>祝日の表示</li>
+          <li>「第2火曜日」のような繰り返し、回数で終わる繰り返し</li>
           <li>移動時間の自動予測（余白は手入力です）</li>
         </ul>
       </section>

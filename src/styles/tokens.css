@@ -8,7 +8,7 @@
  *   light … 白を基調（霧の白）
  *   dark  … 黒を基調（深い黒に深紅）
  *   night … 一日を閉じる（いつも漆黒）
- * data-screen（hall / orrery / equation / chronicle）で、画面ごとに地の色を少しだけ変えます。
+ * data-screen（hall / orrery / chronicle / settings）で、画面ごとに地の色を少しだけ変えます。
  */
 
 :root {
@@ -82,6 +82,10 @@
   --bg-raised: #ffffff;
   --bg-sunken: #e6e8ec;
   --material: rgba(255, 255, 255, 0.72); /* すりガラス */
+  /* 透明感のあるカード（背景の霧がうっすら透ける白） */
+  --card: rgba(255, 255, 255, 0.58);
+  --glass: rgba(255, 255, 255, 0.74);
+  --veil: rgba(28, 30, 38, 0.18);
   --ink: #111214;
   --ink-dim: #5c6068;
   --ink-faint: #9195a0;
@@ -92,8 +96,8 @@
   --accent-2: var(--crimson);
   --glow: rgba(224, 36, 60, 0.14);
   --focus: var(--crimson);
-  --shadow-1: 0 1px 2px rgba(17, 18, 20, 0.05), 0 4px 16px rgba(17, 18, 20, 0.05);
-  --shadow-2: 0 2px 6px rgba(17, 18, 20, 0.06), 0 18px 48px rgba(17, 18, 20, 0.12);
+  --shadow-1: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 1px 2px rgba(17, 18, 20, 0.04), 0 6px 20px rgba(17, 18, 20, 0.05);
+  --shadow-2: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 2px 6px rgba(17, 18, 20, 0.05), 0 18px 48px rgba(17, 18, 20, 0.1);
   --mist-a: rgba(255, 255, 255, 0.9);
   --mist-b: rgba(200, 208, 222, 0.55);
   --picker-filter: none;
@@ -101,10 +105,6 @@
 [data-theme='light'][data-screen='orrery'] {
   --bg: #f4f5f7;
   --bg-deep: #e9ebef;
-}
-[data-theme='light'][data-screen='equation'] {
-  --bg: #f1f2f5;
-  --bg-deep: #e4e6eb;
 }
 [data-theme='light'][data-screen='chronicle'] {
   --bg: #e9eaee;
@@ -120,6 +120,9 @@
   --bg-raised: #1a1a1f;
   --bg-sunken: #121216;
   --material: rgba(28, 28, 33, 0.72);
+  --card: rgba(30, 30, 36, 0.62);
+  --glass: rgba(26, 26, 31, 0.78);
+  --veil: rgba(0, 0, 0, 0.45);
   --ink: #f3f3f5;
   --ink-dim: #a4a5ad;
   --ink-faint: #6c6d75;

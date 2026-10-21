@@ -82,7 +82,7 @@
   gap: 2px;
   padding: var(--sp-4);
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .chr__kpi-label {
@@ -116,7 +116,7 @@
   gap: var(--sp-3);
   padding: var(--sp-5);
   border-radius: var(--r-lg);
-  background: var(--bg-raised);
+  background: var(--card);
   box-shadow: var(--shadow-1);
 }
 .chr__panel-head {

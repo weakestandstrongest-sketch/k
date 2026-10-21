@@ -186,7 +186,7 @@ export function toBase(e: CalendarEvent): CalendarEvent {
   return { ...rest, id: baseId };
 }
 
-/** 時間設計の提案や、ドラッグで「そのまま動かしてよい」単純な予定か */
+/** 再編成の提案や、ドラッグで「そのまま動かしてよい」単純な予定か */
 export function isSimple(e: CalendarEvent): boolean {
   if (!isInstance(e)) return !e.repeat && e.endDate === e.date && !e.allDay;
   return !e.recurring && e.segment === 'single' && !e.allDay;

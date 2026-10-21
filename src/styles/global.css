@@ -123,7 +123,7 @@ body.is-dragging {
 }
 /* 角の丸いカード（iOS のグループ） */
 .card {
-  background: var(--bg-raised);
+  background: var(--card);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-1);
 }

@@ -11,9 +11,9 @@
 .chamber-layer__veil {
   position: absolute;
   inset: 0;
-  background: rgba(8, 8, 10, 0.42);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--veil);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
 }
 .chamber {
   position: relative;
@@ -27,7 +27,9 @@
   border-radius: var(--r-xl);
   background:
     linear-gradient(118deg, transparent 0 74%, rgba(255, 53, 80, 0.07) 74.1% 74.4%, transparent 74.5%),
-    linear-gradient(180deg, var(--bg-raised), var(--bg) 60%);
+    linear-gradient(180deg, var(--glass), color-mix(in srgb, var(--bg) 70%, transparent) 70%);
+  backdrop-filter: blur(30px) saturate(1.6);
+  -webkit-backdrop-filter: blur(30px) saturate(1.6);
   box-shadow: var(--shadow-2);
   overflow: hidden;
 }

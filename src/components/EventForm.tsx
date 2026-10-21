@@ -347,7 +347,7 @@ export function EventForm({ initial, eventId, allEvents, saving, submitLabel, hi
                     </li>
                   ))}
                 </ul>
-                <p className="evform__conflict-note">他の予定は変更されません。調整は「時間設計」でも行えます。</p>
+                <p className="evform__conflict-note">他の予定は変更されません。</p>
               </div>
             </div>
           </motion.div>
@@ -443,7 +443,7 @@ export function EventForm({ initial, eventId, allEvents, saving, submitLabel, hi
         <input type="checkbox" checked={d.fixed} onChange={(e) => set('fixed', e.target.checked)} />
         <span>
           時刻を固定する
-          <span className="field__hint evform__inline-hint">「時間設計」の提案でこの予定を動かしません</span>
+          <span className="field__hint evform__inline-hint">重なりを調整するとき、この予定は動かしません</span>
         </span>
       </label>
 

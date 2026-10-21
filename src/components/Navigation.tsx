@@ -14,8 +14,8 @@ import './Navigation.css';
 export const NAV_ITEMS: { route: Route; label: string; word: string; icon: IconName }[] = [
   { route: 'hall', label: 'ホーム', word: 'HOME', icon: 'hall' },
   { route: 'orrery', label: 'カレンダー', word: 'CALENDAR', icon: 'orrery' },
-  { route: 'equation', label: '時間設計', word: 'PLANNING', icon: 'equation' },
   { route: 'chronicle', label: '振り返り', word: 'ARCHIVE', icon: 'chronicle' },
+  { route: 'settings', label: '設定', word: 'SETTINGS', icon: 'gear' },
 ];
 
 function originOf(e: MouseEvent<HTMLElement>) {
@@ -24,7 +24,7 @@ function originOf(e: MouseEvent<HTMLElement>) {
 }
 
 export function Navigation({ onCreate }: { onCreate: () => void }) {
-  const { route, navigate, setSettingsOpen } = useApp();
+  const { route, navigate } = useApp();
   const { saving } = useEvents();
 
   return (
@@ -62,12 +62,6 @@ export function Navigation({ onCreate }: { onCreate: () => void }) {
           <button type="button" className="rail__create" onClick={onCreate} aria-label="新しい予定を作成">
             <Icon name="plus" size={20} />
             <span className="rail__text">新しい予定</span>
-          </button>
-          <button type="button" className="rail__item rail__gear" onClick={() => setSettingsOpen(true)} aria-label="設定">
-            <Icon name="gear" size={20} className="rail__icon" />
-            <span className="rail__text">
-              <span className="rail__label">設定</span>
-            </span>
           </button>
           <span className={`rail__saving ${saving ? 'is-on' : ''}`} role="status" aria-live="polite">
             {saving ? '保存中…' : ''}
