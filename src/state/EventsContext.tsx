@@ -75,6 +75,9 @@ export function EventsProvider({ children }: { children: ReactNode }) {
         setSettings(s);
         setStorageProblem(null);
         setStatus('ready');
+        // 端末の空き容量が少ないときにブラウザがデータを消さないよう、永続的な保存をお願いする
+        // （許可されるかはブラウザ次第。ホーム画面に追加した iPhone の PWA では通常許可されます）
+        navigator.storage?.persist?.().catch(() => undefined);
       } catch (err) {
         if (cancelled) return;
         // 保存領域が使えない場合は、保存しないことを明示したうえでメモリ上で動かす
