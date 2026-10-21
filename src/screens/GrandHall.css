@@ -41,6 +41,13 @@
   display: none;
   margin-left: auto;
 }
+/* ひび手帳への切り替え（いちばん右。スマートフォンでは設定の左） */
+.hall__head .hall__hibi {
+  margin-left: auto;
+}
+.hall__head .hall__hibi + .hall__gear {
+  margin-left: 0;
+}
 
 /* ---- 日付（細く大きな数字） ---- */
 .hall__date {
