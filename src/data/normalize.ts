@@ -1,6 +1,6 @@
 import { compareDateKeys, isValidDateKey } from '../lib/date';
 import { isCategoryId } from './categories';
-import type { AuditEntry, CalendarEvent, EventStatus, OccurrenceRecord, PrepTask, Repeat, RepeatFreq } from './types';
+import type { AuditEntry, CalendarEvent, EventStatus, OccurrenceRecord, PrepTask, Repeat, RepeatFreq, RouteInfo, RouteStep } from './types';
 
 const FREQS: RepeatFreq[] = ['daily', 'weekly', 'monthly', 'yearly'];
 
@@ -13,6 +13,26 @@ function normalizeRepeat(raw: unknown, date: string): Repeat | null {
   const weekdays = Array.isArray(r.weekdays) ? [...new Set(r.weekdays.filter((d): d is number => Number.isInteger(d) && d >= 0 && d <= 6))].sort() : [];
   const until = typeof r.until === 'string' && isValidDateKey(r.until) && compareDateKeys(r.until, date) >= 0 ? r.until : null;
   return { freq, interval, weekdays, until };
+}
+
+const clip = (v: unknown, n = 80) => (typeof v === 'string' ? v.slice(0, n) : '');
+
+/** 経路は見せるだけなので、決まった項目だけを残す（壊れていたら捨てる） */
+export function normalizeRoute(raw: unknown): RouteInfo | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  if (!Array.isArray(r.steps) || r.steps.length === 0) return undefined;
+  const steps: RouteStep[] = [];
+  for (const x of r.steps.slice(0, 60)) {
+    if (!x || typeof x !== 'object') continue;
+    const s = x as Record<string, unknown>;
+    if (s.k === 's') steps.push({ k: 's', name: clip(s.name), arr: clip(s.arr, 8), dep: clip(s.dep, 8) });
+    else if (s.k === 'a')
+      steps.push({ k: 'a', line: clip(s.line), dest: clip(s.dest), color: /^#[0-9a-fA-F]{3,8}$/.test(String(s.color)) ? String(s.color) : '', walk: s.walk === true, platform: clip(s.platform, 40), stops: clip(s.stops, 20) });
+  }
+  if (!steps.length) return undefined;
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+  return { from: clip(r.from), to: clip(r.to), via: clip(r.via), dep: clip(r.dep, 8), arr: clip(r.arr, 8), duration: clip(r.duration, 30), transfers: num(r.transfers), fare: num(r.fare), fareNote: clip(r.fareNote, 10), steps };
 }
 
 const STATUSES: EventStatus[] = ['planned', 'completed', 'missed'];
@@ -83,6 +103,7 @@ export function normalizeEvent(raw: unknown): CalendarEvent | null {
     bufferAfterMin: Math.max(0, int(r.bufferAfterMin, 0)),
     fixed: r.fixed === true,
     show: r.show === 'day' || r.show === 'range' ? r.show : 'both',
+    ...(normalizeRoute(r.route) ? { route: normalizeRoute(r.route) } : {}),
     isSample: r.isSample === true,
     createdAt: str(r.createdAt, now),
     updatedAt: str(r.updatedAt, now),

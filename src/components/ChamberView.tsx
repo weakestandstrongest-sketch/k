@@ -15,6 +15,7 @@ import { tickContainer, tickItem, tickItemReduced } from '../motion/tokens';
 import { useEvents } from '../state/EventsContext';
 import { useToast } from '../state/ToastContext';
 import { Icon } from './Icon';
+import { RouteView } from './RouteView';
 
 interface Props {
   /** 表示している回（日ごとのインスタンス） */
@@ -162,6 +163,12 @@ export function ChamberView({ event: e, base, titleId, onOpenOther }: Props) {
               <p className="cview__value cview__pre">{e.notes}</p>
             </div>
           )}
+        </motion.div>
+      )}
+
+      {base.route && (
+        <motion.div variants={item}>
+          <RouteView route={base.route} />
         </motion.div>
       )}
 

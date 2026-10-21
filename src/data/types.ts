@@ -52,6 +52,34 @@ export interface OccurrenceRecord {
  */
 export type ShowOn = 'both' | 'day' | 'range';
 
+/** ひび手帳の「のりかえ」で入れた経路（刻では見るだけ。変えるのはひび手帳で） */
+export interface RouteStep {
+  /** s: 駅、a: 電車・バス・徒歩 */
+  k: 's' | 'a';
+  name?: string;
+  arr?: string;
+  dep?: string;
+  line?: string;
+  dest?: string;
+  color?: string;
+  walk?: boolean;
+  platform?: string;
+  stops?: string;
+}
+
+export interface RouteInfo {
+  from: string;
+  to: string;
+  via?: string;
+  dep: string;
+  arr: string;
+  duration?: string;
+  transfers?: number | null;
+  fare?: number | null;
+  fareNote?: string;
+  steps: RouteStep[];
+}
+
 export interface CalendarEvent {
   /** 変わらない一意の ID */
   id: string;
@@ -86,6 +114,8 @@ export interface CalendarEvent {
   fixed: boolean;
   /** どの画面に出すか */
   show: ShowOn;
+  /** のりかえの経路（ひび手帳から来たもの） */
+  route?: RouteInfo;
   /** サンプル（見本）データかどうか */
   isSample: boolean;
   createdAt: string;
