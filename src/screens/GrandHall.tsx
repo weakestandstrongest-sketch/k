@@ -2,7 +2,6 @@
  * Screen 1: THE GRAND HALL（大広間 / ホーム）
  * 今日の日付・現在時刻・次の予定・残りの予定・空き時間を一目で。
  */
-import { HibiButton } from '../components/HibiButton';
 import { motion, useReducedMotion } from 'motion/react';
 import { useMemo } from 'react';
 import { Backdrop } from '../components/Backdrop';
@@ -66,7 +65,6 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
           <p className="hall__pocket">
             残り <span className="num">{remaining.length + data.allDay.length}</span> 件
           </p>
-          <HibiButton className="hall__hibi" />
         </motion.header>
 
         <section className="hall__date" aria-label="今日の日付と時刻">

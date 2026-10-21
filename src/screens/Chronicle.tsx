@@ -4,6 +4,7 @@
  * 「予定時間」（登録された長さ）と「実績」（利用者が記録したもの）を厳密に分けて表示します。
  * 記録のない完了や実績時間を推測で作ることはありません。
  */
+import { HibiButton } from '../components/HibiButton';
 import { motion, useReducedMotion } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { Backdrop } from '../components/Backdrop';
@@ -81,6 +82,7 @@ export function Chronicle() {
       <Backdrop kind="chronicle" intro />
       <motion.div className="chr" variants={tickContainer(0.06, 0.1)} initial="hidden" animate="show">
         <motion.header className="chr__head" variants={item}>
+          <HibiButton className="chr__hibi" />
           <div>
             <p className="kicker">THE CHRONICLE · 年代記</p>
             <h1 className="heading">振り返り</h1>

@@ -9,7 +9,6 @@ import { useApp, type Route } from '../state/AppContext';
 import { useEvents } from '../state/EventsContext';
 import { t } from '../motion/tokens';
 import { Icon, type IconName } from './Icon';
-import { HibiButton } from './HibiButton';
 import './Navigation.css';
 
 export const NAV_ITEMS: { route: Route; label: string; word: string; icon: IconName }[] = [
@@ -64,7 +63,6 @@ export function Navigation({ onCreate }: { onCreate: () => void }) {
             <Icon name="plus" size={20} />
             <span className="rail__text">新しい予定</span>
           </button>
-          <HibiButton className="rail__item rail__hibi" withLabel />
           <span className={`rail__saving ${saving ? 'is-on' : ''}`} role="status" aria-live="polite">
             {saving ? '保存中…' : ''}
           </span>
