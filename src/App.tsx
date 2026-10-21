@@ -26,6 +26,7 @@ import { MoveProvider } from './state/MoveContext';
 import { instancesOn } from './lib/recurrence';
 import { ToastProvider } from './state/ToastContext';
 import { HibiSwitch } from './components/HibiSwitch';
+import { onDayScreens } from './lib/showOn';
 import { IN_HIBI } from './lib/hibi';
 
 const INTRO_KEY = 'chronos:intro-played';
@@ -116,7 +117,7 @@ function Shell() {
     return () => window.removeEventListener('keydown', onKey);
   }, [create, chamber, reviewDate]);
 
-  const todayCount = status === 'loading' ? null : instancesOn(events, todayKey()).length;
+  const todayCount = status === 'loading' ? null : instancesOn(onDayScreens(events), todayKey()).length;
   const showUi = intro !== 'playing';
 
   return (

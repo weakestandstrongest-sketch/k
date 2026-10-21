@@ -4,6 +4,7 @@
  * - 動かしている間：空く時間（点線）、移動先（帯）、ぶつかる予定（赤）を表示
  * - 空いている場所を押すと、その時刻で新しい予定を作成
  */
+import { onDayScreens } from '../../lib/showOn';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
 import { ClockFace } from '../../components/ClockFace';
@@ -37,7 +38,8 @@ export const fadeOnly: Variants = {
 
 export function DayView() {
   const { focusDate, dateDirection, openChamber } = useApp();
-  const { events, settings } = useEvents();
+  const { events: allEvents, settings } = useEvents();
+  const events = useMemo(() => onDayScreens(allEvents), [allEvents]);
   const isMobile = useIsMobile();
   const reduce = useReducedMotion();
   const now = useNow(60_000);
@@ -157,7 +159,8 @@ export function DayView() {
 }
 
 function SideFreeList({ date, onCreate }: { date: DateKey; onCreate: (s: FreeSlot) => void }) {
-  const { events, settings } = useEvents();
+  const { events: allEvents, settings } = useEvents();
+  const events = useMemo(() => onDayScreens(allEvents), [allEvents]);
   const slots = useMemo(
     () => freeSlots(eventsOnDate(events, date), { windowStart: settings.dayStartMin, windowEnd: settings.dayEndMin, includeBuffers: true, minLength: 30 }),
     [events, date, settings.dayStartMin, settings.dayEndMin],

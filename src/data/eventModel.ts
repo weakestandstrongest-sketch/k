@@ -29,6 +29,7 @@ export function emptyDraft(date: DateKey, startMin = 9 * 60, durationMin = 60): 
     bufferBeforeMin: 0,
     bufferAfterMin: 0,
     fixed: false,
+    show: 'both',
   };
 }
 
@@ -50,6 +51,7 @@ export function draftFromEvent(e: CalendarEvent): EventDraft {
     bufferBeforeMin: e.bufferBeforeMin,
     bufferAfterMin: e.bufferAfterMin,
     fixed: e.fixed,
+    show: e.show,
   };
 }
 
@@ -194,6 +196,7 @@ export function updateEvent(prev: CalendarEvent, draft: EventDraft, now = new Da
     prev.bufferBeforeMin !== d.bufferBeforeMin ||
     prev.bufferAfterMin !== d.bufferAfterMin ||
     prev.fixed !== d.fixed ||
+    prev.show !== d.show ||
     JSON.stringify(prev.prepTasks) !== JSON.stringify(d.prepTasks);
   if (otherChanged && parts.length === 0) parts.push('詳細を編集');
 

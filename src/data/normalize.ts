@@ -82,6 +82,7 @@ export function normalizeEvent(raw: unknown): CalendarEvent | null {
     bufferBeforeMin: Math.max(0, int(r.bufferBeforeMin, 0)),
     bufferAfterMin: Math.max(0, int(r.bufferAfterMin, 0)),
     fixed: r.fixed === true,
+    show: r.show === 'day' || r.show === 'range' ? r.show : 'both',
     isSample: r.isSample === true,
     createdAt: str(r.createdAt, now),
     updatedAt: str(r.updatedAt, now),

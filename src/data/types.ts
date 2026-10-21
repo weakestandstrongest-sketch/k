@@ -44,6 +44,14 @@ export interface OccurrenceRecord {
   actualMinutes: number | null;
 }
 
+/**
+ * どの画面に出すか（ひび手帳のタイムライン／カレンダーと同じ分け方）
+ * - both: どこにも出す
+ * - day: ホームと「日」だけ（ひび手帳のタイムラインにだけ出る予定）
+ * - range: 「週」と「月」だけ（ひび手帳のカレンダーにだけ出る予定）
+ */
+export type ShowOn = 'both' | 'day' | 'range';
+
 export interface CalendarEvent {
   /** 変わらない一意の ID */
   id: string;
@@ -76,6 +84,8 @@ export interface CalendarEvent {
   bufferAfterMin: number;
   /** true の場合、重なりの再編成で動かさない */
   fixed: boolean;
+  /** どの画面に出すか */
+  show: ShowOn;
   /** サンプル（見本）データかどうか */
   isSample: boolean;
   createdAt: string;
@@ -102,6 +112,7 @@ export type EventDraft = Pick<
   | 'bufferBeforeMin'
   | 'bufferAfterMin'
   | 'fixed'
+  | 'show'
 >;
 
 /** 見た目：白を基調／黒を基調／端末の設定に合わせる */

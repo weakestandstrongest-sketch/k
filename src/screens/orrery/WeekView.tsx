@@ -3,6 +3,7 @@
  * - デスクトップ：7列の時間軸
  * - スマートフォン：横スクロールなしの縦の一覧（各日に小さな時間の帯）
  */
+import { onRangeScreens } from '../../lib/showOn';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useMemo, useRef } from 'react';
 import { EventRow } from '../../components/EventRow';
@@ -23,7 +24,8 @@ import { fadeOnly, slideVariants } from './DayView';
 
 export function WeekView() {
   const { focusDate, dateDirection, setFocusDate, setCalView, openChamber } = useApp();
-  const { events, settings } = useEvents();
+  const { events: allEvents, settings } = useEvents();
+  const events = useMemo(() => onRangeScreens(allEvents), [allEvents]);
   const isMobile = useIsMobile();
   const reduce = useReducedMotion();
   const now = useNow(60_000);

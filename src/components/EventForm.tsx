@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useId, useMemo, useState, type FormEvent } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { shiftKeepingSpan, spanMinutes, validateDraft, type DraftErrors } from '../data/eventModel';
-import type { CalendarEvent, EventDraft, Repeat, RepeatFreq } from '../data/types';
+import type { CalendarEvent, EventDraft, Repeat, RepeatFreq, ShowOn } from '../data/types';
 import { addDays, compareDateKeys, formatDuration, formatTimeRange, isValidDateKey, parseTime, toTimeInputValue, weekdayOf, WEEKDAYS_JA } from '../lib/date';
 import { createId } from '../lib/ids';
 import { timedOn } from '../lib/recurrence';
@@ -437,6 +437,16 @@ export function EventForm({ initial, eventId, allEvents, saving, submitLabel, hi
       <label className="field">
         <span className="field__label">メモ</span>
         <textarea className="field__control" value={d.notes} maxLength={4000} onChange={(e) => set('notes', e.target.value)} />
+      </label>
+
+      <label className="field">
+        <span className="field__label">表示する場所</span>
+        <select className="field__control" value={d.show} onChange={(e) => set('show', e.target.value as ShowOn)}>
+          <option value="both">どこにも出す</option>
+          <option value="day">ホームと「日」だけ</option>
+          <option value="range">「週」と「月」だけ</option>
+        </select>
+        <span className="field__hint">ひび手帳と合わせています：「ホームと日」はひび手帳のタイムライン、「週と月」はカレンダーに出る予定です</span>
       </label>
 
       <label className="check">

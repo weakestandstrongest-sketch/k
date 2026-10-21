@@ -1,6 +1,7 @@
 /**
  * 月表示：6週×7日の格子と、選んだ日の一覧（台帳）
  */
+import { onRangeScreens } from '../../lib/showOn';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useMemo, useRef } from 'react';
 import { EventRow } from '../../components/EventRow';
@@ -20,7 +21,8 @@ import { fadeOnly, slideVariants } from './DayView';
 
 export function MonthView() {
   const { focusDate, dateDirection, setFocusDate, setCalView, openChamber } = useApp();
-  const { events, settings } = useEvents();
+  const { events: allEvents, settings } = useEvents();
+  const events = useMemo(() => onRangeScreens(allEvents), [allEvents]);
   const isMobile = useIsMobile();
   const reduce = useReducedMotion();
   const today = todayKey(useNow(60_000));

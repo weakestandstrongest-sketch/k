@@ -129,6 +129,7 @@ export function buildSampleEvents(today: DateKey, now = new Date()): CalendarEve
         bufferBeforeMin: s.before ?? 0,
         bufferAfterMin: s.after ?? 0,
         fixed: s.fixed ?? false,
+        show: 'both',
         status: s.status ?? 'planned',
         actualMinutes: s.actual ?? null,
       },

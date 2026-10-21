@@ -2,6 +2,7 @@
  * Screen 1: THE GRAND HALL（大広間 / ホーム）
  * 今日の日付・現在時刻・次の予定・残りの予定・空き時間を一目で。
  */
+import { onDayScreens } from '../lib/showOn';
 import { motion, useReducedMotion } from 'motion/react';
 import { useMemo } from 'react';
 import { Backdrop } from '../components/Backdrop';
@@ -37,7 +38,8 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
   // 画面全体は 15 秒ごと、時刻の表示（LiveTime）だけ毎秒更新
   const now = useNow(15_000);
   const reduce = useReducedMotion();
-  const { events, settings, status } = useEvents();
+  const { events: allEvents, settings, status } = useEvents();
+  const events = useMemo(() => onDayScreens(allEvents), [allEvents]);
   const { openChamber, navigate, setReviewDate, setFocusDate, setCalView } = useApp();
   const today = todayKey(now);
   const nowMin = minutesOfDay(now);
