@@ -7,6 +7,7 @@
   margin: 0 auto;
 }
 .chr__head {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
@@ -14,6 +15,17 @@
   gap: var(--sp-4);
   padding-bottom: var(--sp-4);
   border-bottom: 1px solid var(--line);
+}
+/* ひび手帳への切り替え（右上。期間の切り替えはその下・左に並ぶ） */
+.chr__head .chr__hibi {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+}
+@media (min-width: 761px) {
+  .chr__head {
+    padding-right: 52px;
+  }
 }
 .chr__controls {
   display: flex;

@@ -47,6 +47,11 @@
   font-size: 0.78rem;
   letter-spacing: 0.5em;
 }
+.rail__brand-word--kanji {
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+  font-size: 1.15rem;
+  letter-spacing: 0;
+}
 .rail__list {
   list-style: none;
   margin: 0;

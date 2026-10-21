@@ -37,6 +37,11 @@
   transform-origin: left center;
   clip-path: polygon(0 50%, 100% 0, 100% 100%);
 }
+/* 名前「刻」は明朝の一字で、少し大きく */
+.opening__title--kanji {
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+  font-size: clamp(3rem, 1.6rem + 6vw, 5.4rem) !important;
+}
 .opening__title {
   position: relative;
   margin: 0;
