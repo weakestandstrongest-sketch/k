@@ -1,9 +1,19 @@
 .backdrop {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(100%, 100svh);
   overflow: hidden;
+  /* 下へ向かって溶かす（線が途中で切れたように見えないように） */
+  -webkit-mask-image: linear-gradient(180deg, #000 0 30%, transparent 78%);
+  mask-image: linear-gradient(180deg, #000 0 30%, transparent 78%);
   pointer-events: none;
   z-index: 0;
+}
+/* 細線の層：内容の上に重ねる（ごく淡く、操作は通す） */
+.backdrop--lines {
+  z-index: 4;
 }
 /* 霧のような光 */
 .backdrop__mist {
@@ -34,7 +44,7 @@
   fill: none;
   stroke: var(--ink);
   stroke-width: 1;
-  opacity: 0.22;
+  opacity: 0.16;
   vector-effect: non-scaling-stroke;
 }
 .backdrop__hair--faint {
@@ -42,7 +52,7 @@
 }
 .backdrop__hair--accent {
   stroke: var(--crimson);
-  opacity: 0.55;
+  opacity: 0.45;
 }
 .backdrop__sigil circle {
   fill: none;

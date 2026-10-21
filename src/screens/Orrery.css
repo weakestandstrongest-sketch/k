@@ -156,6 +156,45 @@
 .dayview__frame {
   position: relative;
 }
+/* 終日の予定 */
+.dayview__allday {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 var(--sp-3);
+  padding: 0;
+  list-style: none;
+}
+.dayview__allday button {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  min-height: 40px;
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--cat) 16%, var(--surface, transparent));
+  box-shadow: inset 3px 0 0 var(--cat);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dayview__allday-tag {
+  flex: none;
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  color: var(--ink-dim);
+}
+.dayview__allday-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .dayview__side {
   position: sticky;
   top: calc(var(--orrery-head-h, 0px) + var(--sp-3));
@@ -608,6 +647,49 @@
   background: var(--crimson);
   color: #fff;
 }
+.wgrid__holiday {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--crimson);
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wgrid__allday {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 52px repeat(7, minmax(0, 1fr));
+  gap: 3px 0;
+  padding: 4px 0 6px;
+  border-top: 1px solid var(--line);
+}
+.wgrid__allday-label {
+  grid-column: 1;
+  align-self: center;
+  justify-self: center;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+.wgrid__bar {
+  min-width: 0;
+  margin: 0 3px;
+  padding: 0 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--cat) 20%, transparent);
+  box-shadow: inset 3px 0 0 var(--cat);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
 .wgrid__meta {
   display: flex;
   align-items: center;
@@ -903,6 +985,25 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
+}
+.mgrid__chip.is-allday {
+  background: var(--cat);
+  color: #fff;
+}
+.mgrid__holiday {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--crimson);
+  font-size: 0.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.monthview__holiday {
+  margin-left: var(--sp-2);
+  vertical-align: middle;
+  font-size: var(--fs-micro);
 }
 .mgrid__chip.is-completed {
   opacity: 0.55;

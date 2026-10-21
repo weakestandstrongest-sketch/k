@@ -158,7 +158,7 @@ export function Chronicle() {
               <span><i className="chr-lg chr-lg--missed" />未実施</span>
             </p>
           </div>
-          <Ledger days={days} events={eventsInRange(events, range.start, range.end)} today={today} windowStart={settings.dayStartMin} windowEnd={settings.dayEndMin} onOpenEvent={open} onReview={setReviewDate} />
+          <Ledger days={days} events={eventsInRange(events, range.start, range.end).filter((e) => !e.allDay)} today={today} windowStart={settings.dayStartMin} windowEnd={settings.dayEndMin} onOpenEvent={open} onReview={setReviewDate} />
         </motion.section>
 
         <motion.section className="chr__panel chr__archive" variants={item} aria-labelledby="chr-history">

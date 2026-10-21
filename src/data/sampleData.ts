@@ -5,10 +5,14 @@
  */
 import { addDays, weekdayOf, type DateKey } from '../lib/date';
 import { createEvent, emptyDraft } from './eventModel';
-import type { CalendarEvent, CategoryId, EventStatus } from './types';
+import type { CalendarEvent, CategoryId, EventStatus, Repeat } from './types';
 
 interface Seed {
   offset: number;
+  /** 日をまたぐ予定の終了日（今日からの日数） */
+  endOffset?: number;
+  allDay?: boolean;
+  repeat?: Repeat;
   start: string;
   end: string;
   title: string;
@@ -66,6 +70,11 @@ const TODAY_AND_FUTURE: Seed[] = [
   { offset: 3, start: '18:30', end: '20:00', title: 'ピアノの練習', category: 'personal' },
   { offset: 5, start: '10:00', end: '13:00', title: '美術館へ', category: 'social', location: '上野', before: 40, after: 40 },
   { offset: 8, start: '09:30', end: '11:00', title: '四半期計画の締め切り', category: 'work', fixed: true },
+  // 繰り返し・終日・日をまたぐ予定の見本
+  { offset: -20, start: '07:00', end: '07:30', title: '朝のヨガ', category: 'health', repeat: { freq: 'weekly', interval: 1, weekdays: [2, 4], until: null } },
+  { offset: 3, start: '00:00', end: '24:00', allDay: true, title: '母の誕生日', category: 'social', repeat: { freq: 'yearly', interval: 1, weekdays: [], until: null } },
+  { offset: 4, endOffset: 5, start: '23:00', end: '06:30', title: '夜行バスで移動', category: 'travel', location: 'バスタ新宿', before: 30 },
+  { offset: 6, endOffset: 7, start: '00:00', end: '24:00', allDay: true, title: '京都への出張', category: 'travel', location: '京都' },
 ];
 
 /** 過去の見本：完了などの記録も見本として付けておく（見本であることは画面に明記） */
@@ -101,12 +110,16 @@ export function buildSampleEvents(today: DateKey, now = new Date()): CalendarEve
   return seeds.map((s, i) => {
     const date = addDays(today, s.offset);
     const draft = emptyDraft(date);
+    const repeat = s.repeat ? { ...s.repeat, weekdays: s.repeat.freq === 'weekly' ? s.repeat.weekdays : [] } : null;
     // 作成順を安定させるため、作成時刻を少しずつずらす
     const created = new Date(now.getTime() + i);
     return createEvent(
       {
         ...draft,
         title: s.title,
+        endDate: addDays(today, s.endOffset ?? s.offset),
+        allDay: s.allDay ?? false,
+        repeat,
         startMin: t(s.start),
         endMin: t(s.end),
         category: s.category,

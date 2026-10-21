@@ -1,6 +1,19 @@
-import { isValidDateKey } from '../lib/date';
+import { compareDateKeys, isValidDateKey } from '../lib/date';
 import { isCategoryId } from './categories';
-import type { AuditEntry, CalendarEvent, EventStatus, PrepTask } from './types';
+import type { AuditEntry, CalendarEvent, EventStatus, OccurrenceRecord, PrepTask, Repeat, RepeatFreq } from './types';
+
+const FREQS: RepeatFreq[] = ['daily', 'weekly', 'monthly', 'yearly'];
+
+function normalizeRepeat(raw: unknown, date: string): Repeat | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Record<string, unknown>;
+  const freq = r.freq as RepeatFreq;
+  if (!FREQS.includes(freq)) return null;
+  const interval = typeof r.interval === 'number' && r.interval >= 1 && r.interval <= 99 ? Math.round(r.interval) : 1;
+  const weekdays = Array.isArray(r.weekdays) ? [...new Set(r.weekdays.filter((d): d is number => Number.isInteger(d) && d >= 0 && d <= 6))].sort() : [];
+  const until = typeof r.until === 'string' && isValidDateKey(r.until) && compareDateKeys(r.until, date) >= 0 ? r.until : null;
+  return { freq, interval, weekdays, until };
+}
 
 const STATUSES: EventStatus[] = ['planned', 'completed', 'missed'];
 
@@ -20,7 +33,25 @@ export function normalizeEvent(raw: unknown): CalendarEvent | null {
   const startMin = int(r.startMin, -1);
   const endMin = int(r.endMin, -1);
   if (!id || !isValidDateKey(date)) return null;
-  if (startMin < 0 || startMin >= 1440 || endMin <= startMin || endMin > 1440) return null;
+  // 以前の版のデータには endDate がない → 同じ日として扱う
+  const rawEnd = str(r.endDate);
+  const endDate = isValidDateKey(rawEnd) && compareDateKeys(rawEnd, date) >= 0 ? rawEnd : date;
+  const allDay = r.allDay === true;
+  if (startMin < 0 || startMin >= 1440 || endMin <= 0 || endMin > 1440) return null;
+  if (!allDay && endDate === date && endMin <= startMin) return null;
+  const repeat = normalizeRepeat(r.repeat, date);
+  const records: Record<string, OccurrenceRecord> = {};
+  if (r.records && typeof r.records === 'object') {
+    for (const [k, v] of Object.entries(r.records as Record<string, unknown>)) {
+      if (!isValidDateKey(k) || !v || typeof v !== 'object') continue;
+      const rec = v as Record<string, unknown>;
+      const st = str(rec.status) as EventStatus;
+      records[k] = {
+        status: STATUSES.includes(st) ? st : 'planned',
+        actualMinutes: typeof rec.actualMinutes === 'number' && rec.actualMinutes >= 0 ? Math.round(rec.actualMinutes) : null,
+      };
+    }
+  }
 
   const category = str(r.category);
   const status = str(r.status) as EventStatus;
@@ -32,8 +63,13 @@ export function normalizeEvent(raw: unknown): CalendarEvent | null {
     id,
     title: str(r.title, '（無題）') || '（無題）',
     date,
-    startMin,
-    endMin,
+    endDate,
+    allDay,
+    startMin: allDay ? 0 : startMin,
+    endMin: allDay ? 1440 : endMin,
+    repeat,
+    exceptions: Array.isArray(r.exceptions) ? r.exceptions.filter((d): d is string => typeof d === 'string' && isValidDateKey(d)) : [],
+    records,
     category: isCategoryId(category) ? category : 'other',
     location: str(r.location),
     notes: str(r.notes),

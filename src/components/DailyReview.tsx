@@ -9,11 +9,11 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { useMemo, useRef, useState } from 'react';
 import { categoryOf } from '../data/categories';
-import { draftFromEvent, STATUS_LABEL, updateEvent } from '../data/eventModel';
+import { STATUS_LABEL } from '../data/eventModel';
 import type { CalendarEvent, EventStatus } from '../data/types';
 import { formatDateJa, formatDuration, formatMinutes, formatTimeRange, todayKey, type DateKey } from '../lib/date';
 import { minuteToAngle, polar } from '../lib/geometry';
-import { eventsOnDate } from '../lib/schedule';
+import { instancesOn, type EventInstance } from '../lib/recurrence';
 import { ease } from '../motion/tokens';
 import { useApp } from '../state/AppContext';
 import { useEvents } from '../state/EventsContext';
@@ -29,11 +29,12 @@ interface Entry {
 
 export function DailyReview({ date }: { date: DateKey }) {
   const { setReviewDate } = useApp();
-  const { events, commit, saving } = useEvents();
+  const { events, record, saving } = useEvents();
   const { push } = useToast();
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
-  const day = useMemo(() => eventsOnDate(events, date), [events, date]);
+  // 日をまたぐ予定は、始まった日にだけ記録する
+  const day = useMemo(() => instancesOn(events, date).filter((e) => e.segment === 'single' || e.segment === 'first'), [events, date]);
   const [step, setStep] = useState<'record' | 'stars'>('record');
   const [entries, setEntries] = useState<Record<string, Entry>>(() =>
     Object.fromEntries(day.map((e) => [e.id, { status: e.status, actual: e.actualMinutes == null ? '' : String(e.actualMinutes) }])),
@@ -46,7 +47,7 @@ export function DailyReview({ date }: { date: DateKey }) {
   const setEntry = (id: string, patch: Partial<Entry>) => setEntries((m) => ({ ...m, [id]: { ...m[id], ...patch } }));
 
   const save = async () => {
-    const changed: CalendarEvent[] = [];
+    const changed: { instance: EventInstance; status: EventStatus; actualMinutes: number | null }[] = [];
     for (const e of day) {
       const en = entries[e.id];
       if (!en) continue;
@@ -56,12 +57,12 @@ export function DailyReview({ date }: { date: DateKey }) {
         return;
       }
       if (en.status !== e.status || actual !== e.actualMinutes) {
-        changed.push(updateEvent(e, { ...draftFromEvent(e), status: en.status, actualMinutes: actual }, new Date(), 'status', '一日の振り返りで記録'));
+        changed.push({ instance: e, status: en.status, actualMinutes: actual });
       }
     }
     setError(null);
     if (changed.length > 0) {
-      const ok = await commit(changed);
+      const ok = await record(changed, '一日の振り返りで記録');
       if (!ok) return;
       push({ kind: 'success', message: `${changed.length}件の記録を保存しました。` });
     }
@@ -114,7 +115,7 @@ export function DailyReview({ date }: { date: DateKey }) {
                     return (
                       <li key={e.id} style={{ ['--cat' as string]: cat.color }}>
                         <div className="review__ev">
-                          <span className="review__ev-time num">{formatTimeRange(e.startMin, e.endMin)}</span>
+                          <span className="review__ev-time num">{e.allDay ? '終日' : e.segment === 'first' ? `${formatMinutes(e.startMin)}〜翌日` : formatTimeRange(e.startMin, e.endMin)}</span>
                           <span className="review__ev-title">
                             <span className="dot" />
                             {e.title}
@@ -136,7 +137,7 @@ export function DailyReview({ date }: { date: DateKey }) {
                               className="field__control"
                               inputMode="numeric"
                               value={en.actual}
-                              placeholder={`${e.endMin - e.startMin}`}
+                              placeholder={e.allDay ? '' : `${e.endMin - e.startMin}`}
                               onChange={(ev) => setEntry(e.id, { actual: ev.target.value.replace(/[^\d]/g, '') })}
                             />
                             <span aria-hidden="true">分</span>

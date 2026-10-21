@@ -10,7 +10,9 @@ import { Icon } from '../../components/Icon';
 import { categoryOf } from '../../data/categories';
 import { emptyDraft } from '../../data/eventModel';
 import type { CalendarEvent } from '../../data/types';
-import { formatDuration, formatTimeRange, minutesOfDay, parseDateKey, todayKey, weekdayOf, weekKeys, WEEKDAYS_JA, type DateKey } from '../../lib/date';
+import { formatDuration, minutesOfDay, parseDateKey, todayKey, weekdayOf, weekKeys, WEEKDAYS_JA, type DateKey } from '../../lib/date';
+import { holidayName } from '../../lib/holidays';
+import { allDayOn, expandRange, timeLabel, type EventInstance } from '../../lib/recurrence';
 import { assignLanes, conflictingIds, eventsOnDate, totalFree } from '../../lib/schedule';
 import { tickContainer, tickItem, tickItemReduced } from '../../motion/tokens';
 import { useApp } from '../../state/AppContext';
@@ -29,7 +31,8 @@ export function WeekView() {
   const keys = weekKeys(focusDate, settings.weekStartsOn);
   const weekId = keys[0];
 
-  const byDay = useMemo(() => keys.map((k) => ({ date: k, list: eventsOnDate(events, k) })), [events, weekId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const byDay = useMemo(() => keys.map((k) => ({ date: k, list: eventsOnDate(events, k), allDay: allDayOn(events, k) })), [events, weekId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const bars = useMemo(() => allDayBars(expandRange(events, keys[0], keys[6]), keys), [events, weekId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openDay = (d: DateKey) => {
     setFocusDate(d);
@@ -44,7 +47,7 @@ export function WeekView() {
           {isMobile ? (
             <WeekAgenda byDay={byDay} today={today} focusDate={focusDate} onOpenDay={openDay} onOpen={open} />
           ) : (
-            <WeekGrid byDay={byDay} today={today} nowMin={minutesOfDay(now)} onOpenDay={openDay} onOpen={open} />
+            <WeekGrid byDay={byDay} bars={bars} today={today} nowMin={minutesOfDay(now)} onOpenDay={openDay} onOpen={open} />
           )}
         </motion.div>
       </AnimatePresence>
@@ -55,16 +58,50 @@ export function WeekView() {
 interface DayList {
   date: DateKey;
   list: CalendarEvent[];
+  allDay: EventInstance[];
+}
+
+interface AllDayBar {
+  event: EventInstance;
+  /** 週の中の開始列・終了列（0〜6） */
+  from: number;
+  to: number;
+  row: number;
+}
+
+/** 終日（と日をまたぐ予定の途中）を、週をまたぐ横長の帯にまとめて段を割り当てる */
+function allDayBars(list: EventInstance[], keys: DateKey[]): AllDayBar[] {
+  const groups = new Map<string, { event: EventInstance; from: number; to: number }>();
+  for (const e of list) {
+    if (!e.allDay) continue;
+    const col = keys.indexOf(e.date);
+    if (col < 0) continue;
+    const key = `${e.baseId}@${e.occurrence}`;
+    const g = groups.get(key);
+    if (g) g.to = Math.max(g.to, col);
+    else groups.set(key, { event: e, from: col, to: col });
+  }
+  const rows: number[][] = [];
+  const out: AllDayBar[] = [];
+  for (const g of [...groups.values()].sort((a, b) => a.from - b.from || b.to - b.from - (a.to - a.from))) {
+    let row = rows.findIndex((cols) => cols.every((c) => c < g.from || c > g.to));
+    if (row < 0) row = rows.push([]) - 1;
+    for (let c = g.from; c <= g.to; c++) rows[row].push(c);
+    out.push({ ...g, row });
+  }
+  return out;
 }
 
 function WeekGrid({
   byDay,
+  bars,
   today,
   nowMin,
   onOpenDay,
   onOpen,
 }: {
   byDay: DayList[];
+  bars: AllDayBar[];
   today: DateKey;
   nowMin: number;
   onOpenDay: (d: DateKey) => void;
@@ -90,26 +127,47 @@ function WeekGrid({
     <div className="wgrid">
       <div className="wgrid__head">
         <span />
-        {byDay.map(({ date, list }) => {
+        {byDay.map(({ date, list, allDay }) => {
           const wd = weekdayOf(date);
           const conflicts = conflictingIds(list);
+          const holiday = holidayName(date);
+          const count = list.length + allDay.length;
           return (
             <button
               key={date}
               type="button"
-              className={`wgrid__day ${date === today ? 'is-today' : ''} ${wd === 0 ? 'is-sun' : wd === 6 ? 'is-sat' : ''}`}
+              className={`wgrid__day ${date === today ? 'is-today' : ''} ${wd === 0 || holiday ? 'is-sun' : wd === 6 ? 'is-sat' : ''}`}
               onClick={() => onOpenDay(date)}
-              aria-label={`${parseDateKey(date).month}月${parseDateKey(date).day}日（${WEEKDAYS_JA[wd]}）を日表示で開く、予定${list.length}件`}
+              aria-label={`${parseDateKey(date).month}月${parseDateKey(date).day}日（${WEEKDAYS_JA[wd]}）${holiday ? `、${holiday}` : ''}を日表示で開く、予定${count}件`}
             >
               <span className="wgrid__wd">{WEEKDAYS_JA[wd]}</span>
               <span className="wgrid__num num">{parseDateKey(date).day}</span>
+              {holiday && <span className="wgrid__holiday">{holiday}</span>}
               <span className="wgrid__meta">
-                {list.length > 0 ? `${list.length}件` : '—'}
+                {count > 0 ? `${count}件` : '—'}
                 {[...conflicts.values()].includes('overlap') && <span className="wgrid__conflict" aria-hidden="true" />}
               </span>
             </button>
           );
         })}
+        {bars.length > 0 && (
+          <div className="wgrid__allday" style={{ gridTemplateRows: `repeat(${Math.max(...bars.map((b) => b.row)) + 1}, 26px)` }}>
+            <span className="wgrid__allday-label" style={{ gridRow: `1 / -1` }}>
+              終日
+            </span>
+            {bars.map(({ event: e, from, to, row }) => (
+              <button
+                key={`${e.baseId}@${e.occurrence}`}
+                type="button"
+                className="wgrid__bar"
+                style={{ gridColumn: `${from + 2} / ${to + 3}`, gridRow: row + 1, ['--cat' as string]: categoryOf(e.category).color }}
+                onClick={() => onOpen(e)}
+              >
+                {e.title}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <div className="wgrid__body" ref={bodyRef} style={{ height: 24 * hourPx }}>
         <div className="wgrid__gutter" aria-hidden="true">
@@ -156,7 +214,7 @@ function WeekGrid({
                         ['--cat' as string]: cat.color,
                       }}
                       onClick={() => onOpen(e, `week-${e.id}`)}
-                      aria-label={`${formatTimeRange(e.startMin, e.endMin)} ${e.title}${conflict === 'overlap' ? '、重複あり' : ''}`}
+                      aria-label={`${timeLabel(e)} ${e.title}${conflict === 'overlap' ? '、重複あり' : ''}`}
                     >
                       <motion.span layoutId={`shell-week-${e.id}`} className="wgrid__shell" aria-hidden="true" />
                       <span className="wgrid__title">{e.title}</span>
@@ -199,17 +257,20 @@ function WeekAgenda({
 
   return (
     <motion.ol ref={listRef} className="wagenda" variants={tickContainer(0.04)} initial="hidden" animate="show">
-      {byDay.map(({ date, list }) => {
+      {byDay.map(({ date, list, allDay }) => {
         const wd = weekdayOf(date);
         const conflicts = conflictingIds(list);
         const free = totalFree(list, { windowStart: ws, windowEnd: we, includeBuffers: true });
+        const holiday = holidayName(date);
+        const rows = [...allDay, ...list];
         return (
           <motion.li key={date} variants={item} className={`wagenda__day ${date === today ? 'is-today' : ''} ${date === focusDate ? 'is-focus' : ''}`}>
             <button type="button" className="wagenda__head" onClick={() => onOpenDay(date)} aria-label={`${parseDateKey(date).month}月${parseDateKey(date).day}日を日表示で開く`}>
-              <span className={`wagenda__wd ${wd === 0 ? 'is-sun' : wd === 6 ? 'is-sat' : ''}`}>{WEEKDAYS_JA[wd]}</span>
+              <span className={`wagenda__wd ${wd === 0 || holiday ? 'is-sun' : wd === 6 ? 'is-sat' : ''}`}>{WEEKDAYS_JA[wd]}</span>
               <span className="wagenda__num num">{parseDateKey(date).day}</span>
               <span className="wagenda__meta">
-                {list.length}件 · 空き {formatDuration(free)}
+                {holiday && <span className="chip chip--holiday">{holiday}</span>}
+                {rows.length}件 · 空き {formatDuration(free)}
                 {[...conflicts.values()].includes('overlap') && <span className="chip chip--danger">重複</span>}
               </span>
               <Icon name="next" size={16} />
@@ -222,9 +283,9 @@ function WeekAgenda({
                 />
               ))}
             </div>
-            {list.length > 0 && (
+            {rows.length > 0 && (
               <ul className="evrow-list">
-                {list.map((e) => (
+                {rows.map((e) => (
                   <EventRow key={e.id} event={e} scope={`wagenda-${date}`} conflict={conflicts.get(e.id)} onOpen={onOpen} compact />
                 ))}
               </ul>

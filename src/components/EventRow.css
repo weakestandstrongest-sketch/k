@@ -144,3 +144,9 @@
     display: none;
   }
 }
+
+.evrow__repeat {
+  margin-left: 4px;
+  vertical-align: -1px;
+  color: var(--ink-faint);
+}

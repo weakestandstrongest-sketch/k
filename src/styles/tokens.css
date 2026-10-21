@@ -4,13 +4,11 @@
  * 霧のような白と、深い黒を基調に、細い深紅の線だけを差し色にします。
  * 形は iOS のように角を丸め、影はごく薄く、余白をたっぷり取ります。
  *
- * 画面ごとに data-theme で明暗が変わります。
- *   hall      … ホーム（霧の白）
- *   orrery    … カレンダー（紙の白）
- *   chamber   … 予定の詳細（黒い面に深紅）
- *   equation  … 時間設計（黒）
- *   chronicle … 振り返り（灰白）
- *   night     … 一日を閉じる（漆黒）
+ * 明暗は設定（白／黒／端末に合わせる）で選び、data-theme に入ります。
+ *   light … 白を基調（霧の白）
+ *   dark  … 黒を基調（深い黒に深紅）
+ *   night … 一日を閉じる（いつも漆黒）
+ * data-screen（hall / orrery / equation / chronicle）で、画面ごとに地の色を少しだけ変えます。
  */
 
 :root {
@@ -76,10 +74,8 @@
   --c-sat: #3f6fc6;
 }
 
-/* ---------- 明るい面（霧の白） ---------- */
-[data-theme='hall'],
-[data-theme='orrery'],
-[data-theme='chronicle'] {
+/* ---------- 白を基調（霧の白） ---------- */
+[data-theme='light'] {
   color-scheme: light;
   --bg: #eef0f3;
   --bg-deep: #e2e5ea;
@@ -100,19 +96,23 @@
   --shadow-2: 0 2px 6px rgba(17, 18, 20, 0.06), 0 18px 48px rgba(17, 18, 20, 0.12);
   --mist-a: rgba(255, 255, 255, 0.9);
   --mist-b: rgba(200, 208, 222, 0.55);
+  --picker-filter: none;
 }
-[data-theme='orrery'] {
+[data-theme='light'][data-screen='orrery'] {
   --bg: #f4f5f7;
   --bg-deep: #e9ebef;
 }
-[data-theme='chronicle'] {
+[data-theme='light'][data-screen='equation'] {
+  --bg: #f1f2f5;
+  --bg-deep: #e4e6eb;
+}
+[data-theme='light'][data-screen='chronicle'] {
   --bg: #e9eaee;
   --bg-deep: #dcdee4;
 }
 
-/* ---------- 暗い面（黒） ---------- */
-[data-theme='chamber'],
-[data-theme='equation'],
+/* ---------- 黒を基調 ---------- */
+[data-theme='dark'],
 [data-theme='night'] {
   color-scheme: dark;
   --bg: #0d0d10;
@@ -128,12 +128,23 @@
   --accent: #f3f3f5;
   --accent-ink: #0d0d10;
   --accent-2: #ff3550;
+  --crimson: #ff3550;
+  --c-danger: #ff3550;
+  --c-sun: #ff5a6c;
+  --c-sat: #6f9bf0;
   --glow: rgba(255, 53, 80, 0.22);
   --focus: #ff3550;
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.3);
   --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.5), 0 24px 60px rgba(0, 0, 0, 0.55);
   --mist-a: rgba(255, 255, 255, 0.05);
   --mist-b: rgba(255, 53, 80, 0.06);
+  --picker-filter: invert(0.9);
+}
+[data-theme='dark'][data-screen='orrery'] {
+  --bg: #0f0f12;
+}
+[data-theme='dark'][data-screen='chronicle'] {
+  --bg: #0b0b0e;
 }
 [data-theme='night'] {
   --bg: #050507;

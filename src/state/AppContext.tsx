@@ -11,7 +11,7 @@ export type CalendarView = 'day' | 'week' | 'month';
 
 export type ChamberState =
   | { mode: 'view'; id: string; layoutKey?: string }
-  | { mode: 'edit'; id: string }
+  | { mode: 'edit'; id: string; scope?: 'this' | 'all' }
   | { mode: 'new'; draft: EventDraft };
 
 export interface Point {
@@ -143,9 +143,3 @@ export function useApp(): AppApi {
   return ctx;
 }
 
-export const ROUTE_THEME: Record<Route, string> = {
-  hall: 'hall',
-  orrery: 'orrery',
-  equation: 'equation',
-  chronicle: 'chronicle',
-};

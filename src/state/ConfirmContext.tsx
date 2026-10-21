@@ -1,6 +1,7 @@
 /**
  * 確認ダイアログを Promise で呼び出す仕組み
  *   const ok = await confirm({ title: '削除しますか？', ... });
+ *   const which = await choose({ title: '繰り返しの予定', options: [...] });
  */
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from '../components/Dialog';
@@ -14,50 +15,106 @@ export interface ConfirmOptions {
   kicker?: string;
 }
 
+export interface ChoiceOption<T extends string> {
+  value: T;
+  label: string;
+  danger?: boolean;
+}
+
+export interface ChoiceOptions<T extends string> {
+  title: string;
+  message: ReactNode;
+  options: ChoiceOption<T>[];
+  kicker?: string;
+}
+
 type ConfirmFn = (opts: ConfirmOptions) => Promise<boolean>;
-const ConfirmContext = createContext<ConfirmFn | null>(null);
+type ChooseFn = <T extends string>(opts: ChoiceOptions<T>) => Promise<T | null>;
+
+const ConfirmContext = createContext<{ confirm: ConfirmFn; choose: ChooseFn } | null>(null);
+
+interface Pending {
+  title: string;
+  message: ReactNode;
+  kicker?: string;
+  buttons: { value: string; label: string; className: string }[];
+}
 
 export function ConfirmProvider({ children }: { children: ReactNode }) {
-  const [opts, setOpts] = useState<ConfirmOptions | null>(null);
-  const resolver = useRef<((v: boolean) => void) | null>(null);
+  const [pending, setPending] = useState<Pending | null>(null);
+  const resolver = useRef<((v: string | null) => void) | null>(null);
 
-  const confirm = useCallback<ConfirmFn>((o) => {
-    resolver.current?.(false);
-    setOpts(o);
-    return new Promise<boolean>((resolve) => {
+  const open = useCallback((p: Pending) => {
+    resolver.current?.(null);
+    setPending(p);
+    return new Promise<string | null>((resolve) => {
       resolver.current = resolve;
     });
   }, []);
 
-  const close = (value: boolean) => {
+  const confirm = useCallback<ConfirmFn>(
+    async (o) => {
+      const v = await open({
+        title: o.title,
+        message: o.message,
+        kicker: o.kicker,
+        buttons: [
+          { value: 'cancel', label: o.cancelLabel ?? 'キャンセル', className: 'btn btn--ghost' },
+          { value: 'ok', label: o.confirmLabel ?? 'OK', className: `btn ${o.danger ? 'btn--danger' : 'btn--primary'}` },
+        ],
+      });
+      return v === 'ok';
+    },
+    [open],
+  );
+
+  const choose = useCallback(
+    async <T extends string>(o: ChoiceOptions<T>): Promise<T | null> => {
+      const v = await open({
+        title: o.title,
+        message: o.message,
+        kicker: o.kicker,
+        buttons: [
+          { value: '__cancel', label: 'キャンセル', className: 'btn btn--ghost' },
+          ...o.options.map((opt, i) => ({
+            value: opt.value,
+            label: opt.label,
+            className: `btn ${opt.danger ? 'btn--danger' : i === o.options.length - 1 ? 'btn--primary' : ''}`,
+          })),
+        ],
+      });
+      return v && v !== '__cancel' ? (v as T) : null;
+    },
+    [open],
+  ) as ChooseFn;
+
+  const close = (value: string | null) => {
     resolver.current?.(value);
     resolver.current = null;
-    setOpts(null);
+    setPending(null);
   };
 
   return (
-    <ConfirmContext.Provider value={confirm}>
+    <ConfirmContext.Provider value={{ confirm, choose }}>
       {children}
       <Dialog
-        open={opts !== null}
-        onClose={() => close(false)}
-        title={opts?.title ?? ''}
-        kicker={opts?.kicker ?? 'CONFIRMATION'}
+        open={pending !== null}
+        onClose={() => close(null)}
+        title={pending?.title ?? ''}
+        kicker={pending?.kicker ?? 'CONFIRMATION'}
         role="alertdialog"
-        theme={opts?.danger ? 'chamber' : undefined}
-        width={480}
+        width={500}
         footer={
           <>
-            <button type="button" className="btn btn--ghost" onClick={() => close(false)}>
-              {opts?.cancelLabel ?? 'キャンセル'}
-            </button>
-            <button type="button" className={`btn ${opts?.danger ? 'btn--danger' : 'btn--primary'}`} onClick={() => close(true)} data-autofocus>
-              {opts?.confirmLabel ?? 'OK'}
-            </button>
+            {pending?.buttons.map((b, i) => (
+              <button key={b.value} type="button" className={b.className} onClick={() => close(b.value === 'cancel' ? null : b.value)} data-autofocus={i === pending.buttons.length - 1 ? true : undefined}>
+                {b.label}
+              </button>
+            ))}
           </>
         }
       >
-        <div className="confirm__message">{opts?.message}</div>
+        <div className="confirm__message">{pending?.message}</div>
       </Dialog>
     </ConfirmContext.Provider>
   );
@@ -66,5 +123,11 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 export function useConfirm(): ConfirmFn {
   const ctx = useContext(ConfirmContext);
   if (!ctx) throw new Error('ConfirmProvider の内側で使ってください');
-  return ctx;
+  return ctx.confirm;
+}
+
+export function useChoose(): ChooseFn {
+  const ctx = useContext(ConfirmContext);
+  if (!ctx) throw new Error('ConfirmProvider の内側で使ってください');
+  return ctx.choose;
 }

@@ -2,13 +2,15 @@
  * 時間設計（THE EQUATION）の決定的なルール
  *
  * ルール（いつも同じ入力なら同じ結果になります）:
- *  1. 「固定」の予定、完了・未実施を記録した予定、すでに終わった予定は動かさない。
+ *  1. 「固定」の予定、完了・未実施を記録した予定、すでに終わった予定、
+ *     繰り返し・日をまたぐ・終日の予定は動かさない。
  *  2. 動かせる予定は開始時刻の早い順に処理し、元の時刻より「前」には動かさない。
  *  3. 他の予定（と必要なら余白）に重ならない、元の時刻以降で最初の時刻へ移す。
  *  4. 活動時間帯の終わりまでに収まらない予定は動かさず「収まらない」と報告する。
  *  5. この関数は提案を作るだけで、保存はしない（適用は利用者の確認後）。
  */
 import type { CalendarEvent } from '../data/types';
+import { isSimple } from './recurrence';
 import { bufferedInterval, coreInterval, findConflicts, overlaps, sortEvents, type Interval } from './schedule';
 
 export interface PlanOptions {
@@ -44,9 +46,11 @@ export interface PlanResult {
 }
 
 export function isAnchored(e: CalendarEvent, opts: Pick<PlanOptions, 'nowMin' | 'pinnedIds'>): boolean {
-  if (e.fixed) return true;
-  if (e.status !== 'planned') return true;
   if (opts.pinnedIds?.includes(e.id)) return true;
+  if (e.fixed) return true;
+  // 繰り返し・日をまたぐ・終日の予定は、提案では動かさない
+  if (!isSimple(e)) return true;
+  if (e.status !== 'planned') return true;
   if (opts.nowMin != null && e.startMin < opts.nowMin) return true; // 開始済み・終了済み
   return false;
 }

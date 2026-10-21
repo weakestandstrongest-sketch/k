@@ -25,16 +25,45 @@ export interface AuditEntry {
   detail: string;
 }
 
+/** 繰り返しの頻度 */
+export type RepeatFreq = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+export interface Repeat {
+  freq: RepeatFreq;
+  /** 何日・何週・何か月・何年ごとか（1〜99） */
+  interval: number;
+  /** 毎週の場合の曜日（0 = 日曜 … 6 = 土曜） */
+  weekdays: number[];
+  /** この日まで繰り返す（含む）。null なら終わりなし */
+  until: DateKey | null;
+}
+
+/** 繰り返し予定の、各回ごとの実施記録 */
+export interface OccurrenceRecord {
+  status: EventStatus;
+  actualMinutes: number | null;
+}
+
 export interface CalendarEvent {
   /** 変わらない一意の ID */
   id: string;
   title: string;
-  /** ローカル暦日 */
+  /** 開始日（ローカル暦日） */
   date: DateKey;
-  /** 0時からの分（0〜1439） */
+  /** 終了日（日をまたぐ予定のみ date より後。それ以外は date と同じ） */
+  endDate: DateKey;
+  /** 終日の予定（startMin = 0, endMin = 1440 として保存） */
+  allDay: boolean;
+  /** 開始日の 0 時からの分（0〜1439） */
   startMin: number;
-  /** 0時からの分（1〜1440）。startMin より大きい。同日内のみ */
+  /** 終了日の 0 時からの分（1〜1440）。同じ日なら startMin より大きい */
   endMin: number;
+  /** 繰り返し（なければ null） */
+  repeat: Repeat | null;
+  /** 繰り返しのうち、取り除いた回（開始日） */
+  exceptions: DateKey[];
+  /** 繰り返しの各回の記録（開始日ごと） */
+  records: Record<DateKey, OccurrenceRecord>;
   category: CategoryId;
   location: string;
   notes: string;
@@ -59,8 +88,11 @@ export type EventDraft = Pick<
   CalendarEvent,
   | 'title'
   | 'date'
+  | 'endDate'
+  | 'allDay'
   | 'startMin'
   | 'endMin'
+  | 'repeat'
   | 'category'
   | 'location'
   | 'notes'
@@ -72,8 +104,12 @@ export type EventDraft = Pick<
   | 'fixed'
 >;
 
+/** 見た目：白を基調／黒を基調／端末の設定に合わせる */
+export type Appearance = 'light' | 'dark' | 'system';
+
 export interface Settings {
   weekStartsOn: 0 | 1;
+  appearance: Appearance;
   /** 活動時間帯（空き時間の計算に使う） */
   dayStartMin: number;
   dayEndMin: number;
@@ -81,6 +117,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   weekStartsOn: 0,
+  appearance: 'light',
   dayStartMin: 7 * 60,
   dayEndMin: 23 * 60,
 };

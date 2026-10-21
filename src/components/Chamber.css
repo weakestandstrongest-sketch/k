@@ -27,9 +27,24 @@
   border-radius: var(--r-xl);
   background:
     linear-gradient(118deg, transparent 0 74%, rgba(255, 53, 80, 0.07) 74.1% 74.4%, transparent 74.5%),
-    linear-gradient(180deg, #17171b, #0d0d10 60%);
+    linear-gradient(180deg, var(--bg-raised), var(--bg) 60%);
   box-shadow: var(--shadow-2);
   overflow: hidden;
+}
+/* 新しい予定：対角線に沿って走る深紅の線（ここから面が開く） */
+.chamber__slash {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.chamber__slash line {
+  stroke: var(--crimson);
+  stroke-width: 2;
+  stroke-linecap: round;
 }
 /* 開くときに左右へ退く二枚の扉（細い深紅の縁） */
 .chamber__door {
@@ -38,20 +53,20 @@
   bottom: 0;
   width: 50%;
   z-index: 3;
-  background: #111114;
+  background: var(--bg-sunken);
   pointer-events: none;
 }
 .chamber__door--l {
   left: 0;
   transform-origin: left center;
   border-radius: var(--r-xl) 0 0 var(--r-xl);
-  box-shadow: inset -1px 0 0 #ff3550;
+  box-shadow: inset -1px 0 0 var(--crimson);
 }
 .chamber__door--r {
   right: 0;
   transform-origin: right center;
   border-radius: 0 var(--r-xl) var(--r-xl) 0;
-  box-shadow: inset 1px 0 0 #ff3550;
+  box-shadow: inset 1px 0 0 var(--crimson);
 }
 .chamber__inner {
   position: relative;
@@ -88,7 +103,7 @@
   min-width: 0;
 }
 .chamber__bar-title .kicker {
-  color: #ff3550;
+  color: var(--crimson);
   font-size: 0.6rem;
 }
 .chamber__heading {
@@ -164,10 +179,33 @@
 .cview__rel {
   padding: 0 10px;
   border-radius: var(--r-pill);
-  background: #ff3550;
+  background: var(--crimson);
   color: #fff;
   font-size: var(--fs-micro);
   font-weight: 600;
+}
+.cview__holiday {
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  border: 1px solid color-mix(in srgb, var(--crimson) 50%, transparent);
+  color: var(--crimson);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+}
+.cview__next-day {
+  display: block;
+  font-size: 0.32em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+.cview__repeat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--sp-2) 0 0;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
 }
 .cview__range {
   margin: var(--sp-2) 0 0;
@@ -181,7 +219,7 @@
 .cview__dash {
   flex: 0 0 36px;
   height: 1.5px;
-  background: #ff3550;
+  background: var(--crimson);
   transform: rotate(-24deg);
 }
 .cview__dur {
@@ -374,10 +412,115 @@
   font-weight: 600;
   min-height: 56px;
 }
-.evform__when {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+.evform__note {
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--crimson) 9%, transparent);
+  color: var(--ink);
+  font-size: var(--fs-small);
+}
+/* iOS の設定画面のような、まとまりのカード */
+.evform__card {
+  display: flex;
+  flex-direction: column;
   gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+.evform__switch-row,
+.evform__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 44px;
+}
+.evform__switch-row {
+  font-weight: 600;
+  cursor: pointer;
+}
+.evform__row + .evform__row,
+.evform__switch-row + .evform__row {
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-3);
+}
+.evform__row-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  font-weight: 600;
+  color: var(--ink);
+}
+.evform__row-controls {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.evform__row-controls .field__control {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  max-width: 220px;
+  padding: var(--sp-2) var(--sp-3);
+}
+.evform__row-controls .evform__time {
+  flex: 0 1 8.5em;
+}
+.evform__row-controls select.field__control {
+  flex: 0 1 auto;
+  min-width: 7em;
+}
+.evform__row-controls .btn {
+  flex: none;
+}
+.evform__interval input.field__control {
+  flex: 0 0 64px;
+  text-align: center;
+}
+.evform__interval span {
+  flex: none;
+  white-space: nowrap;
+}
+.evform__weekdays {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+.evform__weekdays .evform__wd {
+  flex: 1;
+  max-width: 44px;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.evform__wd.is-sun {
+  color: var(--crimson);
+}
+.evform__wd.is-on {
+  background: var(--ink);
+  color: var(--accent-ink);
+}
+.evform__link {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--crimson);
+  font: inherit;
+  font-size: var(--fs-small);
+  cursor: pointer;
 }
 .evform__presets {
   display: flex;
@@ -385,11 +528,11 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-2);
-  margin-top: calc(-1 * var(--sp-3));
 }
 .evform__preset-list {
   display: flex;
   flex-wrap: wrap;
+  min-width: 0;
   gap: 6px;
 }
 .evform__preset {
@@ -428,7 +571,7 @@
   color: #e8a93a;
 }
 .evform__conflict.is-overlap .evform__conflict-inner > svg {
-  color: #ff3550;
+  color: var(--crimson);
 }
 .evform__conflict-title {
   margin: 0;
@@ -521,13 +664,13 @@
   gap: var(--sp-2);
   padding: var(--sp-4) 0;
   margin-bottom: calc(-1 * var(--sp-4));
-  background: linear-gradient(180deg, transparent, #0d0d10 30%);
+  background: linear-gradient(180deg, transparent, var(--bg) 30%);
 }
 .evform__ack {
   margin: 0;
   text-align: right;
   font-size: var(--fs-small);
-  color: #ff3550;
+  color: var(--crimson);
 }
 
 @media (max-width: 760px) {
@@ -570,12 +713,6 @@
   }
   .chamber__scroll {
     padding: var(--sp-5) calc(var(--sp-4) + var(--safe-right)) calc(var(--sp-7) + var(--safe-bottom)) calc(var(--sp-4) + var(--safe-left));
-  }
-  .evform__when {
-    grid-template-columns: 1fr 1fr;
-  }
-  .evform__when > :first-child {
-    grid-column: 1 / -1;
   }
   .cview__grid {
     grid-template-columns: 1fr;

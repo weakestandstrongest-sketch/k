@@ -12,7 +12,9 @@ import { categoryOf } from '../../data/categories';
 import { emptyDraft } from '../../data/eventModel';
 import type { CalendarEvent } from '../../data/types';
 import { formatDuration, formatMinutes, formatTimeRange, minutesOfDay, todayKey, type DateKey } from '../../lib/date';
-import { assignLanes, conflictsFor, freeSlots, snapMinutes, type ConflictKind, type FreeSlot } from '../../lib/schedule';
+import { holidayName } from '../../lib/holidays';
+import { canDrag, timeLabel } from '../../lib/recurrence';
+import { assignLanes, conflictsFor, eventsOnDate, freeSlots, snapMinutes, type ConflictKind, type FreeSlot } from '../../lib/schedule';
 import { ease } from '../../motion/tokens';
 import { useApp } from '../../state/AppContext';
 import { useEvents } from '../../state/EventsContext';
@@ -59,17 +61,32 @@ export function DayView() {
   }, []);
 
   const createAt = (min: number) => openChamber({ mode: 'new', draft: emptyDraft(focusDate, Math.min(min, 1380)) });
+  const holiday = holidayName(focusDate);
 
   return (
     <div className="dayview">
       <div className="dayview__main">
         <div className="dayview__chips" aria-label="この日の概要">
-          <span className="chip">予定 {data.day.length}件</span>
+          {holiday && <span className="chip chip--holiday">{holiday}</span>}
+          <span className="chip">予定 {data.day.length + data.allDay.length}件</span>
           <span className="chip">空き {formatDuration(data.freeAllDay)}</span>
           {data.overlapCount > 0 && <span className="chip chip--danger">重複 {data.overlapCount}件</span>}
           {data.bufferCount > 0 && <span className="chip chip--warn">余白の重なり {data.bufferCount}件</span>}
         </div>
         <p className="dayview__hint faint">空いている時間を押すと予定を作成。つまみ（⋮⋮）をドラッグすると時刻を動かせます。</p>
+        {data.allDay.length > 0 && (
+          <ul className="dayview__allday" aria-label="終日の予定">
+            {data.allDay.map((e) => (
+              <li key={e.id} style={{ ['--cat' as string]: categoryOf(e.category).color }}>
+                <button type="button" onClick={() => openChamber({ mode: 'view', id: e.id })}>
+                  <span className="dayview__allday-tag">{e.segment === 'single' ? '終日' : e.segment === 'first' ? '開始' : e.segment === 'last' ? '終了' : '期間中'}</span>
+                  <span className="dayview__allday-title">{e.title}</span>
+                  {e.recurring && <Icon name="repeat" size={12} />}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="dayview__frame" ref={frameRef}>
           <AnimatePresence mode="popLayout" initial={false} custom={dateDirection}>
             <motion.div
@@ -148,7 +165,7 @@ export function DayView() {
 function SideFreeList({ date, onCreate }: { date: DateKey; onCreate: (s: FreeSlot) => void }) {
   const { events, settings } = useEvents();
   const slots = useMemo(
-    () => freeSlots(events.filter((e) => e.date === date), { windowStart: settings.dayStartMin, windowEnd: settings.dayEndMin, includeBuffers: true, minLength: 30 }),
+    () => freeSlots(eventsOnDate(events, date), { windowStart: settings.dayStartMin, windowEnd: settings.dayEndMin, includeBuffers: true, minLength: 30 }),
     [events, date, settings.dayStartMin, settings.dayEndMin],
   );
   if (slots.length === 0) return <p className="faint dayview__free-empty">30分以上の空きはありません。</p>;
@@ -355,11 +372,12 @@ function DayTimeline({ dayEvents, conflictMap, hourPx, nowMin, windowStart, wind
                   ev.stopPropagation();
                   onOpen(e);
                 }}
-                aria-label={`${formatTimeRange(e.startMin, e.endMin)} ${e.title}、${cat.label}${conflict === 'overlap' ? '、重複あり' : ''}`}
+                aria-label={`${timeLabel(e)} ${e.title}、${cat.label}${conflict === 'overlap' ? '、重複あり' : ''}`}
               >
-                <span className="tl__time num">{formatTimeRange(e.startMin, e.endMin)}</span>
+                <span className="tl__time num">{timeLabel(e)}</span>
                 <span className="tl__title">
                   {e.status === 'completed' && <Icon name="check" size={12} />}
+                  {e.repeat && <Icon name="repeat" size={11} />}
                   {e.title}
                 </span>
                 {!short && e.location && <span className="tl__loc">{e.location}</span>}
@@ -369,6 +387,7 @@ function DayTimeline({ dayEvents, conflictMap, hourPx, nowMin, windowStart, wind
                 {conflict === 'overlap' && <span className="tl__flag">重複</span>}
                 {e.isSample && !short && <span className="tl__flag tl__flag--sample">見本</span>}
               </span>
+              {canDrag(e) && (
               <button
                 type="button"
                 className="tl__grip"
@@ -384,6 +403,7 @@ function DayTimeline({ dayEvents, conflictMap, hourPx, nowMin, windowStart, wind
               >
                 <Icon name="grip" size={16} />
               </button>
+              )}
             </motion.div>
           );
         })}

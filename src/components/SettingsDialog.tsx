@@ -1,13 +1,20 @@
 /** 設定：週の始まり・活動時間帯・見本データ・全データの消去・起動演出 */
 import { useEffect, useState } from 'react';
-import type { Settings } from '../data/types';
+import type { Appearance, Settings } from '../data/types';
 import { formatMinutes, parseTime } from '../lib/date';
 import { useApp } from '../state/AppContext';
 import { useConfirm } from '../state/ConfirmContext';
 import { useEvents } from '../state/EventsContext';
 import { useToast } from '../state/ToastContext';
 import { Dialog } from './Dialog';
+import { Icon, type IconName } from './Icon';
 import './SettingsDialog.css';
+
+const APPEARANCES: { value: Appearance; label: string; icon: IconName }[] = [
+  { value: 'light', label: '白', icon: 'sun' },
+  { value: 'dark', label: '黒', icon: 'moon' },
+  { value: 'system', label: '自動', icon: 'device' },
+];
 
 export function SettingsDialog() {
   const { settingsOpen, setSettingsOpen } = useApp();
@@ -50,6 +57,26 @@ function SettingsBody({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="settings">
+      <section className="settings__group">
+        <h3 className="settings__title">外観</h3>
+        <p className="settings__desc">白を基調にするか、黒を基調にするかを選べます。「自動」は端末のダークモードに合わせます。</p>
+        <div className="settings__seg settings__seg--3" role="radiogroup" aria-label="外観">
+          {APPEARANCES.map((a) => (
+            <button
+              key={a.value}
+              type="button"
+              role="radio"
+              aria-checked={settings.appearance === a.value}
+              className={`settings__seg-btn ${settings.appearance === a.value ? 'is-on' : ''}`}
+              onClick={() => save({ ...settings, appearance: a.value })}
+            >
+              <Icon name={a.icon} size={16} />
+              {a.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className="settings__group">
         <h3 className="settings__title">週の始まり</h3>
         <div className="settings__seg" role="radiogroup" aria-label="週の始まり">

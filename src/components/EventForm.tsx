@@ -6,10 +6,11 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useId, useMemo, useState, type FormEvent } from 'react';
 import { CATEGORIES } from '../data/categories';
-import { validateDraft, type DraftErrors } from '../data/eventModel';
-import type { CalendarEvent, EventDraft } from '../data/types';
-import { formatDuration, formatTimeRange, parseTime, toTimeInputValue } from '../lib/date';
+import { shiftKeepingSpan, spanMinutes, validateDraft, type DraftErrors } from '../data/eventModel';
+import type { CalendarEvent, EventDraft, Repeat, RepeatFreq } from '../data/types';
+import { addDays, compareDateKeys, formatDuration, formatTimeRange, isValidDateKey, parseTime, toTimeInputValue, weekdayOf, WEEKDAYS_JA } from '../lib/date';
 import { createId } from '../lib/ids';
+import { timedOn } from '../lib/recurrence';
 import { conflictsFor } from '../lib/schedule';
 import { ease } from '../motion/tokens';
 import { Icon } from './Icon';
@@ -20,14 +21,27 @@ interface Props {
   allEvents: CalendarEvent[];
   saving: boolean;
   submitLabel: string;
+  /** 繰り返しの設定を隠す（繰り返しの「この回だけ」を編集するとき） */
+  hideRepeat?: boolean;
+  /** フォームの上に出す補足 */
+  note?: string;
   onSubmit: (draft: EventDraft) => void;
   onCancel: (dirty: boolean) => void;
 }
 
 const BUFFER_OPTIONS = [0, 5, 10, 15, 20, 30, 45, 60, 90, 120];
 const DURATION_PRESETS = [30, 60, 90, 120];
+const FREQ_OPTIONS: { value: RepeatFreq | 'none'; label: string }[] = [
+  { value: 'none', label: 'しない' },
+  { value: 'daily', label: '毎日' },
+  { value: 'weekly', label: '毎週' },
+  { value: 'monthly', label: '毎月' },
+  { value: 'yearly', label: '毎年' },
+];
+const FREQ_UNIT: Record<RepeatFreq, string> = { daily: '日', weekly: '週', monthly: 'か月', yearly: '年' };
+const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
-export function EventForm({ initial, eventId, allEvents, saving, submitLabel, onSubmit, onCancel }: Props) {
+export function EventForm({ initial, eventId, allEvents, saving, submitLabel, hideRepeat = false, note, onSubmit, onCancel }: Props) {
   const [d, setD] = useState<EventDraft>(initial);
   const [errors, setErrors] = useState<DraftErrors>({});
   const [submitted, setSubmitted] = useState(false);
@@ -36,39 +50,68 @@ export function EventForm({ initial, eventId, allEvents, saving, submitLabel, on
   const uid = useId();
   const dirty = JSON.stringify(d) !== JSON.stringify(initial);
 
-  const set = <K extends keyof EventDraft>(key: K, value: EventDraft[K]) => {
+  const apply = (fn: (prev: EventDraft) => EventDraft) => {
     setD((prev) => {
-      const next = { ...prev, [key]: value };
+      const next = fn(prev);
       if (submitted) setErrors(validateDraft(next));
       return next;
     });
     setAck(false);
   };
+  const set = <K extends keyof EventDraft>(key: K, value: EventDraft[K]) => apply((prev) => ({ ...prev, [key]: value }));
 
+  const multiDay = d.endDate !== d.date;
   const conflicts = useMemo(() => {
+    if (d.allDay) return [];
     if (Object.keys(validateDraft({ ...d, title: d.title || 'x' })).length > 0) return [];
-    return conflictsFor({ ...d, id: eventId ?? '__new__' }, allEvents);
+    // 日をまたぐ予定は、初日の部分（開始〜24:00）で重なりを調べる
+    const candidate = { ...d, endMin: d.endDate > d.date ? 1440 : d.endMin, id: eventId ?? '__new__', baseId: eventId };
+    return conflictsFor(candidate, timedOn(allEvents, d.date));
   }, [d, eventId, allEvents]);
   const overlapList = conflicts.filter((c) => c.kind === 'overlap');
 
-  const onStart = (value: string) => {
-    const s = parseTime(value);
-    if (s == null) return;
-    // 開始を変えたら長さを保ったまま終了もずらす
-    const dur = Math.max(5, d.endMin - d.startMin);
-    setD((prev) => {
-      const next = { ...prev, startMin: s, endMin: Math.min(1440, s + dur) };
-      if (submitted) setErrors(validateDraft(next));
+  const onStartDate = (value: string) => {
+    if (!isValidDateKey(value)) return set('date', value);
+    apply((prev) => {
+      const next = shiftKeepingSpan(prev, value, prev.startMin);
+      // 毎週の繰り返しで曜日が 1 つだけなら、開始日の曜日に合わせる
+      if (next.repeat?.freq === 'weekly' && next.repeat.weekdays.length <= 1) next.repeat = { ...next.repeat, weekdays: [weekdayOf(value)] };
       return next;
     });
-    setAck(false);
   };
 
-  const onEnd = (value: string) => {
+  const onStartTime = (value: string) => {
+    const s = parseTime(value);
+    if (s == null) return;
+    // 開始を変えたら長さを保ったまま終了もずらす（日付をまたぐこともある）
+    apply((prev) => shiftKeepingSpan(prev, prev.date, s));
+  };
+
+  const onEndDate = (value: string) => set('endDate', value);
+
+  const onEndTime = (value: string) => {
     const e = parseTime(value);
     if (e == null) return;
     // 00:00 は「その日の終わり（24:00）」として扱う
     set('endMin', e === 0 ? 1440 : e);
+  };
+
+  const toggleAllDay = (on: boolean) =>
+    apply((prev) => (on ? { ...prev, allDay: true } : { ...prev, allDay: false, startMin: initial.allDay ? 9 * 60 : prev.startMin, endMin: initial.allDay ? 10 * 60 : prev.endMin }));
+
+  const setPreset = (m: number) => apply((prev) => shiftKeepingSpan({ ...prev, endDate: prev.date, endMin: prev.startMin + m }, prev.date, prev.startMin));
+
+  const setFreq = (value: RepeatFreq | 'none') =>
+    apply((prev) => {
+      if (value === 'none') return { ...prev, repeat: null };
+      const r: Repeat = prev.repeat ?? { freq: value, interval: 1, weekdays: [], until: null };
+      return { ...prev, repeat: { ...r, freq: value, weekdays: value === 'weekly' ? (r.weekdays.length ? r.weekdays : [weekdayOf(prev.date)]) : [] } };
+    });
+  const setRepeat = (patch: Partial<Repeat>) => apply((prev) => (prev.repeat ? { ...prev, repeat: { ...prev.repeat, ...patch } } : prev));
+  const toggleWeekday = (w: number) => {
+    if (!d.repeat) return;
+    const has = d.repeat.weekdays.includes(w);
+    setRepeat({ weekdays: has ? d.repeat.weekdays.filter((x) => x !== w) : [...d.repeat.weekdays, w] });
   };
 
   const submit = (ev: FormEvent) => {
@@ -102,8 +145,12 @@ export function EventForm({ initial, eventId, allEvents, saving, submitLabel, on
       </p>
     ) : null;
 
+  const span = spanMinutes(d);
+  const endBeforeStart = isValidDateKey(d.date) && isValidDateKey(d.endDate) && compareDateKeys(d.endDate, d.date) < 0;
+
   return (
     <form className="evform" onSubmit={submit} noValidate>
+      {note && <p className="evform__note">{note}</p>}
       <label className={`field evform__title ${errors.title ? 'field--error' : ''}`}>
         <span className="field__label">タイトル（必須）</span>
         <input
@@ -121,60 +168,163 @@ export function EventForm({ initial, eventId, allEvents, saving, submitLabel, on
         {err('title')}
       </label>
 
-      <div className="evform__when">
-        <label className={`field ${errors.date ? 'field--error' : ''}`}>
-          <span className="field__label">日付</span>
-          <input className="field__control" type="date" data-field="date" value={d.date} onChange={(e) => set('date', e.target.value)} aria-invalid={!!errors.date} required />
-          {err('date')}
+      <div className="evform__card">
+        <label className="evform__switch-row">
+          <span>終日</span>
+          <span className="switch">
+            <input type="checkbox" role="switch" checked={d.allDay} onChange={(e) => toggleAllDay(e.target.checked)} />
+            <span className="switch__track" aria-hidden="true" />
+          </span>
         </label>
-        <label className={`field ${errors.startMin ? 'field--error' : ''}`}>
-          <span className="field__label">開始</span>
-          <input
-            className="field__control"
-            type="time"
-            step={300}
-            data-field="startMin"
-            value={toTimeInputValue(d.startMin)}
-            onChange={(e) => onStart(e.target.value)}
-            aria-invalid={!!errors.startMin}
-            required
-          />
-          {err('startMin')}
-        </label>
-        <label className={`field ${errors.endMin ? 'field--error' : ''}`}>
-          <span className="field__label">終了</span>
-          <input
-            className="field__control"
-            type="time"
-            step={300}
-            data-field="endMin"
-            value={toTimeInputValue(d.endMin)}
-            onChange={(e) => onEnd(e.target.value)}
-            aria-invalid={!!errors.endMin}
-            aria-describedby={`${uid}-end-hint`}
-            required
-          />
-          {err('endMin')}
-        </label>
+        <div className={`evform__row ${errors.date || errors.startMin ? 'field--error' : ''}`}>
+          <span className="evform__row-label">開始</span>
+          <div className="evform__row-controls">
+            <input className="field__control" type="date" aria-label="開始日" data-field="date" value={d.date} onChange={(e) => onStartDate(e.target.value)} aria-invalid={!!errors.date} required />
+            {!d.allDay && (
+              <input
+                className="field__control evform__time"
+                type="time"
+                step={300}
+                aria-label="開始時刻"
+                data-field="startMin"
+                value={toTimeInputValue(d.startMin)}
+                onChange={(e) => onStartTime(e.target.value)}
+                aria-invalid={!!errors.startMin}
+                required
+              />
+            )}
+          </div>
+        </div>
+        {err('date')}
+        {err('startMin')}
+        <div className={`evform__row ${errors.endDate || errors.endMin ? 'field--error' : ''}`}>
+          <span className="evform__row-label">終了</span>
+          <div className="evform__row-controls">
+            <input
+              className="field__control"
+              type="date"
+              aria-label="終了日"
+              data-field="endDate"
+              min={d.date}
+              value={d.endDate}
+              onChange={(e) => onEndDate(e.target.value)}
+              aria-invalid={!!errors.endDate || endBeforeStart}
+              required
+            />
+            {!d.allDay && (
+              <input
+                className="field__control evform__time"
+                type="time"
+                step={300}
+                aria-label="終了時刻"
+                data-field="endMin"
+                value={toTimeInputValue(d.endMin)}
+                onChange={(e) => onEndTime(e.target.value)}
+                aria-invalid={!!errors.endMin}
+                aria-describedby={`${uid}-end-hint`}
+                required
+              />
+            )}
+          </div>
+        </div>
+        {err('endDate')}
+        {err('endMin')}
+        {!d.allDay && (
+          <div className="evform__presets">
+            <span className="field__hint" id={`${uid}-end-hint`}>
+              {span > 0 ? `長さ ${formatDuration(span)}` : ''}
+              {multiDay && span > 0 ? '（日をまたぐ予定）' : ''}
+              {d.endMin === 1440 && !multiDay ? '（終了 0:00 は深夜0時＝その日の終わり）' : ''}
+            </span>
+            <span className="evform__preset-list">
+              {DURATION_PRESETS.map((m) => (
+                <button key={m} type="button" className={`evform__preset ${span === m ? 'is-on' : ''}`} onClick={() => setPreset(m)}>
+                  {formatDuration(m)}
+                </button>
+              ))}
+            </span>
+          </div>
+        )}
+        {!d.allDay && !multiDay && (
+          <button type="button" className="evform__link" onClick={() => set('endDate', addDays(d.date, 1))}>
+            翌日に終わる予定にする
+          </button>
+        )}
       </div>
-      <div className="evform__presets">
-        <span className="field__hint" id={`${uid}-end-hint`}>
-          {d.endMin > d.startMin ? `長さ ${formatDuration(d.endMin - d.startMin)}` : ''}
-          {d.endMin === 1440 ? '（終了 0:00 は深夜0時＝その日の終わり）' : ''}
-        </span>
-        <span className="evform__preset-list">
-          {DURATION_PRESETS.map((m) => (
-            <button
-              key={m}
-              type="button"
-              className={`evform__preset ${d.endMin - d.startMin === m ? 'is-on' : ''}`}
-              onClick={() => set('endMin', Math.min(1440, d.startMin + m))}
-            >
-              {formatDuration(m)}
-            </button>
-          ))}
-        </span>
-      </div>
+
+      {!hideRepeat && (
+        <div className={`evform__card ${errors.repeat ? 'field--error' : ''}`}>
+          <div className="evform__row">
+            <span className="evform__row-label">
+              <Icon name="repeat" size={16} /> 繰り返し
+            </span>
+            <div className="evform__row-controls">
+              <select className="field__control" data-field="repeat" value={d.repeat?.freq ?? 'none'} onChange={(e) => setFreq(e.target.value as RepeatFreq | 'none')}>
+                {FREQ_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          {d.repeat && (
+            <>
+              <div className="evform__row">
+                <span className="evform__row-label">間隔</span>
+                <div className="evform__row-controls evform__interval">
+                  <input
+                    className="field__control"
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={99}
+                    aria-label="繰り返しの間隔"
+                    value={Number.isFinite(d.repeat.interval) ? d.repeat.interval : ''}
+                    onChange={(e) => setRepeat({ interval: e.target.value === '' ? NaN : Number(e.target.value) })}
+                  />
+                  <span>{FREQ_UNIT[d.repeat.freq]}ごと</span>
+                </div>
+              </div>
+              {d.repeat.freq === 'weekly' && (
+                <div className="evform__weekdays" role="group" aria-label="繰り返す曜日">
+                  {WEEK_ORDER.map((w) => (
+                    <button
+                      key={w}
+                      type="button"
+                      className={`evform__wd ${d.repeat!.weekdays.includes(w) ? 'is-on' : ''} ${w === 0 ? 'is-sun' : w === 6 ? 'is-sat' : ''}`}
+                      aria-pressed={d.repeat!.weekdays.includes(w)}
+                      onClick={() => toggleWeekday(w)}
+                    >
+                      {WEEKDAYS_JA[w]}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="evform__row">
+                <span className="evform__row-label">終了日</span>
+                <div className="evform__row-controls">
+                  <input
+                    className="field__control"
+                    type="date"
+                    aria-label="繰り返しの終了日"
+                    min={d.date}
+                    value={d.repeat.until ?? ''}
+                    onChange={(e) => setRepeat({ until: e.target.value || null })}
+                  />
+                  {d.repeat.until && (
+                    <button type="button" className="btn btn--small btn--ghost" onClick={() => setRepeat({ until: null })}>
+                      なし
+                    </button>
+                  )}
+                </div>
+              </div>
+              {!d.repeat.until && <p className="field__hint">終了日を空にすると、ずっと繰り返します。</p>}
+            </>
+          )}
+          {err('repeat')}
+        </div>
+      )}
 
       <AnimatePresence initial={false}>
         {conflicts.length > 0 && (

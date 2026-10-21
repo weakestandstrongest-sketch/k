@@ -272,11 +272,6 @@ input[type='date']::-webkit-calendar-picker-indicator,
 input[type='time']::-webkit-calendar-picker-indicator {
   filter: var(--picker-filter, none);
 }
-[data-theme='chamber'],
-[data-theme='equation'],
-[data-theme='night'] {
-  --picker-filter: invert(0.9);
-}
 
 .check {
   display: inline-flex;
@@ -290,6 +285,52 @@ input[type='time']::-webkit-calendar-picker-indicator {
   width: 20px;
   height: 20px;
   accent-color: var(--crimson);
+}
+
+/* iOS 風のスイッチ */
+.switch {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  width: 51px;
+  height: 31px;
+}
+.switch input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+.switch__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 16%, transparent);
+  transition: background 0.25s ease;
+}
+.switch__track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.switch input:checked + .switch__track {
+  background: var(--crimson);
+}
+.switch input:checked + .switch__track::after {
+  transform: translateX(20px);
+}
+.switch input:focus-visible + .switch__track {
+  outline: 2px solid var(--crimson);
+  outline-offset: 2px;
 }
 
 /* ---------- 小さな記号 ---------- */
@@ -308,6 +349,11 @@ input[type='time']::-webkit-calendar-picker-indicator {
 }
 .chip--danger {
   background: color-mix(in srgb, var(--crimson) 14%, transparent);
+  color: var(--crimson);
+}
+.chip--holiday {
+  border: 1px solid color-mix(in srgb, var(--crimson) 45%, transparent);
+  background: transparent;
   color: var(--crimson);
 }
 .chip--warn {
@@ -343,6 +389,25 @@ input[type='time']::-webkit-calendar-picker-indicator {
   position: fixed;
   inset: 0 0 0 calc(var(--rail-width) + var(--safe-left));
   overflow: hidden;
+}
+.ripple {
+  position: absolute;
+  z-index: 3;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.ripple__ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 1.5px solid var(--crimson);
+}
+.ripple__ring--1 {
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--ink) 40%, transparent);
 }
 .screen {
   position: absolute;

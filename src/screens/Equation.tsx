@@ -2,7 +2,7 @@
  * Screen 4: THE EQUATION（均時差 / 時間設計）
  *
  *  活動時間 − 予定 − 余白 ＝ 空き  を、その日の実データから計算して示し、
- *  重なりの検出・再編成の提案（適用前に比較）・空き時間の検索を行います。
+ *  空き時間の計算・再編成の提案（適用前に比較）・空き時間の検索を行います。
  *  提案は決定的なルールに基づき、利用者が確認するまで何も変更しません。
  */
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
@@ -16,7 +16,7 @@ import { emptyDraft, moveEvent } from '../data/eventModel';
 import type { CalendarEvent } from '../data/types';
 import { addDays, formatDateJa, formatDuration, formatMinutes, formatTimeRange, minutesOfDay, rangeKeys, relativeDayLabel, todayKey } from '../lib/date';
 import { proposeResolution } from '../lib/planner';
-import { bufferedInterval, eventsOnDate, findConflicts, freeSlots, timeBreakdown } from '../lib/schedule';
+import { bufferedInterval, eventsOnDate, freeSlots, timeBreakdown } from '../lib/schedule';
 import { ease, tickContainer, tickItem, tickItemReduced } from '../motion/tokens';
 import { useApp } from '../state/AppContext';
 import { useConfirm } from '../state/ConfirmContext';
@@ -47,7 +47,6 @@ export function Equation() {
   const we = settings.dayEndMin;
   const day = useMemo(() => eventsOnDate(events, focusDate), [events, focusDate]);
   const breakdown = useMemo(() => timeBreakdown(day, ws, we), [day, ws, we]);
-  const conflicts = useMemo(() => findConflicts(day), [day]);
   const free = useMemo(() => freeSlots(day, { windowStart: ws, windowEnd: we, includeBuffers: true, minLength: 5 }), [day, ws, we]);
   const plan = useMemo(
     () => proposeResolution(day, { respectBuffers, minGap, windowEnd: we, nowMin }),
@@ -113,7 +112,7 @@ export function Equation() {
           <div>
             <p className="kicker">THE EQUATION · 均時差</p>
             <h1 className="heading">時間設計</h1>
-            <p className="muted eq__lead">空き時間を計算し、重なりを見つけ、組み替えの案を比べます。</p>
+            <p className="muted eq__lead">空き時間を計算し、組み替えの案を比べます。</p>
           </div>
           <DateStepper
             label={`${formatDateJa(focusDate)}${rel ? ` ${rel}` : ''}`}
@@ -198,37 +197,6 @@ export function Equation() {
         </motion.section>
 
         <div className="eq__columns">
-          {/* ---- 重なり ---- */}
-          <motion.section className="eq__panel" variants={item} aria-labelledby="eq-conflicts">
-            <h2 className="subheading" id="eq-conflicts">
-              重なりの検出
-              <span className={`eq__count ${conflicts.length ? 'is-alert' : ''}`}>{conflicts.length}</span>
-            </h2>
-            {conflicts.length === 0 ? (
-              <p className="muted">この日の予定に重なりはありません。</p>
-            ) : (
-              <ul className="eq__conflicts">
-                {conflicts.map((c) => (
-                  <li key={`${c.a.id}-${c.b.id}`} className={`is-${c.kind}`}>
-                    <span className={`chip ${c.kind === 'overlap' ? 'chip--danger' : 'chip--warn'}`}>{c.kind === 'overlap' ? '時間が重複' : '余白が重複'}</span>
-                    <span className="eq__conflict-range num">
-                      {formatTimeRange(c.start, c.end)}（{formatDuration(c.end - c.start)}）
-                    </span>
-                    <span className="eq__conflict-pair">
-                      <button type="button" onClick={() => open(c.a)}>
-                        {c.a.title}
-                      </button>
-                      <span aria-hidden="true">×</span>
-                      <button type="button" onClick={() => open(c.b)}>
-                        {c.b.title}
-                      </button>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </motion.section>
-
           {/* ---- 空きを探す ---- */}
           <motion.section className="eq__panel" variants={item} aria-labelledby="eq-finder">
             <h2 className="subheading" id="eq-finder">

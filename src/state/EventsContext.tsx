@@ -7,11 +7,12 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { describeStorageError } from '../data/db';
-import { createEvent, updateEvent as applyDraft } from '../data/eventModel';
+import { createEvent, draftFromEvent, statusChangeLabel, updateEvent as applyDraft } from '../data/eventModel';
 import * as repo from '../data/repository';
 import { buildSampleEvents } from '../data/sampleData';
-import { DEFAULT_SETTINGS, type CalendarEvent, type EventDraft, type Settings } from '../data/types';
-import { todayKey } from '../lib/date';
+import { DEFAULT_SETTINGS, type CalendarEvent, type EventDraft, type EventStatus, type Settings } from '../data/types';
+import { formatDateJa, todayKey } from '../lib/date';
+import { parseInstanceId, toBase, type EventInstance } from '../lib/recurrence';
 import { useToast } from './ToastContext';
 
 export type LoadStatus = 'loading' | 'ready' | 'error';
@@ -31,6 +32,12 @@ interface EventsApi {
   /** 履歴付きで更新済みの予定をまとめて保存（移動・提案の適用） */
   commit: (updated: CalendarEvent[]) => Promise<boolean>;
   remove: (id: string) => Promise<CalendarEvent | null>;
+  /** 実施の記録（繰り返しの予定はその回だけに記録） */
+  record: (items: { instance: EventInstance; status: EventStatus; actualMinutes: number | null }[], note?: string) => Promise<boolean>;
+  /** 繰り返しの予定のうち、この回だけを変更（この回を切り離して単独の予定にする） */
+  editOccurrence: (instance: EventInstance, draft: EventDraft) => Promise<CalendarEvent | null>;
+  /** 繰り返しの予定のうち、この回だけを削除。元に戻すための変更前の予定を返す */
+  removeOccurrence: (instance: EventInstance) => Promise<CalendarEvent | null>;
   /** 削除の取り消し・変更の取り消し */
   restore: (events: CalendarEvent[]) => Promise<boolean>;
   updateSettings: (s: Settings) => Promise<boolean>;
@@ -128,7 +135,8 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   );
 
   const update = useCallback<EventsApi['update']>(
-    async (id, draft) => {
+    async (instanceOrBaseId, draft) => {
+      const id = parseInstanceId(instanceOrBaseId).baseId;
       const prev = eventsRef.current.find((e) => e.id === id);
       if (!prev) {
         push({ kind: 'error', message: 'この予定は見つかりませんでした。すでに削除された可能性があります。' });
@@ -144,7 +152,9 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   );
 
   const commit = useCallback<EventsApi['commit']>(
-    async (updated) => {
+    async (given) => {
+      // 画面のインスタンスが渡されても、保存は必ず元の予定の形で
+      const updated = given.map(toBase);
       const ok = await persist(() => repo.saveEvents(updated), '変更を保存できませんでした。');
       if (!ok) return false;
       const map = new Map(updated.map((e) => [e.id, e]));
@@ -155,7 +165,8 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   );
 
   const remove = useCallback<EventsApi['remove']>(
-    async (id) => {
+    async (instanceOrBaseId) => {
+      const id = parseInstanceId(instanceOrBaseId).baseId;
       const prev = eventsRef.current.find((e) => e.id === id) ?? null;
       const ok = await persist(() => repo.deleteEvent(id), '予定を削除できませんでした。');
       if (!ok) return null;
@@ -166,12 +177,93 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   );
 
   const restore = useCallback<EventsApi['restore']>(
-    async (restored) => {
+    async (given) => {
+      const restored = given.map(toBase);
       const ok = await persist(() => repo.saveEvents(restored), '元に戻せませんでした。');
       if (!ok) return false;
       const map = new Map(restored.map((e) => [e.id, e]));
       setEvents((list) => [...list.filter((e) => !map.has(e.id)), ...restored]);
       return true;
+    },
+    [persist],
+  );
+
+  const record = useCallback<EventsApi['record']>(
+    async (items, note) => {
+      const byBase = new Map<string, CalendarEvent>();
+      const now = new Date();
+      for (const { instance, status, actualMinutes } of items) {
+        const prev = byBase.get(instance.baseId) ?? eventsRef.current.find((e) => e.id === instance.baseId);
+        if (!prev) continue;
+        if (instance.recurring) {
+          const old = prev.records[instance.occurrence];
+          if (old?.status === status && old?.actualMinutes === actualMinutes) continue;
+          if (!old && status === 'planned' && actualMinutes == null) continue;
+          const records = { ...prev.records, [instance.occurrence]: { status, actualMinutes } };
+          const detail = [note, `${formatDateJa(instance.occurrence)}の回を${statusChangeLabel(status)}`, actualMinutes != null ? `実績${actualMinutes}分` : '']
+            .filter(Boolean)
+            .join('／');
+          byBase.set(prev.id, {
+            ...prev,
+            records,
+            updatedAt: now.toISOString(),
+            history: [...prev.history, { at: now.toISOString(), kind: 'status' as const, detail }].slice(-40),
+          });
+        } else {
+          if (prev.status === status && prev.actualMinutes === actualMinutes) continue;
+          byBase.set(prev.id, applyDraft(prev, { ...draftFromEvent(prev), status, actualMinutes }, now, 'status', note));
+        }
+      }
+      const updated = [...byBase.values()];
+      if (updated.length === 0) return true;
+      const ok = await persist(() => repo.saveEvents(updated), '記録を保存できませんでした。');
+      if (!ok) return false;
+      const map = new Map(updated.map((e) => [e.id, e]));
+      setEvents((list) => list.map((e) => map.get(e.id) ?? e));
+      return true;
+    },
+    [persist],
+  );
+
+  const editOccurrence = useCallback<EventsApi['editOccurrence']>(
+    async (instance, draft) => {
+      const prev = eventsRef.current.find((e) => e.id === instance.baseId);
+      if (!prev) return null;
+      const now = new Date();
+      const rec = prev.records[instance.occurrence];
+      const detached = createEvent({ ...draft, repeat: null, status: rec?.status ?? 'planned', actualMinutes: rec?.actualMinutes ?? null }, now);
+      const records = { ...prev.records };
+      delete records[instance.occurrence];
+      const base: CalendarEvent = {
+        ...prev,
+        exceptions: [...new Set([...prev.exceptions, instance.occurrence])],
+        records,
+        updatedAt: now.toISOString(),
+        history: [...prev.history, { at: now.toISOString(), kind: 'edited' as const, detail: `${formatDateJa(instance.occurrence)}の回だけを別の予定として変更` }].slice(-40),
+      };
+      const ok = await persist(() => repo.saveEvents([base, detached]), '変更を保存できませんでした。');
+      if (!ok) return null;
+      setEvents((list) => [...list.map((e) => (e.id === base.id ? base : e)), detached]);
+      return detached;
+    },
+    [persist],
+  );
+
+  const removeOccurrence = useCallback<EventsApi['removeOccurrence']>(
+    async (instance) => {
+      const prev = eventsRef.current.find((e) => e.id === instance.baseId);
+      if (!prev) return null;
+      const now = new Date();
+      const base: CalendarEvent = {
+        ...prev,
+        exceptions: [...new Set([...prev.exceptions, instance.occurrence])],
+        updatedAt: now.toISOString(),
+        history: [...prev.history, { at: now.toISOString(), kind: 'edited' as const, detail: `${formatDateJa(instance.occurrence)}の回を削除` }].slice(-40),
+      };
+      const ok = await persist(() => repo.saveEvent(base), '予定を削除できませんでした。');
+      if (!ok) return null;
+      setEvents((list) => list.map((e) => (e.id === base.id ? base : e)));
+      return prev;
     },
     [persist],
   );
@@ -227,6 +319,9 @@ export function EventsProvider({ children }: { children: ReactNode }) {
       update,
       commit,
       remove,
+      record,
+      editOccurrence,
+      removeOccurrence,
       restore,
       updateSettings,
       clearSamples,
@@ -234,7 +329,7 @@ export function EventsProvider({ children }: { children: ReactNode }) {
       loadSamples,
       retry,
     }),
-    [status, storageProblem, memoryOnly, events, settings, pending, create, update, commit, remove, restore, updateSettings, clearSamples, clearAll, loadSamples, retry],
+    [status, storageProblem, memoryOnly, events, settings, pending, create, update, commit, remove, record, editOccurrence, removeOccurrence, restore, updateSettings, clearSamples, clearAll, loadSamples, retry],
   );
 
   return <EventsContext.Provider value={api}>{children}</EventsContext.Provider>;

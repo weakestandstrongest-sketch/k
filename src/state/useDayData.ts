@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { CalendarEvent, Settings } from '../data/types';
 import type { DateKey } from '../lib/date';
+import { allDayOn } from '../lib/recurrence';
 import { conflictingIds, eventsOnDate, findConflicts, freeSlots, totalFree } from '../lib/schedule';
 
 /** ある 1 日について、画面で使う計算結果をまとめて返す */
@@ -12,6 +13,8 @@ export function useDayData(events: CalendarEvent[], date: DateKey, settings: Set
     const free = freeSlots(day, { ...window, includeBuffers: true, from: nowMin ?? undefined, minLength: 5 });
     return {
       day,
+      /** 終日の予定（日をまたぐ予定の途中の日を含む） */
+      allDay: allDayOn(events, date),
       conflicts,
       conflictMap: conflictingIds(day),
       overlapCount: conflicts.filter((c) => c.kind === 'overlap').length,

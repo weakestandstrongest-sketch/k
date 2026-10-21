@@ -6,6 +6,7 @@
  */
 import type { CalendarEvent } from '../data/types';
 import type { DateKey } from './date';
+import { isInstance, timedOn } from './recurrence';
 
 export interface Interval {
   start: number;
@@ -35,8 +36,18 @@ export function durationOf(e: Pick<CalendarEvent, 'startMin' | 'endMin'>): numbe
   return e.endMin - e.startMin;
 }
 
+/**
+ * その日の「時間の決まった」予定（繰り返し・日またぎを展開したインスタンス）。
+ * 終日の予定は時間を占有しないので含めません。
+ */
 export function eventsOnDate(events: CalendarEvent[], date: DateKey): CalendarEvent[] {
-  return sortEvents(events.filter((e) => e.date === date));
+  return timedOn(events, date);
+}
+
+/** 同じ元の予定から作られたものか（インスタンスにも対応） */
+function sameBase(a: Pick<CalendarEvent, 'id'> & { baseId?: string }, b: CalendarEvent): boolean {
+  const baseB = isInstance(b) ? b.baseId : b.id;
+  return (a.baseId ?? a.id) === baseB;
 }
 
 export function sortEvents(events: CalendarEvent[]): CalendarEvent[] {
@@ -102,14 +113,14 @@ export function findConflicts(dayEvents: CalendarEvent[]): Conflict[] {
 
 /** ある候補（新規・移動後）の予定が、他の予定と衝突するか */
 export function conflictsFor(
-  candidate: Pick<CalendarEvent, 'id' | 'date' | 'startMin' | 'endMin' | 'bufferBeforeMin' | 'bufferAfterMin'>,
+  candidate: Pick<CalendarEvent, 'id' | 'date' | 'startMin' | 'endMin' | 'bufferBeforeMin' | 'bufferAfterMin'> & { baseId?: string },
   allEvents: CalendarEvent[],
 ): { event: CalendarEvent; kind: ConflictKind }[] {
   const out: { event: CalendarEvent; kind: ConflictKind }[] = [];
   const core = coreInterval(candidate);
   const buf = bufferedInterval(candidate);
   for (const e of allEvents) {
-    if (e.id === candidate.id || e.date !== candidate.date) continue;
+    if (e.id === candidate.id || sameBase(candidate, e) || e.date !== candidate.date || e.allDay) continue;
     if (overlaps(core, coreInterval(e))) out.push({ event: e, kind: 'overlap' });
     else if (overlaps(buf, bufferedInterval(e))) out.push({ event: e, kind: 'buffer' });
   }

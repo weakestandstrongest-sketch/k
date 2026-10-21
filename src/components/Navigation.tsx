@@ -1,7 +1,7 @@
 /**
  * 画面の切り替え
  * - デスクトップ: iPad のようなサイドバー（選択中は丸い面で示す）
- * - スマートフォン: すりガラスのタブバー（中央に「新しい予定」）
+ * - スマートフォン: 浮かんだすりガラスのタブバー（右端に丸い「新しい予定」）
  */
 import { motion } from 'motion/react';
 import type { MouseEvent } from 'react';
@@ -75,17 +75,17 @@ export function Navigation({ onCreate }: { onCreate: () => void }) {
         </div>
       </nav>
 
-      <nav className="dock" aria-label="主要な画面">
-        {NAV_ITEMS.slice(0, 2).map((item) => (
-          <DockItem key={item.route} item={item} active={route === item.route} onClick={(e) => navigate(item.route, originOf(e))} />
-        ))}
+      {/* iOS のように浮かんだ、すりガラスの丸いタブバー。右端に丸い「＋」 */}
+      <div className="dock">
+        <nav className="dock__bar" aria-label="主要な画面">
+          {NAV_ITEMS.map((item) => (
+            <DockItem key={item.route} item={item} active={route === item.route} onClick={(e) => navigate(item.route, originOf(e))} />
+          ))}
+        </nav>
         <button type="button" className="dock__create" onClick={onCreate} aria-label="新しい予定を作成">
-          <Icon name="plus" size={24} />
+          <Icon name="plus" size={26} />
         </button>
-        {NAV_ITEMS.slice(2).map((item) => (
-          <DockItem key={item.route} item={item} active={route === item.route} onClick={(e) => navigate(item.route, originOf(e))} />
-        ))}
-      </nav>
+      </div>
     </>
   );
 }
@@ -101,9 +101,9 @@ function DockItem({
 }) {
   return (
     <button type="button" className={`dock__item ${active ? 'is-active' : ''}`} aria-current={active ? 'page' : undefined} onClick={onClick}>
-      <Icon name={item.icon} size={23} />
+      {active && <motion.span layoutId="dock-pill" className="dock__pill" transition={{ type: 'spring', stiffness: 520, damping: 40 }} aria-hidden="true" />}
+      <Icon name={item.icon} size={22} />
       <span className="dock__label">{item.label}</span>
-      {active && <motion.span layoutId="dock-mark" className="dock__mark" transition={t.chamber} aria-hidden="true" />}
     </button>
   );
 }

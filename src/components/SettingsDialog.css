@@ -44,7 +44,21 @@
   border-radius: 10px;
   background: color-mix(in srgb, var(--ink) 7%, transparent);
 }
+.settings__seg--3 {
+  display: flex;
+  align-self: stretch;
+}
+.settings__seg--3 .settings__seg-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--sp-2);
+  letter-spacing: 0.04em;
+}
 .settings__seg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   min-height: 34px;
   min-width: 96px;
   padding: 0 var(--sp-4);
@@ -58,9 +72,9 @@
 }
 
 .settings__seg-btn.is-on {
-  background: var(--bg);
+  background: var(--bg-raised);
   color: var(--ink);
-  box-shadow: 0 2px 6px rgba(17, 18, 20, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
 }
 .settings__about ul {
   margin: 0;

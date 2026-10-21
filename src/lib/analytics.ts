@@ -10,6 +10,7 @@
 import { CATEGORIES } from '../data/categories';
 import type { CalendarEvent, CategoryId } from '../data/types';
 import { compareDateKeys, rangeKeys, diffDays, type DateKey } from './date';
+import { expandRange } from './recurrence';
 import { durationOf } from './schedule';
 
 export interface CategoryTotal {
@@ -36,8 +37,14 @@ export interface PeriodSummary {
   sampleCount: number;
 }
 
+/** 期間内の予定（繰り返し・日またぎを日ごとに展開したもの） */
 export function eventsInRange(events: CalendarEvent[], start: DateKey, end: DateKey): CalendarEvent[] {
-  return events.filter((e) => compareDateKeys(e.date, start) >= 0 && compareDateKeys(e.date, end) <= 0);
+  return expandRange(events, start, end);
+}
+
+/** 予定時間として数える長さ（終日の予定は時間を占有しないので 0） */
+function plannedOf(e: CalendarEvent): number {
+  return e.allDay ? 0 : durationOf(e);
 }
 
 export function summarize(events: CalendarEvent[], start: DateKey, end: DateKey, today: DateKey): PeriodSummary {
@@ -52,7 +59,7 @@ export function summarize(events: CalendarEvent[], start: DateKey, end: DateKey,
   const withActual: PeriodSummary['withActual'] = [];
 
   for (const e of list) {
-    const d = durationOf(e);
+    const d = plannedOf(e);
     planned += d;
     const cat = byCat.get(e.category)!;
     cat.plannedMinutes += d;
@@ -100,13 +107,13 @@ export function dayRecords(events: CalendarEvent[], start: DateKey, end: DateKey
   if (n <= 0) return [];
   const map = new Map<DateKey, CalendarEvent[]>();
   for (const k of rangeKeys(start, n)) map.set(k, []);
-  for (const e of events) map.get(e.date)?.push(e);
+  for (const e of expandRange(events, start, end)) map.get(e.date)?.push(e);
   return [...map.entries()]
     .filter(([, list]) => list.length > 0)
     .map(([date, list]) => ({
       date,
       events: [...list].sort((a, b) => a.startMin - b.startMin),
-      plannedMinutes: list.reduce((s, e) => s + durationOf(e), 0),
+      plannedMinutes: list.reduce((s, e) => s + plannedOf(e), 0),
       completedCount: list.filter((e) => e.status === 'completed').length,
       recordedCount: list.filter((e) => e.status !== 'planned').length,
     }))

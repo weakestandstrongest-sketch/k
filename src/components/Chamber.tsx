@@ -5,14 +5,16 @@
  * 深紅の扉が左右に開いて中身が現れます。閉じると元の位置へ戻ります。
  */
 import { motion, useReducedMotion } from 'motion/react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { draftFromEvent } from '../data/eventModel';
-import type { EventDraft } from '../data/types';
-import { formatDateJa } from '../lib/date';
+import type { CalendarEvent, EventDraft } from '../data/types';
+import { addDays, diffDays, formatDateJa } from '../lib/date';
+import { findInstance, type EventInstance } from '../lib/recurrence';
 import { ease, t } from '../motion/tokens';
 import { useApp } from '../state/AppContext';
-import { useConfirm } from '../state/ConfirmContext';
+import { useChoose, useConfirm } from '../state/ConfirmContext';
 import { useEvents } from '../state/EventsContext';
+import { useTone } from '../state/useTone';
 import { useFocusTrap } from '../state/useFocusTrap';
 import { useToast } from '../state/ToastContext';
 import { ChamberView } from './ChamberView';
@@ -22,8 +24,10 @@ import './Chamber.css';
 
 export function Chamber() {
   const { chamber, closeChamber, openChamber, setFocusDate } = useApp();
-  const { events, create, update, remove, restore, saving } = useEvents();
+  const { events, create, update, remove, restore, editOccurrence, removeOccurrence, saving } = useEvents();
+  const tone = useTone();
   const confirm = useConfirm();
+  const choose = useChoose();
   const { push } = useToast();
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -31,7 +35,19 @@ export function Chamber() {
   const dirtyRef = useRef(false);
   const [busy, setBusy] = useState(false);
 
-  const event = chamber && chamber.mode !== 'new' ? events.find((e) => e.id === chamber.id) : undefined;
+  // 開いている予定（繰り返しの回・日をまたぐ予定にも対応したインスタンス）と、その元の予定
+  const event = chamber && chamber.mode !== 'new' ? (findInstance(events, chamber.id) ?? undefined) : undefined;
+  const base = event ? events.find((e) => e.id === event.baseId) : undefined;
+  const scope = chamber?.mode === 'edit' ? (chamber.scope ?? 'all') : 'all';
+  // 新しい予定は、斜めの線から開く
+  const [diagonal] = useState(() => chamber?.mode === 'new');
+  // 斜めの線は、パネルの実際の大きさで右上から左下へ引く
+  const [box, setBox] = useState<{ w: number; h: number } | null>(null);
+  useLayoutEffect(() => {
+    if (!diagonal || !ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    setBox({ w: Math.round(r.width), h: Math.round(r.height) });
+  }, [diagonal]);
   // 共有レイアウトの相手（開いた元の行）は、開いた時点で固定する。
   // 閲覧⇔編集を切り替えても枠が作り直されず、閉じると元の行へ戻る。
   const [layoutKey] = useState(() => (chamber?.mode === 'view' ? chamber.layoutKey : undefined));
@@ -74,11 +90,18 @@ export function Chamber() {
           push({ kind: 'success', message: `「${created.title}」を${formatDateJa(created.date)}に保存しました。` });
           openChamber({ mode: 'view', id: created.id });
         }
+      } else if (event && event.recurring && scope === 'this') {
+        const detached = await editOccurrence(event, draft);
+        if (detached) {
+          dirtyRef.current = false;
+          push({ kind: 'success', message: `${formatDateJa(event.occurrence)}の回だけを変更しました。ほかの回はそのままです。` });
+          openChamber({ mode: 'view', id: detached.id });
+        }
       } else if (event) {
-        const saved = await update(event.id, draft);
+        const saved = await update(event.baseId, draft);
         if (saved) {
           dirtyRef.current = false;
-          push({ kind: 'success', message: '変更を保存しました。' });
+          push({ kind: 'success', message: saved.repeat ? 'すべての回を変更しました。' : '変更を保存しました。' });
           openChamber({ mode: 'view', id: saved.id, layoutKey: undefined });
         }
       }
@@ -87,8 +110,48 @@ export function Chamber() {
     }
   };
 
+  const handleEdit = async () => {
+    if (!event) return;
+    if (!event.recurring) return openChamber({ mode: 'edit', id: event.id, scope: 'all' });
+    const which = await choose({
+      title: '繰り返しの予定を編集',
+      message: `「${event.title}」は繰り返しの予定です。どちらを編集しますか？`,
+      options: [
+        { value: 'this', label: `この回だけ（${formatDateJa(event.occurrence)}）` },
+        { value: 'all', label: 'すべての回' },
+      ],
+    });
+    if (which) openChamber({ mode: 'edit', id: event.id, scope: which });
+  };
+
   const handleDelete = async () => {
     if (!event) return;
+    if (event.recurring) {
+      const which = await choose({
+        title: '繰り返しの予定を削除',
+        message: `「${event.title}」は繰り返しの予定です。どちらを削除しますか？削除の直後なら「元に戻す」で復元できます。`,
+        options: [
+          { value: 'this', label: 'この回だけ削除', danger: true },
+          { value: 'all', label: 'すべての回を削除', danger: true },
+        ],
+      });
+      if (!which) return;
+      const prev = which === 'this' ? await removeOccurrence(event) : await remove(event.baseId);
+      if (prev) {
+        closeChamber();
+        push({
+          kind: 'success',
+          message: which === 'this' ? `${formatDateJa(event.occurrence)}の「${prev.title}」を削除しました。` : `「${prev.title}」のすべての回を削除しました。`,
+          action: {
+            label: '元に戻す',
+            onClick: async () => {
+              if (await restore([prev])) push({ kind: 'success', message: '予定を復元しました。' });
+            },
+          },
+        });
+      }
+      return;
+    }
     const ok = await confirm({
       title: 'この予定を削除しますか？',
       message: `「${event.title}」（${formatDateJa(event.date)}）を削除します。削除の直後なら「元に戻す」で復元できます。`,
@@ -96,7 +159,7 @@ export function Chamber() {
       danger: true,
     });
     if (!ok) return;
-    const removed = await remove(event.id);
+    const removed = await remove(event.baseId);
     if (removed) {
       closeChamber();
       push({
@@ -118,7 +181,7 @@ export function Chamber() {
   return (
     <motion.div
       className="chamber-layer"
-      data-theme="chamber"
+      data-theme={tone}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.3, delay: 0.05 } }}
@@ -129,6 +192,30 @@ export function Chamber() {
         {/* 共有レイアウト：一覧の行からこの枠へ広がる */}
         {layoutKey && !reduce ? (
           <motion.div layoutId={`shell-${layoutKey}`} className="chamber__shell" transition={t.chamber} />
+        ) : diagonal && !reduce ? (
+          <>
+            {/* 斜めの線が走り、その線から面が開く */}
+            <motion.div
+              className="chamber__shell"
+              initial={{ clipPath: 'polygon(100% 0%, 100% 0%, 0% 100%, 0% 100%)' }}
+              animate={{ clipPath: 'polygon(-100% 0%, 200% 0%, 200% 100%, -100% 100%)', transitionEnd: { clipPath: 'none' } }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.6, ease: ease.regal, delay: 0.18 }}
+            />
+            {box && (
+              <svg className="chamber__slash" viewBox={`0 0 ${box.w} ${box.h}`} aria-hidden="true">
+                <motion.line
+                  x1={box.w}
+                  y1={0}
+                  x2={0}
+                  y2={box.h}
+                  initial={{ pathLength: 0, opacity: 1 }}
+                  animate={{ pathLength: 1, opacity: [1, 1, 0] }}
+                  transition={{ pathLength: { duration: 0.34, ease: ease.escapement }, opacity: { duration: 0.85, times: [0, 0.55, 1] } }}
+                />
+              </svg>
+            )}
+          </>
         ) : (
           <motion.div
             className="chamber__shell"
@@ -139,8 +226,8 @@ export function Chamber() {
           />
         )}
 
-        {/* 扉（左右に開く） */}
-        {!reduce && (
+        {/* 扉（左右に開く）。新しい予定は斜めの線から開くので扉は使わない */}
+        {!reduce && !diagonal && (
           <>
             <motion.div
               className="chamber__door chamber__door--l"
@@ -166,7 +253,7 @@ export function Chamber() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.12 } }}
-          transition={{ duration: 0.3, delay: reduce ? 0 : 0.22 }}
+          transition={{ duration: 0.3, delay: reduce ? 0 : diagonal ? 0.45 : 0.22 }}
         >
           <header className="chamber__bar">
             <button type="button" className="chamber__back" onClick={requestClose}>
@@ -184,7 +271,7 @@ export function Chamber() {
             </div>
             {mode === 'view' && event && (
               <div className="chamber__tools">
-                <button type="button" className="btn btn--small" onClick={() => openChamber({ mode: 'edit', id: event.id })}>
+                <button type="button" className="btn btn--small" onClick={handleEdit}>
                   <Icon name="edit" size={16} />
                   編集
                 </button>
@@ -197,12 +284,14 @@ export function Chamber() {
           </header>
 
           <div className="chamber__scroll">
-            {mode === 'view' && event && <ChamberView event={event} titleId={titleId} onOpenOther={(id) => openChamber({ mode: 'view', id })} />}
-            {mode === 'edit' && event && (
+            {mode === 'view' && event && base && <ChamberView key={event.id} event={event} base={base} titleId={titleId} onOpenOther={(id) => openChamber({ mode: 'view', id })} />}
+            {mode === 'edit' && event && base && (
               <EventForm
-                key={`edit-${event.id}`}
-                initial={draftFromEvent(event)}
-                eventId={event.id}
+                key={`edit-${event.id}-${scope}`}
+                initial={scope === 'this' && event.recurring ? occurrenceDraft(base, event) : draftFromEvent(base)}
+                eventId={event.baseId}
+                hideRepeat={scope === 'this' && event.recurring}
+                note={scope === 'this' && event.recurring ? `${formatDateJa(event.occurrence)}の回だけを変更します。ほかの回は変わりません。` : base.repeat ? 'すべての回を変更します。' : undefined}
                 allEvents={events}
                 saving={saving || busy}
                 submitLabel="変更を保存"
@@ -256,4 +345,17 @@ function DirtyTracker({ onChange }: { onChange: (dirty: boolean) => void }) {
     return () => document.removeEventListener('input', handler, true);
   }, [onChange]);
   return null;
+}
+
+/** 繰り返しの「この回だけ」を編集するときの初期値（その回の日付・記録） */
+function occurrenceDraft(base: CalendarEvent, inst: EventInstance): EventDraft {
+  const d = draftFromEvent(base);
+  return {
+    ...d,
+    date: inst.occurrence,
+    endDate: addDays(inst.occurrence, diffDays(base.date, base.endDate)),
+    repeat: null,
+    status: inst.status,
+    actualMinutes: inst.actualMinutes,
+  };
 }

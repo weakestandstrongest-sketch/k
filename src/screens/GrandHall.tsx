@@ -29,6 +29,7 @@ import { tickContainer, tickItem, tickItemReduced } from '../motion/tokens';
 import { useApp } from '../state/AppContext';
 import { useEvents } from '../state/EventsContext';
 import { useDayData } from '../state/useDayData';
+import { holidayName } from '../lib/holidays';
 import { useNow } from '../state/useNow';
 import './GrandHall.css';
 
@@ -45,6 +46,7 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
   const next = useMemo(() => nextEvent(data.day, nowMin), [data.day, nowMin]);
   const remaining = data.day.filter((e) => e.endMin > nowMin);
   const done = data.day.length - remaining.length;
+  const holiday = holidayName(today);
   const item = reduce ? tickItemReduced : tickItem;
   const d0 = entranceDelay;
 
@@ -61,7 +63,7 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
           <p className="kicker">TODAY</p>
           {/* 今日の残りの予定（小さな丸い札） */}
           <p className="hall__pocket">
-            残り <span className="num">{remaining.length}</span> 件
+            残り <span className="num">{remaining.length + data.allDay.length}</span> 件
           </p>
           <button type="button" className="btn btn--icon btn--ghost hall__gear" onClick={() => setSettingsOpen(true)} aria-label="設定">
             <Icon name="gear" />
@@ -79,7 +81,10 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
             <p className="hall__month">
               {year}年 {month}月 <span className="hall__wafu">{wafuMonthName(today)}</span>
             </p>
-            <h1 className="hall__weekday">{WEEKDAYS_JA_LONG[weekdayOf(today)]}</h1>
+            <h1 className="hall__weekday">
+              {WEEKDAYS_JA_LONG[weekdayOf(today)]}
+              {holiday && <span className="chip chip--holiday hall__holiday">{holiday}</span>}
+            </h1>
             <p className="hall__weekday-en" aria-hidden="true">
               {WEEKDAYS_EN[weekdayOf(today)]}
             </p>
@@ -146,7 +151,7 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
         </motion.section>
 
         <motion.section className="hall__stats" variants={item} aria-label="今日の概要">
-          <Stat label="本日の予定" value={`${data.day.length}`} unit="件" note={done > 0 ? `うち${done}件は終了` : undefined} />
+          <Stat label="本日の予定" value={`${data.day.length + data.allDay.length}`} unit="件" note={done > 0 ? `うち${done}件は終了` : undefined} />
           <Stat label="残りの空き" value={formatDuration(data.freeMinutes)} note="移動・準備の余白も差し引き済み" />
           <Stat
             label="重複"
@@ -176,11 +181,11 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
               <Icon name="next" size={14} />
             </button>
           </div>
-          {remaining.length === 0 ? (
+          {remaining.length + data.allDay.length === 0 ? (
             <p className="hall__empty muted">{data.day.length === 0 ? '今日の予定はまだありません。「新しい予定」から追加できます。' : '残りの予定はありません。'}</p>
           ) : (
             <motion.ul className="evrow-list" variants={tickContainer(0.05)} initial="hidden" animate="show">
-              {remaining.map((e) => (
+              {[...data.allDay, ...remaining].map((e) => (
                 <EventRow key={e.id} event={e} scope="hall" conflict={data.conflictMap.get(e.id)} onOpen={open} variants={item} />
               ))}
             </motion.ul>

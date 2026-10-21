@@ -7,8 +7,9 @@ import { EventRow } from '../../components/EventRow';
 import { Icon } from '../../components/Icon';
 import { categoryOf } from '../../data/categories';
 import { emptyDraft } from '../../data/eventModel';
-import type { CalendarEvent } from '../../data/types';
 import { formatDateJa, formatDuration, isSameMonth, monthGridKeys, orderedWeekdays, parseDateKey, todayKey, weekdayOf, WEEKDAYS_JA, type DateKey } from '../../lib/date';
+import { holidayName } from '../../lib/holidays';
+import { expandRange, instancesOn, type EventInstance } from '../../lib/recurrence';
 import { conflictingIds, eventsOnDate, totalFree } from '../../lib/schedule';
 import { tickContainer, tickItem, tickItemReduced } from '../../motion/tokens';
 import { useApp } from '../../state/AppContext';
@@ -27,19 +28,21 @@ export function MonthView() {
   const monthId = focusDate.slice(0, 7);
   const item = reduce ? tickItemReduced : tickItem;
 
+  // 表示中の 6 週ぶんを、繰り返し・日またぎを展開して日ごとに（終日が先）
   const byDate = useMemo(() => {
-    const map = new Map<DateKey, CalendarEvent[]>();
-    for (const e of events) {
+    const map = new Map<DateKey, EventInstance[]>();
+    for (const e of expandRange(events, grid[0], grid[grid.length - 1])) {
       const list = map.get(e.date);
       if (list) list.push(e);
       else map.set(e.date, [e]);
     }
-    for (const list of map.values()) list.sort((a, b) => a.startMin - b.startMin);
     return map;
-  }, [events]);
+  }, [events, grid[0]]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const selected = eventsOnDate(events, focusDate);
-  const selectedConflicts = conflictingIds(selected);
+  const selected = instancesOn(events, focusDate);
+  const selectedTimed = eventsOnDate(events, focusDate);
+  const selectedConflicts = conflictingIds(selectedTimed);
+  const selectedHoliday = holidayName(focusDate);
   const maxChips = isMobile ? 0 : 3;
 
   // 表示を切り替えたときは先頭から
@@ -66,24 +69,26 @@ export function MonthView() {
                   const list = byDate.get(date) ?? [];
                   const inMonth = isSameMonth(date, focusDate);
                   const wd = weekdayOf(date);
-                  const hasOverlap = [...conflictingIds(list).values()].includes('overlap');
+                  const hasOverlap = [...conflictingIds(list.filter((e) => !e.allDay)).values()].includes('overlap');
                   const { day } = parseDateKey(date);
+                  const holiday = holidayName(date);
                   return (
                     <div key={date} role="gridcell" aria-selected={date === focusDate} className="mgrid__cell-wrap">
                       <button
                         type="button"
-                        className={`mgrid__cell ${inMonth ? '' : 'is-outside'} ${date === today ? 'is-today' : ''} ${date === focusDate ? 'is-selected' : ''} ${wd === 0 ? 'is-sun' : wd === 6 ? 'is-sat' : ''}`}
+                        className={`mgrid__cell ${inMonth ? '' : 'is-outside'} ${date === today ? 'is-today' : ''} ${date === focusDate ? 'is-selected' : ''} ${wd === 0 || holiday ? 'is-sun' : wd === 6 ? 'is-sat' : ''}`}
                         onClick={() => setFocusDate(date)}
                         onDoubleClick={() => setCalView('day')}
-                        aria-label={`${formatDateJa(date)} 予定${list.length}件${hasOverlap ? '、重複あり' : ''}`}
+                        aria-label={`${formatDateJa(date)}${holiday ? `（${holiday}）` : ''} 予定${list.length}件${hasOverlap ? '、重複あり' : ''}`}
                       >
                         {date === focusDate && <motion.span layoutId="mgrid-selection" className="mgrid__selection" transition={{ type: 'spring', stiffness: 420, damping: 36 }} aria-hidden="true" />}
                         <span className="mgrid__num num">{day}</span>
+                        {holiday && <span className="mgrid__holiday">{holiday}</span>}
                         {hasOverlap && <span className="mgrid__conflict" aria-hidden="true" />}
                         {maxChips > 0 ? (
                           <span className="mgrid__chips" aria-hidden="true">
                             {list.slice(0, maxChips).map((e) => (
-                              <span key={e.id} className={`mgrid__chip ${e.status === 'completed' ? 'is-completed' : ''}`} style={{ ['--cat' as string]: categoryOf(e.category).color }}>
+                              <span key={e.id} className={`mgrid__chip ${e.allDay ? 'is-allday' : ''} ${e.status === 'completed' ? 'is-completed' : ''}`} style={{ ['--cat' as string]: categoryOf(e.category).color }}>
                                 {e.title}
                               </span>
                             ))}
@@ -111,9 +116,10 @@ export function MonthView() {
           <p className="kicker">LEDGER</p>
           <h2 className="subheading" id="month-ledger-title">
             {formatDateJa(focusDate)}
+            {selectedHoliday && <span className="chip chip--holiday monthview__holiday">{selectedHoliday}</span>}
           </h2>
           <p className="faint monthview__ledger-meta">
-            予定 {selected.length}件 · 空き {formatDuration(totalFree(selected, { windowStart: settings.dayStartMin, windowEnd: settings.dayEndMin, includeBuffers: true }))}
+            予定 {selected.length}件 · 空き {formatDuration(totalFree(selectedTimed, { windowStart: settings.dayStartMin, windowEnd: settings.dayEndMin, includeBuffers: true }))}
           </p>
         </div>
         <AnimatePresence mode="wait" initial={false}>

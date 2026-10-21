@@ -53,6 +53,7 @@ export async function loadSettings(): Promise<Settings> {
   const merged: Settings = { ...DEFAULT_SETTINGS, ...v };
   // 壊れた値に備えて検証
   if (merged.weekStartsOn !== 0 && merged.weekStartsOn !== 1) merged.weekStartsOn = DEFAULT_SETTINGS.weekStartsOn;
+  if (merged.appearance !== 'light' && merged.appearance !== 'dark' && merged.appearance !== 'system') merged.appearance = DEFAULT_SETTINGS.appearance;
   if (
     !Number.isInteger(merged.dayStartMin) ||
     !Number.isInteger(merged.dayEndMin) ||

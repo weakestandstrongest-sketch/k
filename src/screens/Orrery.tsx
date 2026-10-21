@@ -22,6 +22,7 @@ import {
 } from '../lib/date';
 import { ease, t } from '../motion/tokens';
 import { useApp, type CalendarView } from '../state/AppContext';
+import { holidayName } from '../lib/holidays';
 import { useEvents } from '../state/EventsContext';
 import { useNow } from '../state/useNow';
 import { DayView } from './orrery/DayView';
@@ -107,7 +108,8 @@ export function Orrery() {
   if (calView === 'day') {
     main = String(day).padStart(2, '0');
     sub = `${month}月 ${WEEKDAYS_JA_LONG[weekdayOf(focusDate)]}`;
-    caption = `${year}年`;
+    const holiday = holidayName(focusDate);
+    caption = holiday ? `${year}年 · ${holiday}` : `${year}年`;
   } else if (calView === 'week') {
     main = `${String(wa.day).padStart(2, '0')}–${String(wb.day).padStart(2, '0')}`;
     sub = wa.month === wb.month ? `${wa.month}月` : `${wa.month}月 〜 ${wb.month}月`;

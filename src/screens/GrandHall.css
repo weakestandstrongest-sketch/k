@@ -401,3 +401,10 @@
     flex: 1;
   }
 }
+.hall__holiday {
+  margin-left: var(--sp-3);
+  vertical-align: middle;
+  font-family: var(--font-body, inherit);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.04em;
+}
