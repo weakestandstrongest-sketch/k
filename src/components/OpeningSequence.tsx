@@ -69,7 +69,7 @@ export function OpeningSequence({ eventCount, onReveal, onDone }: Props) {
       onAnimationComplete={() => leaving && onDone()}
     >
       <p className="sr-only" role="status">
-        CHRONOS ATELIER を起動しています
+        刻 を起動しています
       </p>
       <p className="opening__ver" aria-hidden="true">
         Ver 1.0
@@ -87,15 +87,15 @@ export function OpeningSequence({ eventCount, onReveal, onDone }: Props) {
           />
         ))}
         <motion.p
-          className="opening__title"
+          className="opening__title opening__title--kanji"
           initial={{ opacity: 0, letterSpacing: '1.2em' }}
           animate={{ opacity: 1, letterSpacing: '0.62em' }}
           transition={{ duration: 1.4, ease: ease.glide, delay: 0.5 }}
         >
-          CHRONOS
+          刻
         </motion.p>
         <motion.p className="opening__subtitle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.9 }}>
-          A T E L I E R
+          K O K U
         </motion.p>
         <motion.span className="opening__seal" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: ease.glide, delay: 1.1 }}>
           時ノ

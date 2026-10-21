@@ -32,7 +32,7 @@ export function Navigation({ onCreate }: { onCreate: () => void }) {
       <nav className="rail" aria-label="主要な画面">
         <div className="rail__brand" aria-hidden="true">
           <span className="rail__sigil" />
-          <span className="rail__brand-word">CHRONOS</span>
+          <span className="rail__brand-word rail__brand-word--kanji">刻</span>
         </div>
         <ul className="rail__list">
           {NAV_ITEMS.map((item) => {

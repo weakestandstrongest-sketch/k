@@ -14,8 +14,8 @@ export default defineConfig({
       injectRegister: false, // 登録は src/pwa.ts で行い、状態を画面に表示します
       includeAssets: ['icons/*.png', 'icons/*.svg'],
       manifest: {
-        name: 'CHRONOS ATELIER — 時の宮殿',
-        short_name: 'CHRONOS',
+        name: '刻 — 時の宮殿',
+        short_name: '刻',
         description: '時を司る宮殿のような、精緻で美しいカレンダー。',
         lang: 'ja',
         start_url: './',

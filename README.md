@@ -1,4 +1,6 @@
-# CHRONOS ATELIER ― 時の宮殿
+# 刻（こく）― 時の宮殿
+
+（旧名 CHRONOS ATELIER）
 
 時間を「宮殿の中で動く精密な機械」として扱う、ブラウザで動くカレンダーアプリです。
 React・TypeScript・Vite・Motion for React で作られ、予定はこの端末のブラウザ内（IndexedDB）に保存されます。
