@@ -1,0 +1,63 @@
+.guide {
+  position: fixed;
+  z-index: 40;
+  right: calc(var(--sp-5) + var(--safe-right));
+  bottom: calc(var(--sp-4) + var(--safe-bottom));
+  pointer-events: none;
+  color: #fff;
+}
+.guide__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 300px;
+}
+.guide__text {
+  margin: 0;
+  font-weight: 900;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  transform: skewX(var(--slant));
+  text-shadow: 2px 2px 0 rgba(2, 6, 40, 0.8);
+}
+.guide__rule {
+  width: 100%;
+  margin: 0;
+  border-bottom: 2px solid #fff;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.75rem;
+  line-height: 1.1;
+}
+.guide__keys {
+  display: flex;
+  gap: var(--sp-3);
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.guide__keys span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.guide__keys kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 0.75rem;
+}
+/* 画面が狭いときや、タッチ操作の端末では表示しない */
+@media (max-width: 1100px), (hover: none) {
+  .guide {
+    display: none;
+  }
+}

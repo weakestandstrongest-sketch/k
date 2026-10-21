@@ -37,19 +37,20 @@
   stroke-width: 2;
 }
 .cf-tick--major {
-  stroke: var(--accent);
+  stroke: var(--cyan);
   stroke-width: 3.5;
 }
 .cf-numeral {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 30px;
   fill: var(--ink-dim);
-  letter-spacing: 0.02em;
 }
 .cf-numeral--cardinal {
-  font-size: 40px;
-  fill: var(--ink);
-  font-style: italic;
+  font-size: 48px;
+  font-weight: 900;
+  fill: #fff;
 }
 .clockface--compact .cf-numeral {
   font-size: 44px;
@@ -69,13 +70,13 @@
 }
 .cf-elapsed {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--cyan);
   stroke-width: 3;
   opacity: 0.55;
 }
 .cf-free {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--yellow);
   stroke-width: 6;
   stroke-linecap: round;
   opacity: 0.9;
@@ -126,37 +127,38 @@
   stroke-width: 2;
 }
 .cf-hand__line {
-  stroke: var(--accent);
+  stroke: #fff;
   stroke-width: 3;
   stroke-linecap: round;
 }
 .cf-hand__tip {
-  fill: var(--accent);
+  fill: var(--hl);
 }
 .cf-hand__sun {
-  fill: var(--accent);
+  fill: var(--hl);
 }
 .cf-hand__halo {
   fill: none;
-  stroke: var(--accent);
+  stroke: #fff;
   stroke-width: 1.5;
   opacity: 0.6;
 }
 .cf-seconds circle {
-  fill: var(--accent);
+  fill: var(--yellow);
   opacity: 0.85;
 }
 .cf-pin {
-  fill: var(--accent);
+  fill: #fff;
 }
 .cf-pin-inner {
   fill: var(--bg);
 }
 .cf-center__label {
   font-family: var(--font-sans);
+  font-weight: 800;
   font-size: 26px;
-  letter-spacing: 0.3em;
-  fill: var(--ink-dim);
+  letter-spacing: 0.2em;
+  fill: var(--cyan);
 }
 .cf-center text {
   paint-order: stroke;
@@ -166,14 +168,17 @@
 }
 .cf-center__value {
   font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
   font-size: 128px;
-  fill: var(--ink);
+  fill: #fff;
   font-variant-numeric: lining-nums tabular-nums;
 }
 .cf-center__note {
   font-family: var(--font-sans);
+  font-weight: 700;
   font-size: 26px;
-  fill: var(--accent);
+  fill: var(--yellow);
   letter-spacing: 0.08em;
 }
 .cf-center__value--long {

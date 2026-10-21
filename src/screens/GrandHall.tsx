@@ -19,14 +19,13 @@ import {
   formatTimeRange,
   minutesOfDay,
   parseDateKey,
-  romanMonth,
   todayKey,
   wafuMonthName,
   weekdayOf,
   WEEKDAYS_JA_LONG,
 } from '../lib/date';
 import { nextEvent, snapMinutes } from '../lib/schedule';
-import { ease, tickContainer, tickItem, tickItemReduced } from '../motion/tokens';
+import { tickContainer, tickItem, tickItemReduced } from '../motion/tokens';
 import { useApp } from '../state/AppContext';
 import { useEvents } from '../state/EventsContext';
 import { useDayData } from '../state/useDayData';
@@ -59,8 +58,15 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
 
       <motion.div className="hall__grid" variants={tickContainer(0.07, d0 + 0.15)} initial="hidden" animate="show">
         <motion.header className="hall__head" variants={item}>
-          <p className="kicker">THE GRAND HALL</p>
-          <p className="hall__head-ja">大広間 ― 本日の御用</p>
+          {/* 左上の小さな白い札：今日の残りの予定 */}
+          <div className="hall__pocket">
+            <span className="hall__pocket-value num">{remaining.length}</span>
+            <span className="hall__pocket-unit">件</span>
+            <span className="hall__pocket-label">
+              本日の残りの予定
+              <small>events remaining today</small>
+            </span>
+          </div>
           <button type="button" className="btn btn--icon btn--ghost hall__gear" onClick={() => setSettingsOpen(true)} aria-label="設定">
             <Icon name="gear" />
           </button>
@@ -71,11 +77,14 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
             <RollingText text={String(day)} />
           </motion.div>
           <motion.div className="hall__date-side" variants={item}>
-            <p className="hall__roman num">{romanMonth(today)}</p>
+            <p className="hall__month-en">{MONTHS_EN[month - 1]}</p>
             <p className="hall__month">
               {year}年 {month}月 <span className="hall__wafu">{wafuMonthName(today)}</span>
             </p>
             <h1 className="hall__weekday">{WEEKDAYS_JA_LONG[weekdayOf(today)]}</h1>
+            <p className="hall__weekday-en" aria-hidden="true">
+              {WEEKDAYS_EN[weekdayOf(today)]}
+            </p>
             <p className="sr-only">
               {year}年{month}月{day}日 {WEEKDAYS_JA_LONG[weekdayOf(today)]}
             </p>
@@ -114,7 +123,7 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
 
         <motion.section className="hall__next" variants={item} aria-labelledby="hall-next-title">
           <p className="kicker" id="hall-next-title">
-            {next?.ongoing ? 'NOW IN SESSION · 進行中' : 'NEXT · 次の予定'}
+            {next?.ongoing ? 'NOW · 進行中' : 'NEXT · 次の予定'}
           </p>
           {status === 'loading' ? (
             <p className="muted">読み込み中…</p>
@@ -185,18 +194,12 @@ export function GrandHall({ entranceDelay = 0 }: { entranceDelay?: number }) {
         </motion.div>
       </motion.div>
 
-      <motion.div
-        className="hall__signature"
-        aria-hidden="true"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, ease: ease.glide, delay: d0 + 0.6 }}
-      >
-        CHRONOS ATELIER
-      </motion.div>
     </div>
   );
 }
+
+const MONTHS_EN = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const WEEKDAYS_EN = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
 
 function LiveTime() {
   const now = useNow(1000);

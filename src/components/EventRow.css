@@ -1,9 +1,11 @@
+/* 予定の帯：黒い斜めの帯に、色付きの札と数値 */
 .evrow-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 .evrow-item {
   position: relative;
@@ -11,46 +13,66 @@
 .evrow {
   position: relative;
   display: grid;
-  grid-template-columns: 64px 2px minmax(0, 1fr) auto;
+  grid-template-columns: 76px minmax(0, 1fr) auto auto;
   align-items: center;
   gap: var(--sp-3);
   width: 100%;
-  min-height: 60px;
-  padding: var(--sp-2) var(--sp-3) var(--sp-2) 0;
+  min-height: 62px;
+  padding: 6px calc(var(--cut) + var(--sp-3)) 6px 0;
   border: 0;
-  border-bottom: 1px solid var(--line);
   background: none;
   text-align: left;
   cursor: pointer;
-  color: var(--ink);
+  color: #fff;
   isolation: isolate;
+  transition: transform var(--dur-fast) var(--ease-escapement), color var(--dur-fast);
 }
 .evrow__shell {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: transparent;
+  background: var(--bar);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
   transition: background-color var(--dur-fast) var(--ease-escapement);
+}
+/* 選んでいる（触れている）帯は白地・黒文字・赤い縁 */
+.evrow:hover,
+.evrow:focus-visible {
+  color: #050f4a;
+  transform: translateX(6px);
+  outline: none;
 }
 .evrow:hover .evrow__shell,
 .evrow:focus-visible .evrow__shell {
-  background: color-mix(in srgb, var(--cat) 12%, transparent);
+  background: #fff;
 }
-.evrow__time {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 1.05rem;
-  line-height: 1.15;
+.evrow:hover::after,
+.evrow:focus-visible::after {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset: 0 -5px -5px 5px;
+  background: var(--hl);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
 }
-.evrow__end {
-  font-size: 0.78rem;
-  color: var(--ink-faint);
-}
-.evrow__rule {
+.evrow__tag {
+  position: relative;
   align-self: stretch;
-  background: var(--cat);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--cat) 50%, transparent);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(115deg, var(--cat) 0 58%, transparent 58.5%);
+}
+.evrow__tag span {
+  padding-left: 6px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  color: #050f4a;
+  transform: rotate(-14deg);
+  white-space: nowrap;
 }
 .evrow__main {
   display: flex;
@@ -61,7 +83,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.98rem;
+  font-weight: 800;
+  font-size: 1.02rem;
   letter-spacing: 0.04em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -77,12 +100,48 @@
   gap: 2px var(--sp-3);
   font-size: var(--fs-micro);
   color: var(--ink-dim);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
+}
+.evrow:hover .evrow__meta,
+.evrow:focus-visible .evrow__meta {
+  color: #3a4a8a;
 }
 .evrow__loc {
   display: inline-flex;
   align-items: center;
   gap: 3px;
+}
+.evrow__stats {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-3);
+}
+.evrow__stat {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding-bottom: 2px;
+  border-bottom: 3px solid var(--cyan);
+}
+.evrow__stat small {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--cyan);
+}
+.evrow__stat b {
+  font-size: 1.55rem;
+  line-height: 1;
+  font-weight: 600;
+}
+.evrow__stat--len {
+  border-bottom-color: var(--yellow);
+}
+.evrow__stat--len small {
+  color: var(--yellow);
+}
+.evrow:hover .evrow__stat small,
+.evrow:focus-visible .evrow__stat small {
+  color: #050f4a;
 }
 .evrow__flags {
   display: flex;
@@ -90,26 +149,43 @@
   gap: 6px;
 }
 .evrow__lock {
-  color: var(--ink-faint);
+  color: var(--ink-dim);
 }
 .evrow.is-past {
   opacity: 0.55;
 }
 .evrow.is-missed .evrow__title {
   text-decoration: line-through;
-  text-decoration-color: var(--ink-faint);
 }
 .evrow--compact {
-  min-height: 46px;
-  grid-template-columns: 48px 2px minmax(0, 1fr) auto;
+  min-height: 48px;
+  grid-template-columns: 58px minmax(0, 1fr) auto auto;
 }
-.evrow--compact .evrow__time {
-  font-size: 0.92rem;
+.evrow--compact .evrow__tag span {
+  font-size: 0.82rem;
+}
+.evrow--compact .evrow__stat b {
+  font-size: 1.25rem;
 }
 @media (max-width: 760px) {
   .evrow {
-    grid-template-columns: 52px 2px minmax(0, 1fr) auto;
-    gap: var(--sp-2);
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    grid-template-areas: 'tag main stats' 'tag flags stats';
+    gap: 0 var(--sp-2);
+    padding-right: calc(var(--cut) + var(--sp-2));
+  }
+  .evrow__tag { grid-area: tag; }
+  .evrow__main { grid-area: main; }
+  .evrow__stats { grid-area: stats; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .evrow__flags { grid-area: flags; }
+  .evrow__flags:empty { display: none; }
+  .evrow__tag span {
+    padding-left: 3px;
+    font-size: 0.7rem;
+    letter-spacing: -0.02em;
+  }
+  .evrow__stat b {
+    font-size: 1.2rem;
   }
   .evrow__flags .chip--sample {
     display: none;

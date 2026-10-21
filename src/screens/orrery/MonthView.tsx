@@ -123,7 +123,7 @@ export function MonthView() {
             ) : (
               <motion.ul className="evrow-list" variants={tickContainer(0.04)} initial="hidden" animate="show">
                 {selected.map((e) => (
-                  <EventRow key={e.id} event={e} scope="month" conflict={selectedConflicts.get(e.id)} onOpen={(ev, k) => openChamber({ mode: 'view', id: ev.id, layoutKey: k })} variants={item} />
+                  <EventRow key={e.id} event={e} scope="month" conflict={selectedConflicts.get(e.id)} onOpen={(ev, k) => openChamber({ mode: 'view', id: ev.id, layoutKey: k })} variants={item} compact />
                 ))}
               </motion.ul>
             )}

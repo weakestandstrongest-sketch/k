@@ -141,8 +141,8 @@
   width: 18px;
   height: 8px;
 }
-.eq-lg--event { background: #4a78c2; }
-.eq-lg--buffer { background: repeating-linear-gradient(90deg, #4a78c2 0 3px, transparent 3px 6px); }
+.eq-lg--event { background: #33e4ff; }
+.eq-lg--buffer { background: repeating-linear-gradient(90deg, #33e4ff 0 3px, transparent 3px 6px); }
 .eq-lg--free { border: 1px dashed var(--accent); }
 
 /* ---- 欄 ---- */

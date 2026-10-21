@@ -12,8 +12,8 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(80% 70% at 50% 40%, rgba(120, 20, 16, 0.35), transparent 70%),
-    rgba(8, 3, 3, 0.78);
+    linear-gradient(115deg, rgba(255, 44, 70, 0.22) 0 18%, transparent 18.2%),
+    rgba(2, 6, 40, 0.8);
 }
 .chamber {
   position: relative;
@@ -25,13 +25,10 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(120% 60% at 50% 0%, rgba(214, 69, 58, 0.16), transparent 60%),
-    linear-gradient(180deg, #1d0b0b, #120707 40%);
-  border: 1px solid var(--line-strong);
-  box-shadow:
-    0 0 0 8px rgba(18, 7, 7, 0.9),
-    0 0 0 9px rgba(201, 164, 92, 0.35),
-    0 60px 120px -40px rgba(0, 0, 0, 0.9);
+    linear-gradient(105deg, transparent 0 72%, rgba(255, 255, 255, 0.06) 72.2% 80%, transparent 80.2%),
+    linear-gradient(180deg, #0b2bc0, #061a7a 45%, #030c4a);
+  border: 2px solid #fff;
+  box-shadow: 12px 12px 0 var(--hl);
 }
 .chamber__door {
   position: absolute;
@@ -39,20 +36,18 @@
   bottom: 0;
   width: 50%;
   z-index: 3;
-  background:
-    repeating-linear-gradient(90deg, transparent 0 22px, rgba(201, 164, 92, 0.08) 22px 23px),
-    linear-gradient(180deg, #5a1410, #2d0907);
+  background: linear-gradient(180deg, #ff2c46, #c3112b);
   pointer-events: none;
 }
 .chamber__door--l {
   left: 0;
   transform-origin: left center;
-  border-right: 2px solid #c9a45c;
+  border-right: 4px solid #fff;
 }
 .chamber__door--r {
   right: 0;
   transform-origin: right center;
-  border-left: 2px solid #c9a45c;
+  border-left: 4px solid #fff;
 }
 .chamber__inner {
   position: relative;
@@ -74,14 +69,17 @@
   gap: 4px;
   min-height: 44px;
   padding: 0 var(--sp-3) 0 var(--sp-2);
-  border: 1px solid var(--line-strong);
+  border: 2px solid #fff;
   background: none;
   color: var(--ink);
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   cursor: pointer;
+  transform: skewX(var(--slant));
 }
 .chamber__back:hover {
-  background: rgba(214, 69, 58, 0.14);
+  background: #fff;
+  color: #050f4a;
 }
 .chamber__bar-title {
   flex: 1;
@@ -89,7 +87,7 @@
 }
 .chamber__heading {
   margin: 0;
-  font-family: var(--font-mincho);
+  font-family: var(--font-heading);
   font-weight: 500;
   font-size: 0.95rem;
   letter-spacing: 0.2em;
@@ -125,10 +123,10 @@
   height: 14px;
   border-radius: 50%;
   background: var(--cat);
-  box-shadow: 0 0 0 3px rgba(18, 7, 7, 1), 0 0 0 4px var(--cat);
+  box-shadow: 0 0 0 3px #050f4a, 0 0 0 5px var(--cat);
 }
 .cview__enamel {
-  font-family: var(--font-mincho);
+  font-family: var(--font-heading);
   color: var(--ink-faint);
 }
 .cview__status--completed {
@@ -140,10 +138,13 @@
 }
 .cview__title {
   margin: 0;
-  font-family: var(--font-mincho);
-  font-weight: 500;
-  font-size: clamp(1.8rem, 1.2rem + 2.4vw, 3rem);
-  letter-spacing: 0.06em;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3.2rem);
+  letter-spacing: 0.04em;
+  transform: skewX(var(--slant));
+  transform-origin: left bottom;
+  text-shadow: 0.06em 0.05em 0 var(--hl);
   line-height: 1.3;
   overflow-wrap: anywhere;
 }
@@ -346,7 +347,7 @@
   gap: var(--sp-5);
 }
 .evform__title .field__control {
-  font-family: var(--font-mincho);
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   min-height: 56px;
 }
@@ -495,7 +496,7 @@
   gap: var(--sp-3);
   padding: var(--sp-4) 0;
   margin-bottom: calc(-1 * var(--sp-4));
-  background: linear-gradient(180deg, transparent, #120707 30%);
+  background: linear-gradient(180deg, transparent, #030c4a 30%);
 }
 .evform__ack {
   margin: 0;

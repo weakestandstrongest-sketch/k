@@ -2,43 +2,44 @@
   position: fixed;
   z-index: 80;
   right: calc(var(--sp-5) + var(--safe-right));
-  bottom: calc(var(--sp-5) + var(--safe-bottom));
+  bottom: calc(110px + var(--safe-bottom));
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: var(--sp-2);
-  width: min(420px, calc(100vw - 2 * var(--sp-4)));
+  width: min(440px, calc(100vw - 2 * var(--sp-4)));
   pointer-events: none;
 }
+/* 黒い斜めの帯の通知。種類は左端の色で示す */
 .toast {
   pointer-events: auto;
   display: flex;
   align-items: center;
   gap: var(--sp-3);
   width: 100%;
-  padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-3);
-  background: #15130f;
-  color: #efe6d2;
-  border: 1px solid rgba(201, 164, 92, 0.4);
-  border-left: 3px solid var(--tone, #c9a45c);
-  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+  padding: var(--sp-3) calc(var(--sp-3) + 16px) var(--sp-3) var(--sp-4);
+  background: rgba(2, 6, 34, 0.94);
+  color: #fff;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+  box-shadow: inset 6px 0 0 var(--tone, #3ff2ff);
   transform-origin: right center;
   font-size: var(--fs-small);
+  font-weight: 700;
   line-height: 1.5;
 }
-.toast--success { --tone: #c9a45c; }
-.toast--error { --tone: var(--c-danger); }
-.toast--warning { --tone: var(--c-warn); }
-.toast--info { --tone: #8cc3ff; }
+.toast--success { --tone: #3ff2ff; }
+.toast--error { --tone: #ff2c46; }
+.toast--warning { --tone: #ffe23e; }
+.toast--info { --tone: #ffffff; }
 .toast__seal {
   display: grid;
   place-items: center;
   flex: none;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
-  border: 1px solid var(--tone, #c9a45c);
-  color: var(--tone, #c9a45c);
+  background: var(--tone, #3ff2ff);
+  color: #04114f;
+  transform: skewX(-10deg);
 }
 .toast__message {
   flex: 1;
@@ -46,15 +47,17 @@
 .toast__action {
   flex: none;
   padding: 6px 12px;
-  border: 1px solid var(--tone, #c9a45c);
-  background: transparent;
-  color: var(--tone, #c9a45c);
+  border: 0;
+  background: #fff;
+  color: #04114f;
   font: inherit;
+  font-weight: 800;
   cursor: pointer;
-  letter-spacing: 0.06em;
+  transform: skewX(-10deg);
+  box-shadow: 3px 3px 0 #ff2c46;
 }
 .toast__action:hover {
-  background: color-mix(in srgb, var(--tone, #c9a45c) 18%, transparent);
+  background: var(--tone, #3ff2ff);
 }
 .toast__close {
   flex: none;
@@ -64,7 +67,7 @@
   height: 28px;
   border: 0;
   background: none;
-  color: #a39a88;
+  color: #9fb4ff;
   cursor: pointer;
 }
 @media (max-width: 760px) {

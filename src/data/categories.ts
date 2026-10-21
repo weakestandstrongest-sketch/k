@@ -5,22 +5,23 @@ export interface CategoryInfo {
   label: string;
   /** 装飾用の名前（七宝・宝石の色名） */
   enamel: string;
+  /** 帯に斜めに入れる短い英字（装飾） */
+  tag: string;
   color: string;
 }
 
 /**
- * カテゴリーの色は「七宝（エナメル）」をイメージした中間調。
- * 黒背景・アイボリー背景のどちらでも識別できる明度にしています。
+ * カテゴリーの色は、深い青の背景の上でも見分けられる鮮やかな色。
  */
 export const CATEGORIES: readonly CategoryInfo[] = [
-  { id: 'work', label: '仕事', enamel: '瑠璃', color: '#4a78c2' },
-  { id: 'meeting', label: '会議', enamel: '紅玉', color: '#c4513f' },
-  { id: 'study', label: '学び', enamel: '紫水晶', color: '#8c62c4' },
-  { id: 'health', label: '健康', enamel: '孔雀石', color: '#2f9a72' },
-  { id: 'personal', label: '私用', enamel: '琥珀', color: '#cf952c' },
-  { id: 'travel', label: '移動', enamel: '青磁', color: '#3d9da3' },
-  { id: 'social', label: '交流', enamel: '珊瑚', color: '#cf6a8a' },
-  { id: 'other', label: 'その他', enamel: '鉛', color: '#858b96' },
+  { id: 'work', label: '仕事', enamel: '水色', tag: 'WORK', color: '#33e4ff' },
+  { id: 'meeting', label: '会議', enamel: '紅', tag: 'MEET', color: '#ff3d5e' },
+  { id: 'study', label: '学び', enamel: '菫', tag: 'STUDY', color: '#b97cff' },
+  { id: 'health', label: '健康', enamel: '若葉', tag: 'HEALTH', color: '#42f09a' },
+  { id: 'personal', label: '私用', enamel: '山吹', tag: 'LIFE', color: '#ffd93b' },
+  { id: 'travel', label: '移動', enamel: '空', tag: 'MOVE', color: '#9fc4ff' },
+  { id: 'social', label: '交流', enamel: '桃', tag: 'SOCIAL', color: '#ff62c9' },
+  { id: 'other', label: 'その他', enamel: '銀', tag: 'OTHER', color: '#d7def0' },
 ];
 
 const BY_ID = new Map(CATEGORIES.map((c) => [c.id, c]));

@@ -21,6 +21,11 @@ interface Props {
   compact?: boolean;
 }
 
+/** 90 → '1:30'（帯の数字用の短い表記） */
+function lengthLabel(min: number): string {
+  return `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`;
+}
+
 export function EventRow({ event: e, scope, conflict, past, onOpen, variants, compact }: Props) {
   const cat = categoryOf(e.category);
   const layoutKey = `${scope}-${e.id}`;
@@ -34,11 +39,10 @@ export function EventRow({ event: e, scope, conflict, past, onOpen, variants, co
         aria-label={`${formatMinutes(e.startMin)}から${formatMinutes(e.endMin)} ${e.title}、${cat.label}${conflict === 'overlap' ? '、他の予定と重複' : ''}${e.status !== 'planned' ? `、${STATUS_LABEL[e.status]}` : ''}`}
       >
         <motion.span layoutId={`shell-${layoutKey}`} className="evrow__shell" aria-hidden="true" />
-        <span className="evrow__time num" aria-hidden="true">
-          <span>{formatMinutes(e.startMin)}</span>
-          {!compact && <span className="evrow__end">{formatMinutes(e.endMin)}</span>}
+        {/* 斜めのカテゴリー札（色の三角と英字） */}
+        <span className="evrow__tag" aria-hidden="true">
+          <span>{cat.tag}</span>
         </span>
-        <span className="evrow__rule" aria-hidden="true" />
         <span className="evrow__main" aria-hidden="true">
           <span className="evrow__title">
             {e.status === 'completed' && <Icon name="check" size={14} className="evrow__done" />}
@@ -54,6 +58,19 @@ export function EventRow({ event: e, scope, conflict, past, onOpen, variants, co
                 </span>
               )}
               {(e.bufferBeforeMin > 0 || e.bufferAfterMin > 0) && <span>余白 {e.bufferBeforeMin + e.bufferAfterMin}分</span>}
+            </span>
+          )}
+        </span>
+        {/* 数値：開始時刻（水色の下線）と長さ（黄色の下線） */}
+        <span className="evrow__stats" aria-hidden="true">
+          <span className="evrow__stat">
+            <small>開始</small>
+            <b className="num">{formatMinutes(e.startMin)}</b>
+          </span>
+          {!compact && (
+            <span className="evrow__stat evrow__stat--len">
+              <small>長さ</small>
+              <b className="num">{lengthLabel(e.endMin - e.startMin)}</b>
             </span>
           )}
         </span>

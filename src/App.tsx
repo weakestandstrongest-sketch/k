@@ -6,6 +6,7 @@ import { AnimatePresence, MotionConfig, motion, useReducedMotion, type Variants 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Chamber } from './components/Chamber';
 import { DailyReview } from './components/DailyReview';
+import { GuideBar } from './components/GuideBar';
 import { Navigation, NAV_ITEMS } from './components/Navigation';
 import { OpeningSequence } from './components/OpeningSequence';
 import { SettingsDialog } from './components/SettingsDialog';
@@ -96,6 +97,20 @@ function Shell() {
     [route, focusDate, openChamber],
   );
 
+  // キーボード：N で新しい予定（入力中やパネル表示中は無効）
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'n' && e.key !== 'N') return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if ((e.target as HTMLElement).closest('input, textarea, select, [contenteditable]')) return;
+      if (chamber || reviewDate || document.querySelector('.dialog-layer, .opening')) return;
+      e.preventDefault();
+      create();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [create, chamber, reviewDate]);
+
   const todayCount = status === 'loading' ? null : events.filter((e) => e.date === todayKey()).length;
   const showUi = intro !== 'playing';
 
@@ -114,6 +129,7 @@ function Shell() {
 
       <AnimatePresence>{chamber && <Chamber key="chamber" />}</AnimatePresence>
       <AnimatePresence>{reviewDate && <DailyReview key={`review-${reviewDate}`} date={reviewDate} />}</AnimatePresence>
+      {showUi && <GuideBar />}
       <SettingsDialog />
       <StatusNotices />
       <Toasts />
@@ -132,19 +148,19 @@ function Shell() {
   );
 }
 
-// ---------- 画面の転換（IRIS：新しい画面が円形に開く） ----------
+// ---------- 画面の転換（斜めに切り裂くように、新しい画面が左から差し込む） ----------
 
 const irisVariants: Variants = {
-  enter: (o: Point) => ({ clipPath: `circle(0% at ${o.x}px ${o.y}px)`, zIndex: 2 }),
-  center: (o: Point) => ({
-    clipPath: `circle(150% at ${o.x}px ${o.y}px)`,
+  enter: { clipPath: 'polygon(0% 0%, 0% 0%, -30% 100%, -30% 100%)', zIndex: 2 },
+  center: {
+    clipPath: 'polygon(0% 0%, 160% 0%, 130% 100%, -30% 100%)',
     zIndex: 2,
-    scale: 1,
+    x: 0,
     opacity: 1,
-    transition: { duration: 0.62, ease: ease.regal },
+    transition: { duration: 0.5, ease: ease.regal },
     transitionEnd: { clipPath: 'none' },
-  }),
-  exit: { zIndex: 1, scale: 0.965, opacity: 0.35, transition: { duration: 0.62, ease: ease.regal } },
+  },
+  exit: { zIndex: 1, x: -60, opacity: 0.4, transition: { duration: 0.5, ease: ease.regal } },
 };
 
 const fadeVariants: Variants = {

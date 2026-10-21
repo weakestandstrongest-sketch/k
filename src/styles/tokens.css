@@ -1,19 +1,22 @@
 /*
- * デザイントークン
+ * デザイントークン ― 「月夜の水底」スタイル
  * ------------------------------------------------------------
- * 画面ごとに「data-theme」を切り替えると、色・線・光・質感がまとめて変わります。
- *   hall      … 大広間（黒・アイボリー・古金）
- *   orrery    … 天球儀（アイボリー・チャコール・金属）
- *   chamber   … 私室（深紅）
- *   equation  … 時間設計（深い青と静かな光）
- *   chronicle … 年代記（琥珀・青銅・古文書）
- *   night     … 一日を閉じる（星空）
+ * 深い青の水の底から月明かりを見上げるような世界観。
+ * 太く傾いた大文字、黒い斜めの帯、選択時の白と赤、水面の揺らめき。
+ *
+ * 画面ごとに data-theme で色味が少しずつ変わります。
+ *   hall      … ホーム（鮮やかな群青）
+ *   orrery    … カレンダー（澄んだ水色寄りの青）
+ *   chamber   … 予定の詳細（深い紺に赤）
+ *   equation  … 時間設計（真夜中の藍）
+ *   chronicle … 振り返り（青緑の記録庫と黄）
+ *   night     … 一日を閉じる（月夜）
  */
 
 :root {
-  /* 書体 */
-  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', 'Times New Roman', serif;
-  --font-mincho: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', 'Noto Serif JP', 'Noto Serif CJK JP', serif;
+  /* 書体：欧文は太い縦長の斜体、和文は太いゴシック */
+  --font-display: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  --font-heading: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
   --font-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', 'Meiryo', 'Noto Sans JP', system-ui, sans-serif;
 
   /* 文字サイズ（流体） */
@@ -21,8 +24,8 @@
   --fs-small: 0.8125rem;
   --fs-body: 0.9375rem;
   --fs-lead: 1.125rem;
-  --fs-title: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
-  --fs-hero: clamp(4.5rem, 2rem + 13vw, 13rem);
+  --fs-title: clamp(1.7rem, 1.2rem + 1.8vw, 2.6rem);
+  --fs-hero: clamp(6rem, 2rem + 15vw, 15rem);
 
   /* 余白（8 の倍数を基本に） */
   --sp-1: 4px;
@@ -35,11 +38,13 @@
   --sp-8: 64px;
   --sp-9: 96px;
 
-  /* 線・角・影 */
+  /* 線・角・傾き */
   --hairline: 1px;
   --radius-0: 0;
   --radius-1: 2px;
   --radius-pill: 999px;
+  --slant: -10deg; /* 文字と帯の傾き */
+  --cut: 14px; /* 斜めの帯の切り落とし幅 */
 
   /* 時間（モーション）— src/motion/tokens.ts と対応 */
   --dur-instant: 120ms;
@@ -52,131 +57,145 @@
   --ease-regal: cubic-bezier(0.65, 0, 0.35, 1);
 
   /* レイアウト */
-  --rail-width: 104px;
+  --rail-width: 196px;
   --mobile-nav-height: 68px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
 
-  /* 状態色（全テーマ共通の意味） */
-  --c-danger: #d2483c;
-  --c-warn: #d9a03b;
-  --c-ok: #5fae8a;
+  /* 全テーマ共通の意味を持つ色 */
+  --hl: #ff2c46; /* 選択・強調の赤 */
+  --yellow: #ffe23e;
+  --cyan: #3ff2ff;
+  --c-danger: #ff3b55;
+  --c-warn: #ffd23e;
+  --c-ok: #4cf0a0;
+  --c-sun: #ff6b81;
+  --c-sat: #7fe3ff;
+  --bar: rgba(2, 6, 32, 0.86); /* 黒い斜めの帯 */
+  --bar-ink: #ffffff;
 }
 
 /* ---------- テーマ ---------- */
 
 [data-theme='hall'] {
   color-scheme: dark;
-  --bg: #0b0a09;
-  --bg-raised: #141210;
-  --bg-sunken: #070606;
-  --ink: #efe6d2;
-  --ink-dim: #b5ab97;
-  --ink-faint: #7b7365;
-  --line: rgba(201, 164, 92, 0.32);
-  --line-strong: rgba(201, 164, 92, 0.7);
-  --accent: #c9a45c;
-  --accent-ink: #0b0a09;
-  --accent-2: #8c6d3a;
-  --glow: rgba(214, 178, 106, 0.28);
-  --focus: #f3d48d;
-  --texture-opacity: 0.07;
-  --vignette: radial-gradient(120% 90% at 70% 30%, rgba(201, 164, 92, 0.08), transparent 60%);
+  --bg: #0a2fd8;
+  --bg-deep: #03128c;
+  --bg-raised: #0b1f9e;
+  --bg-sunken: #031066;
+  --ink: #ffffff;
+  --ink-dim: #b9d8ff;
+  --ink-faint: #7fa6ef;
+  --line: rgba(160, 230, 255, 0.28);
+  --line-strong: rgba(190, 245, 255, 0.7);
+  --accent: #3ff2ff;
+  --accent-ink: #020a4a;
+  --accent-2: #ffe23e;
+  --glow: rgba(63, 242, 255, 0.35);
+  --focus: #ffe23e;
+  --water: 0.55;
 }
 
 [data-theme='orrery'] {
-  color-scheme: light;
-  --bg: #ece5d6;
-  --bg-raised: #f6f1e6;
-  --bg-sunken: #e1d8c6;
-  --ink: #1d1c1a;
-  --ink-dim: #4b4842;
-  --ink-faint: #6f6a61;
-  --line: rgba(29, 28, 26, 0.18);
-  --line-strong: rgba(29, 28, 26, 0.55);
-  --accent: #8a6a2c; /* 真鍮 */
-  --accent-ink: #f6f1e6;
-  --accent-2: #4f5a66; /* 鋼 */
-  --glow: rgba(138, 106, 44, 0.18);
-  --focus: #1f4f8f;
-  --texture-opacity: 0.05;
-  --vignette: radial-gradient(100% 80% at 20% 0%, rgba(255, 255, 255, 0.55), transparent 60%);
+  color-scheme: dark;
+  --bg: #0f45ea;
+  --bg-deep: #0520a8;
+  --bg-raised: #0b2cb4;
+  --bg-sunken: #041677;
+  --ink: #ffffff;
+  --ink-dim: #c4e4ff;
+  --ink-faint: #8cb4f5;
+  --line: rgba(170, 235, 255, 0.26);
+  --line-strong: rgba(200, 248, 255, 0.72);
+  --accent: #3ff2ff;
+  --accent-ink: #020a4a;
+  --accent-2: #ffe23e;
+  --glow: rgba(63, 242, 255, 0.32);
+  --focus: #ffe23e;
+  --water: 0.7;
 }
 
 [data-theme='chamber'] {
   color-scheme: dark;
-  --bg: #120707;
-  --bg-raised: #1c0c0c;
-  --bg-sunken: #0b0404;
-  --ink: #f4e7df;
-  --ink-dim: #c9aea4;
-  --ink-faint: #8e756d;
-  --line: rgba(214, 74, 64, 0.32);
-  --line-strong: rgba(226, 92, 78, 0.75);
-  --accent: #d6453a;
-  --accent-ink: #fff4ef;
-  --accent-2: #c9a45c;
-  --glow: rgba(214, 69, 58, 0.3);
-  --focus: #ffb3a6;
-  --texture-opacity: 0.06;
-  --vignette: radial-gradient(90% 70% at 50% 0%, rgba(214, 69, 58, 0.16), transparent 65%);
+  --bg: #071a7a;
+  --bg-deep: #030a3a;
+  --bg-raised: #0a1f8c;
+  --bg-sunken: #030c4a;
+  --ink: #ffffff;
+  --ink-dim: #c9d6ff;
+  --ink-faint: #8a9ce0;
+  --line: rgba(255, 120, 140, 0.32);
+  --line-strong: rgba(255, 150, 165, 0.8);
+  --accent: #ff2c46;
+  --accent-ink: #ffffff;
+  --accent-2: #3ff2ff;
+  --glow: rgba(255, 44, 70, 0.4);
+  --focus: #ffe23e;
+  --water: 0.35;
 }
 
 [data-theme='equation'] {
   color-scheme: dark;
-  --bg: #070c18;
-  --bg-raised: #0d1526;
-  --bg-sunken: #050812;
-  --ink: #e3ebf7;
-  --ink-dim: #9fb0c9;
-  --ink-faint: #6a7a93;
-  --line: rgba(120, 170, 255, 0.24);
-  --line-strong: rgba(140, 190, 255, 0.6);
-  --accent: #8cc3ff;
-  --accent-ink: #050812;
-  --accent-2: #c9a45c;
-  --glow: rgba(110, 170, 255, 0.28);
-  --focus: #bfe0ff;
-  --texture-opacity: 0.05;
-  --vignette: radial-gradient(80% 70% at 85% 10%, rgba(80, 140, 255, 0.14), transparent 60%);
+  --bg: #061a9a;
+  --bg-deep: #020a52;
+  --bg-raised: #0a1fa8;
+  --bg-sunken: #030c5e;
+  --ink: #ffffff;
+  --ink-dim: #b7c8ff;
+  --ink-faint: #7f90e0;
+  --line: rgba(150, 190, 255, 0.28);
+  --line-strong: rgba(190, 220, 255, 0.7);
+  --accent: #3ff2ff;
+  --accent-ink: #020a4a;
+  --accent-2: #ffe23e;
+  --glow: rgba(63, 242, 255, 0.32);
+  --focus: #ffe23e;
+  --water: 0.4;
 }
 
 [data-theme='chronicle'] {
   color-scheme: dark;
-  --bg: #15100a;
-  --bg-raised: #1f170e;
-  --bg-sunken: #0e0a06;
-  --ink: #f0dfbf;
-  --ink-dim: #c3a77c;
-  --ink-faint: #8a7356;
-  --line: rgba(205, 140, 60, 0.3);
-  --line-strong: rgba(222, 160, 80, 0.7);
-  --accent: #e0a24a; /* 琥珀 */
-  --accent-ink: #15100a;
-  --accent-2: #a8703a; /* 青銅 */
-  --glow: rgba(224, 162, 74, 0.25);
-  --focus: #ffd48a;
-  --texture-opacity: 0.11;
-  --vignette: radial-gradient(110% 80% at 30% 10%, rgba(224, 162, 74, 0.12), transparent 60%);
+  --bg: #0758c4;
+  --bg-deep: #032a78;
+  --bg-raised: #0a4aa8;
+  --bg-sunken: #032a6e;
+  --ink: #ffffff;
+  --ink-dim: #c2e6ff;
+  --ink-faint: #87b8ea;
+  --line: rgba(170, 240, 255, 0.28);
+  --line-strong: rgba(200, 250, 255, 0.72);
+  --accent: #ffe23e;
+  --accent-ink: #062058;
+  --accent-2: #3ff2ff;
+  --glow: rgba(255, 226, 62, 0.3);
+  --focus: #ffffff;
+  --water: 0.5;
 }
 
 [data-theme='night'] {
   color-scheme: dark;
-  --bg: #05060d;
-  --bg-raised: #0b0d1a;
-  --bg-sunken: #030308;
-  --ink: #eef0ff;
-  --ink-dim: #a9aed0;
-  --ink-faint: #6d7196;
-  --line: rgba(190, 200, 255, 0.22);
-  --line-strong: rgba(210, 220, 255, 0.6);
-  --accent: #f6e7b0;
-  --accent-ink: #05060d;
-  --accent-2: #8ea2ff;
-  --glow: rgba(246, 231, 176, 0.35);
-  --focus: #ffffff;
-  --texture-opacity: 0.04;
-  --vignette: radial-gradient(70% 60% at 50% 40%, rgba(110, 120, 220, 0.18), transparent 70%);
+  --bg: #04104f;
+  --bg-deep: #01062a;
+  --bg-raised: #08186a;
+  --bg-sunken: #020a38;
+  --ink: #ffffff;
+  --ink-dim: #b8c6ff;
+  --ink-faint: #7a88cf;
+  --line: rgba(190, 210, 255, 0.24);
+  --line-strong: rgba(220, 230, 255, 0.6);
+  --accent: #e9f6ff;
+  --accent-ink: #04104f;
+  --accent-2: #3ff2ff;
+  --glow: rgba(200, 240, 255, 0.45);
+  --focus: #ffe23e;
+  --water: 0.25;
+}
+
+/* 互換：以前の変数名 */
+:root,
+[data-theme] {
+  --vignette: radial-gradient(120% 90% at 50% 0%, transparent 40%, var(--bg-deep) 100%);
+  --texture-opacity: 0;
 }

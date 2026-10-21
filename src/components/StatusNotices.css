@@ -18,6 +18,7 @@
   gap: var(--sp-3);
   padding: var(--sp-3) var(--sp-4);
   font-size: var(--fs-small);
+  font-weight: 700;
   line-height: 1.5;
 }
 .notice p {
@@ -29,21 +30,23 @@
 }
 .notice--danger {
   width: 100%;
-  background: #2a0b08;
-  color: #ffe2dc;
-  border: 1px solid var(--c-danger);
+  background: #ff2c46;
+  color: #fff;
+  box-shadow: 5px 5px 0 #02062a;
+}
+.notice--danger .btn {
+  color: #fff;
 }
 .notice--quiet {
-  background: rgba(11, 10, 9, 0.85);
-  color: #efe6d2;
-  border: 1px solid rgba(201, 164, 92, 0.4);
+  background: rgba(2, 6, 34, 0.92);
+  color: #fff;
   font-size: var(--fs-micro);
-  letter-spacing: 0.12em;
-  padding: 4px 14px;
+  letter-spacing: 0.1em;
+  padding: 4px 16px;
+  transform: skewX(-10deg);
 }
 .notice__dot {
   width: 7px;
   height: 7px;
-  border-radius: 50%;
-  background: var(--c-warn);
+  background: #ffe23e;
 }

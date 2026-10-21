@@ -5,7 +5,7 @@
   display: grid;
   place-items: center;
   padding: calc(var(--sp-4) + var(--safe-top)) calc(var(--sp-4) + var(--safe-right)) calc(var(--sp-4) + var(--safe-bottom)) calc(var(--sp-4) + var(--safe-left));
-  background: rgba(5, 4, 3, 0.66);
+  background: rgba(2, 6, 40, 0.72);
 }
 .dialog {
   position: relative;
@@ -13,25 +13,20 @@
   max-height: calc(100dvh - 2 * var(--sp-5) - var(--safe-top) - var(--safe-bottom));
   display: flex;
   flex-direction: column;
-  background: var(--bg-raised);
+  background: linear-gradient(180deg, var(--bg-raised), var(--bg-sunken));
   color: var(--ink);
-  border: 1px solid var(--line-strong);
-  box-shadow:
-    0 0 0 6px color-mix(in srgb, var(--bg-raised) 70%, transparent),
-    0 0 0 7px var(--line),
-    0 40px 80px -30px rgba(0, 0, 0, 0.8);
+  border: 2px solid #fff;
+  box-shadow: 10px 10px 0 rgba(2, 6, 40, 0.85);
   outline: none;
 }
 .dialog__corner {
   position: absolute;
-  width: 18px;
-  height: 18px;
-  border-color: var(--accent);
-  border-style: solid;
+  width: 46px;
+  height: 46px;
   pointer-events: none;
 }
-.dialog__corner--tl { top: -4px; left: -4px; border-width: 2px 0 0 2px; }
-.dialog__corner--br { bottom: -4px; right: -4px; border-width: 0 2px 2px 0; }
+.dialog__corner--tl { top: -2px; left: -2px; background: linear-gradient(135deg, var(--hl) 0 50%, transparent 50%); }
+.dialog__corner--br { bottom: -2px; right: -2px; background: linear-gradient(-45deg, #fff 0 50%, transparent 50%); }
 .dialog__head {
   position: relative;
   padding: var(--sp-5) var(--sp-7) var(--sp-3) var(--sp-5);
@@ -40,16 +35,20 @@
 .dialog__kicker {
   margin: 0 0 var(--sp-1);
   font-family: var(--font-display);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.32em;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
   color: var(--accent);
 }
 .dialog__title {
+  display: inline-block;
   margin: 0;
-  font-family: var(--font-mincho);
-  font-weight: 500;
-  font-size: 1.35rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  transform: skewX(var(--slant));
 }
 .dialog__close {
   position: absolute;
@@ -59,13 +58,13 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
+  border: 2px solid var(--line-strong);
   background: none;
-  color: var(--ink-dim);
+  color: var(--ink);
   cursor: pointer;
+  transform: skewX(var(--slant));
 }
-.dialog__close:hover { color: var(--ink); border-color: var(--line-strong); }
+.dialog__close:hover { background: #fff; color: #050f4a; box-shadow: 3px 3px 0 var(--hl); }
 .dialog__body {
   padding: var(--sp-5);
   overflow-y: auto;

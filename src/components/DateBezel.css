@@ -46,7 +46,7 @@
   stroke: var(--line-strong);
 }
 .bezel__weekday {
-  font-family: var(--font-mincho);
+  font-family: var(--font-heading);
   font-size: 26px;
   fill: var(--ink);
 }
