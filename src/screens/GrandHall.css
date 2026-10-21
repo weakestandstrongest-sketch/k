@@ -64,17 +64,6 @@
   color: var(--ink);
   margin-left: -0.05em;
 }
-.hall__slash {
-  position: absolute;
-  left: 8%;
-  right: -6%;
-  top: 52%;
-  height: 1.5px;
-  background: var(--crimson);
-  transform: rotate(-58deg);
-  transform-origin: center;
-  pointer-events: none;
-}
 .hall__date-side {
   grid-area: side;
   padding-bottom: 0.6rem;
