@@ -22,6 +22,7 @@ import { Orrery } from './screens/Orrery';
 import { AppProvider, ROUTE_THEME, useApp, type Point, type Route } from './state/AppContext';
 import { ConfirmProvider } from './state/ConfirmContext';
 import { EventsProvider, useEvents } from './state/EventsContext';
+import { MoveProvider } from './state/MoveContext';
 import { ToastProvider } from './state/ToastContext';
 
 const INTRO_KEY = 'chronos:intro-played';
@@ -42,7 +43,9 @@ export default function App() {
         <ConfirmProvider>
           <EventsProvider>
             <AppProvider>
-              <Shell />
+              <MoveProvider>
+                <Shell />
+              </MoveProvider>
             </AppProvider>
           </EventsProvider>
         </ConfirmProvider>
