@@ -25,6 +25,8 @@ import { EventsProvider, useEvents } from './state/EventsContext';
 import { MoveProvider } from './state/MoveContext';
 import { instancesOn } from './lib/recurrence';
 import { ToastProvider } from './state/ToastContext';
+import { HibiSwitch } from './components/HibiSwitch';
+import { IN_HIBI } from './lib/hibi';
 
 const INTRO_KEY = 'chronos:intro-played';
 
@@ -55,6 +57,7 @@ export default function App() {
 type IntroState = 'playing' | 'revealing' | 'done';
 
 function readIntroPlayed(): boolean {
+  if (IN_HIBI) return true; // ひび手帳から切り替えたときは、すぐに画面を出す
   try {
     return sessionStorage.getItem(INTRO_KEY) === '1';
   } catch {
@@ -131,6 +134,7 @@ function Shell() {
 
       <AnimatePresence>{chamber && <Chamber key="chamber" />}</AnimatePresence>
       <AnimatePresence>{reviewDate && <DailyReview key={`review-${reviewDate}`} date={reviewDate} />}</AnimatePresence>
+      <HibiSwitch />
       <StatusNotices />
       <Toasts />
 

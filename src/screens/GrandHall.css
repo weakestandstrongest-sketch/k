@@ -37,6 +37,10 @@
   font-weight: 600;
   color: var(--crimson);
 }
+/* ひび手帳への切り替え（見出しの行のいちばん右） */
+.hall__head .hall__hibi {
+  margin-left: auto;
+}
 
 /* ---- 日付（細く大きな数字） ---- */
 .hall__date {

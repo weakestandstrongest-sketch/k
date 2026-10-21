@@ -45,6 +45,8 @@ interface EventsApi {
   clearAll: () => Promise<boolean>;
   loadSamples: () => Promise<boolean>;
   retry: () => void;
+  /** 保存された予定と設定を読み直す（ひび手帳から戻ったとき。読み込み中の画面は出さない） */
+  reload: () => Promise<void>;
 }
 
 const EventsContext = createContext<EventsApi | null>(null);
@@ -306,6 +308,17 @@ export function EventsProvider({ children }: { children: ReactNode }) {
     setAttempt((n) => n + 1);
   }, []);
 
+  const reload = useCallback(async () => {
+    if (memoryOnlyRef.current) return;
+    try {
+      const [loaded, s] = await Promise.all([repo.loadAllEvents(), repo.loadSettings()]);
+      setEvents(loaded);
+      setSettings(s);
+    } catch (err) {
+      push({ kind: 'error', message: `予定を読み直せませんでした。${describeStorageError(err)}` });
+    }
+  }, [push]);
+
   const api = useMemo<EventsApi>(
     () => ({
       status,
@@ -328,8 +341,9 @@ export function EventsProvider({ children }: { children: ReactNode }) {
       clearAll,
       loadSamples,
       retry,
+      reload,
     }),
-    [status, storageProblem, memoryOnly, events, settings, pending, create, update, commit, remove, record, editOccurrence, removeOccurrence, restore, updateSettings, clearSamples, clearAll, loadSamples, retry],
+    [status, storageProblem, memoryOnly, events, settings, pending, create, update, commit, remove, record, editOccurrence, removeOccurrence, restore, updateSettings, clearSamples, clearAll, loadSamples, retry, reload],
   );
 
   return <EventsContext.Provider value={api}>{children}</EventsContext.Provider>;

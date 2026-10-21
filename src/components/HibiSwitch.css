@@ -1,0 +1,79 @@
+/* ---- ひび手帳への切り替え ---- */
+.hibi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.hibi-btn:focus-visible {
+  outline: 2px solid var(--gold, #c9a45c);
+  outline-offset: 2px;
+}
+.hibi-icon {
+  display: block;
+  border-radius: 7px;
+  box-shadow: 0 2px 6px rgba(224, 127, 120, 0.35);
+}
+.hibi-btn__text {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.hibi-ov {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #f6f1ec;
+  opacity: 0;
+  transition: opacity 0.35s ease, background-color 0.4s ease;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.hibi-ov.is-in {
+  opacity: 1;
+}
+.hibi-ov__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.hibi-ov.is-ready .hibi-ov__frame {
+  opacity: 1;
+}
+.hibi-ov__load {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  color: #23285a;
+  font-size: 14px;
+}
+.hibi-ov__load .hibi-icon {
+  animation: hibi-pulse 1.8s ease-in-out infinite;
+}
+.hibi-ov.is-ready .hibi-ov__load {
+  display: none;
+}
+@keyframes hibi-pulse {
+  50% {
+    transform: scale(1.08);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hibi-ov,
+  .hibi-ov__frame {
+    transition: none;
+  }
+  .hibi-ov__load .hibi-icon {
+    animation: none;
+  }
+}
