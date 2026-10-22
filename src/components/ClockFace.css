@@ -123,11 +123,6 @@
   stroke: var(--focus);
   stroke-opacity: 0.3;
 }
-.cf-done {
-  fill: var(--bg-raised);
-  stroke: var(--ink);
-  stroke-width: 2;
-}
 .cf-hand__line {
   stroke: var(--ink);
   stroke-width: 2;

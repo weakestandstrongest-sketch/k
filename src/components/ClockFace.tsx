@@ -257,14 +257,6 @@ function ClockFaceImpl({
                 />
                 {/* 押しやすいように太い透明の当たり判定 */}
                 <path d={arcPath(r, e.startMin, e.endMin)} className="cf-hit" strokeWidth={LANE_W + 16} />
-                {e.status === 'completed' && (
-                  <circle
-                    cx={polar(r, minuteToAngle((e.startMin + e.endMin) / 2)).x}
-                    cy={polar(r, minuteToAngle((e.startMin + e.endMin) / 2)).y}
-                    r={5}
-                    className="cf-done"
-                  />
-                )}
               </g>
             );
           })}
